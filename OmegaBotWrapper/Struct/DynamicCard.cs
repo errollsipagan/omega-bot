@@ -1,4 +1,4 @@
-﻿namespace OmegaBotWrapper.Struct
+namespace OmegaBotWrapper.Struct
 {
     /// <summary>
     /// Contains dynamic data about the card on the game state
@@ -80,11 +80,11 @@
         /// <summary>
         /// Operation parameter 1 of the card for being used during specific operations
         /// </summary>
-        public byte OpParam1;
+        public int OpParam1;
         /// <summary>
         /// Operation parameter 2 of the card for being used during specific operations
         /// </summary>
-        public byte OpParam2;
+        public int OpParam2;
         /// <summary>
         /// Latest reason of why the card is on its current state
         /// </summary>
