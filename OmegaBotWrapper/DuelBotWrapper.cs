@@ -31,6 +31,17 @@ namespace OmegaBotWrapper
             BotID = -1;
         }
         /// <summary>
+        /// Creates a new bot wrapper with given set of actions
+        /// </summary>
+        /// <param name="botActions">Bot actions object containing all instructions and data about this bot instance behaviour</param>
+        public DuelBotWrapper(IBotActions botActions)
+        {
+            DeckName = botActions.DeckName ?? string.Empty;
+            DeckHash = botActions.DeckHash ?? string.Empty;
+            BotID = -1;
+            botActions.RegisterActions(this);
+        }
+        /// <summary>
         /// Connects the bot to the given client bot slot
         /// </summary>
         /// <param name="slot">Slot of the bot that this instance will control or -1 for first available</param>
@@ -138,7 +149,7 @@ namespace OmegaBotWrapper
         /// <summary>
         /// Action to be taken when selecting yes or no for an effect, should return true or false
         /// </summary>
-        public Func<SelectEffectYnData, Task<bool>>? OnSelectEffectYnAction { get; set; }
+        public Func<SelectEffectYnState, Task<bool>>? OnSelectEffectYnAction { get; set; }
         /// <summary>
         /// Action to be taken when selecting yes or no, should return true or false
         /// </summary>
@@ -238,7 +249,7 @@ namespace OmegaBotWrapper
                 case BotState.SelectEffectYn:
                     if (OnSelectEffectYnAction == null)
                         return false;
-                    var selectEffectYnState = await WebHandler.DownloadObject<SelectEffectYnData>(BotStateURL);
+                    var selectEffectYnState = await WebHandler.DownloadObject<SelectEffectYnState>(BotStateURL);
                     var selectEffectYnResponse = await OnSelectEffectYnAction(selectEffectYnState);
                     pkt.Write((byte)(selectEffectYnResponse ? 1 : 0)); // True = 1, False = 0 (1 byte)
                     break;
