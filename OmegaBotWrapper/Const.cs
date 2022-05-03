@@ -53,6 +53,10 @@
         /// End point to request the player's current assigned deck
         /// </summary>
         public const string GET_PLAYER_CURRENT_DECK = BASE_API + "/current-deck";
+        /// <summary>
+        /// End point to request card list with matching filters
+        /// </summary>
+        public const string GET_MATCHING_CARDS = BASE_API + "/card-list";
     }
     public static class Zones
     {

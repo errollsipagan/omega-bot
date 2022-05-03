@@ -85,5 +85,18 @@ namespace OmegaBotWrapper
             }
             return -1;
         }
+        /// <summary>
+        /// Gets all combinations from enumerable
+        /// </summary>
+        /// <typeparam name="T">Type of elements</typeparam>
+        /// <param name="elements">Enumerable of elements</param>
+        /// <param name="k">Size of resulting collection</param>
+        /// <returns>Collection of combinations with k elements</returns>
+        public static IEnumerable<IEnumerable<T>> GetCombinations<T>(this IEnumerable<T> elements, int k)
+        {
+            return k == 0 ? new[] { Array.Empty<T>() } :
+              elements.SelectMany((e, i) =>
+                elements.Skip(i + 1).GetCombinations(k - 1).Select(c => (new[] { e }).Concat(c)));
+        }
     }
 }

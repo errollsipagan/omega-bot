@@ -2,7 +2,7 @@
 using BotTest;
 
 var playerDeck = await DuelBotWrapper.GetPlayerDeck(); // Gets the deck being used by the player
-Actions botActions = new()
+Actions botActions = new() // This class has a copy of the interface implementation, the default behaviour occurs even without proper implementation of each case
 {
     DeckName = playerDeck.Name,
     DeckHash = playerDeck.Hash

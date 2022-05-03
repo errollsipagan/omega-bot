@@ -36,6 +36,7 @@ namespace OmegaBotWrapper
         /// <param name="botActions">Bot actions object containing all instructions and data about this bot instance behaviour</param>
         public DuelBotWrapper(IBotActions botActions)
         {
+            botActions.BotWrapper = this;
             DeckName = botActions.DeckName ?? string.Empty;
             DeckHash = botActions.DeckHash ?? string.Empty;
             BotID = -1;
@@ -416,6 +417,20 @@ namespace OmegaBotWrapper
         public async Task<bool> SendResponse(BinaryWriter pkt)
         {
             return await pkt.SendResponsePacket(BotID);
+        }
+        /// <summary>
+        /// Gets a list of cards from client database which matches the given filters
+        /// </summary>
+        /// <param name="filters">Filters to match cards</param>
+        /// <returns>List of cards that matched the filters</returns>
+        public async Task<DBCardList> GetMatchingCards(params int[] filters)
+        {
+            var endPoint = $"{Const.GET_MATCHING_CARDS}/";
+            foreach (var filter in filters)
+                endPoint = $"filter,";
+            if (endPoint.EndsWith(','))
+                endPoint = endPoint.Remove(endPoint.Length - 1);
+            return await WebHandler.DownloadObject<DBCardList>(endPoint);
         }
     }
 }
