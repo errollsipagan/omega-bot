@@ -77,5 +77,21 @@ namespace OmegaBotWrapper
         /// <param name="card">Spell or Trap card to be set</param>
         /// <returns>Response to set this spell or trap card</returns>
         public static IdleCmdResponse SetSpellTrap(this DynamicCard card) => (MainAction.SetSpell, (ushort)card.ActionIndex[(int)MainAction.SetSpell]);
+        /// <summary>
+        /// Try getting a card with given id from a collection of cards
+        /// </summary>
+        /// <param name="cards">Collection of cards</param>
+        /// <param name="id">ID of the card being searched</param>
+        /// <param name="card">Card returned if found (default if not)</param>
+        /// <returns>True if a card with given ID was found or False otherwise</returns>
+        public static bool TryGetByID(this IEnumerable<DynamicCard> cards, int id, out DynamicCard card)
+        {
+            card = default;
+            if (id <= 0) return false;
+            cards = cards.Where(c => c.ID == id || c.Alias == id);
+            if (!cards.Any()) return false;
+            card = cards.First();
+            return true;
+        }
     }
 }
