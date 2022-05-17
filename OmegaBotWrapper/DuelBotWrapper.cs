@@ -1,5 +1,7 @@
 ﻿using OmegaBotWrapper.Struct;
 using OmegaBotWrapper.Enum;
+using OmegaBotWrapper.States;
+
 namespace OmegaBotWrapper
 {
     /// <summary>
@@ -90,75 +92,75 @@ namespace OmegaBotWrapper
         /// <summary>
         /// Action to be taken at battle phase, should return the action and its index (or 0 if not applicable)
         /// </summary>
-        public Func<BattleCmdState, Task<Tuple<BattleAction, ushort>>>? OnBattleCmdAction { get; set; }
+        public Func<BattleCmdData, Task<BattleCmdResponse>>? OnBattleCmdAction { get; set; }
         /// <summary>
         /// Action to be taken at main phase, should return the action and its index (or 0 if not applicable)
         /// </summary>
-        public Func<IdleCmdState, Task<Tuple<MainAction, ushort>>>? OnIdleCmdAction { get; set; }
+        public Func<IdleCmdData, Task<IdleCmdResponse>>? OnIdleCmdAction { get; set; }
         /// <summary>
         /// Action to be taken when selecting something to chain, should return the index of the selected chain to activate or, if allowed, -1 for none
         /// </summary>
-        public Func<SelectChainState, Task<int>>? OnSelectChainAction { get; set; }
+        public Func<SelectChainData, Task<int>>? OnSelectChainAction { get; set; }
         /// <summary>
         /// Action to be taken when selecting card(s), should return the indexes that was selected from the selectable options
         /// </summary>
-        public Func<SelectCardState, Task<IList<byte>?>>? OnSelectCardAction { get; set; }
+        public Func<SelectCardData, Task<IList<byte>?>>? OnSelectCardAction { get; set; }
         /// <summary>
         /// Action to be taken when selecting tribute(s), should return the indexes that was selected from the selectable options
         /// </summary>
-        public Func<SelectTributeState, Task<IList<byte>?>>? OnSelectTributeAction { get; set; }
+        public Func<SelectTributeData, Task<IList<byte>?>>? OnSelectTributeAction { get; set; }
         /// <summary>
         /// Action to be taken when selecting a sum (eg. synchro/ritual), should return the indexes that was selected from the selectable options
         /// </summary>
-        public Func<SelectSumState, Task<IList<byte>?>>? OnSelectSumAction { get; set; }
+        public Func<SelectSumData, Task<IList<byte>?>>? OnSelectSumAction { get; set; }
         /// <summary>
         /// Action to be taken when announcing attribute(s), should return the attribute(s) selected
         /// </summary>
-        public Func<AnnounceAttributeState, Task<IList<CardAttribute>>>? OnAnnounceAttributeAction { get; set; }
+        public Func<AnnounceAttributeData, Task<IList<CardAttribute>>>? OnAnnounceAttributeAction { get; set; }
         /// <summary>
         /// Action to be taken when announcing race(s), should return the race(s) selected
         /// </summary>
-        public Func<AnnounceRaceState, Task<IList<CardRace>>>? OnAnnounceRaceAction { get; set; }
+        public Func<AnnounceRaceData, Task<IList<CardRace>>>? OnAnnounceRaceAction { get; set; }
         /// <summary>
         /// Action to be taken when announcing a number, should return the index of the number selected from the selectable options
         /// </summary>
-        public Func<AnnounceNumberState, Task<int>>? OnAnnounceNumberAction { get; set; }
+        public Func<AnnounceNumberData, Task<int>>? OnAnnounceNumberAction { get; set; }
         /// <summary>
         /// Action to be taken when announcing a card, should return the card id that was selected
         /// </summary>
-        public Func<AnnounceCardState, Task<int>>? OnAnnounceCardAction { get; set; }
+        public Func<AnnounceCardData, Task<int>>? OnAnnounceCardAction { get; set; }
         /// <summary>
         /// Action to be taken when announcing a card with filter, should return the card id that was selected
         /// </summary>
-        public Func<AnnounceCardFilterState, Task<int>>? OnAnnounceCardFilterAction { get; set; }
+        public Func<AnnounceCardFilterData, Task<int>>? OnAnnounceCardFilterAction { get; set; }
         /// <summary>
         /// Action to be taken when selecting/unselecting card(s), should return the indexes that was selected from the selectable options
         /// </summary>
-        public Func<SelectUnselectCardState, Task<IList<byte>?>>? OnSelectUnselectCardAction { get; set; }
+        public Func<SelectUnselectCardData, Task<IList<byte>?>>? OnSelectUnselectCardAction { get; set; }
         /// <summary>
         /// Action to be taken when selecting counter(s), should return the amount of counters picked from each of the indexes that was present on the selectable options
         /// </summary>
-        public Func<SelectCounterState, Task<IList<short>>>? OnSelectCounterAction { get; set; }
+        public Func<SelectCounterData, Task<IList<short>>>? OnSelectCounterAction { get; set; }
         /// <summary>
         /// Action to be taken when selecting field zone for disabling, should return the integer representing the zone selected (use the 'Zones' class helper for values)
         /// </summary>
-        public Func<SelectDisfieldState, Task<int>>? OnSelectDisfieldAction { get; set; }
+        public Func<SelectDisfieldData, Task<int>>? OnSelectDisfieldAction { get; set; }
         /// <summary>
         /// Action to be taken when selecting field zone, should return the integer representing the zone selected (use the 'Zones' class helper for values)
         /// </summary>
-        public Func<SelectPlaceState, Task<int>>? OnSelectPlaceAction { get; set; }
+        public Func<SelectPlaceData, Task<int>>? OnSelectPlaceAction { get; set; }
         /// <summary>
         /// Action to be taken when selecting yes or no for an effect, should return true or false
         /// </summary>
-        public Func<SelectEffectYnState, Task<bool>>? OnSelectEffectYnAction { get; set; }
+        public Func<SelectEffectYnData, Task<bool>>? OnSelectEffectYnAction { get; set; }
         /// <summary>
         /// Action to be taken when selecting yes or no, should return true or false
         /// </summary>
-        public Func<SelectYesNoState, Task<bool>>? OnSelectYesNoAction { get; set; }
+        public Func<SelectYesNoData, Task<bool>>? OnSelectYesNoAction { get; set; }
         /// <summary>
         /// Action to be taken when selecting an option, should return the index of the selected option
         /// </summary>
-        public Func<SelectOptionState, Task<int>>? OnSelectOptionAction { get; set; }
+        public Func<SelectOptionData, Task<int>>? OnSelectOptionAction { get; set; }
         /// <summary>
         /// Action to be taken when selecting a rock paper scissors option, should return 1 = scissors, 2 = rock, 3 = paper 
         /// </summary>
@@ -166,11 +168,11 @@ namespace OmegaBotWrapper
         /// <summary>
         /// Action to be taken when selecting position, should return the position selected
         /// </summary>
-        public Func<SelectPositionState, Task<CardPosition>>? OnSelectPositionAction { get; set; }
+        public Func<SelectPositionData, Task<CardPosition>>? OnSelectPositionAction { get; set; }
         /// <summary>
         /// Action to be taken when sorting cards, should return the indexes of the selectable cards in the desired order
         /// </summary>
-        public Func<SortCardState, Task<IList<byte>>>? OnSortCardAction { get; set; }
+        public Func<SortCardData, Task<IList<byte>>>? OnSortCardAction { get; set; }
         /// <summary>
         /// URL for acquiring this bot instance state header
         /// </summary>
@@ -179,38 +181,39 @@ namespace OmegaBotWrapper
         /// URL for acquiring this bot instance state
         /// </summary>
         private string BotStateURL { get => $"{Const.GET_BOT_STATE}/{BotID}"; }
+        public BotStateHeader CurrentStateHeader;
         /// <summary>
         /// Main loop of actions from the bot
         /// </summary>
         /// <returns>Will return True everytime the bot finishes one loop without error, or False otherwise</returns>
         private async Task<bool> Heartbeat()
         {
-            var header = await WebHandler.DownloadObject<BotStateHeader>(BotStateHeaderURL);
+            CurrentStateHeader = await WebHandler.DownloadObject<BotStateHeader>(BotStateHeaderURL);
             using MemoryStream ms = new();
             using BinaryWriter pkt = new(ms);
-            switch ((BotState)header.CurrentStateCode)
+            switch ((BotState)CurrentStateHeader.CurrentStateCode)
             {
                 case BotState.SelectBattleCmd:
                     if (OnBattleCmdAction == null)
                         return false;
                     var battleState = await WebHandler.DownloadObject<BattleCmdState>(BotStateURL);
-                    var battleResponse = await OnBattleCmdAction(battleState);
-                    pkt.Write((ushort)battleResponse.Item1); // Action to be taken on battle phase (2 bytes)
-                    pkt.Write(battleResponse.Item2); // Index of the action (or 0 if not applicable) (2 bytes)
+                    var battleResponse = await OnBattleCmdAction(battleState.CurrentStateData);
+                    pkt.Write((ushort)battleResponse.Action); // Action to be taken on battle phase (2 bytes)
+                    pkt.Write(battleResponse.Index); // Index of the action (or 0 if not applicable) (2 bytes)
                     break; 
                 case BotState.SelectIdleCmd:
                     if (OnIdleCmdAction == null)
                         return false;
                     var idleState = await WebHandler.DownloadObject<IdleCmdState>(BotStateURL);
-                    var idleResponse = await OnIdleCmdAction(idleState);
-                    pkt.Write((ushort)idleResponse.Item1); // Action to be taken on main phase (2 bytes)
-                    pkt.Write(idleResponse.Item2); // Index of the action (or 0 if not applicable) (2 bytes)
+                    var idleResponse = await OnIdleCmdAction(idleState.CurrentStateData);
+                    pkt.Write((ushort)idleResponse.Action); // Action to be taken on main phase (2 bytes)
+                    pkt.Write(idleResponse.Index); // Index of the action (or 0 if not applicable) (2 bytes)
                     break;
                 case BotState.SelectCard:
                     if (OnSelectCardAction == null)
                         return false;
                     var selectCardState = await WebHandler.DownloadObject<SelectCardState>(BotStateURL);
-                    var selectCardResponse = await OnSelectCardAction(selectCardState) ?? Array.Empty<byte>();
+                    var selectCardResponse = await OnSelectCardAction(selectCardState.CurrentStateData) ?? Array.Empty<byte>();
                     pkt.Write((byte)selectCardResponse.Count); // Length of the selected options (1 byte)
                     foreach (byte optionIndex in selectCardResponse)
                         pkt.Write(optionIndex); // Index of the option picked (1 byte)
@@ -219,7 +222,7 @@ namespace OmegaBotWrapper
                     if (OnSelectUnselectCardAction == null)
                         return false;
                     var selectUnselectCardState = await WebHandler.DownloadObject<SelectUnselectCardState>(BotStateURL);
-                    var selectUnselectCardResponse = await OnSelectUnselectCardAction(selectUnselectCardState) ?? Array.Empty<byte>();
+                    var selectUnselectCardResponse = await OnSelectUnselectCardAction(selectUnselectCardState.CurrentStateData) ?? Array.Empty<byte>();
                     pkt.Write((byte)selectUnselectCardResponse.Count); // Length of the selected options (1 byte)
                     foreach (byte optionIndex in selectUnselectCardResponse)
                         pkt.Write(optionIndex); // Index of the option picked (1 byte)
@@ -228,14 +231,14 @@ namespace OmegaBotWrapper
                     if (OnSelectChainAction == null)
                         return false;
                     var selectChainState = await WebHandler.DownloadObject<SelectChainState>(BotStateURL);
-                    var selectChainResponse = await OnSelectChainAction(selectChainState);
+                    var selectChainResponse = await OnSelectChainAction(selectChainState.CurrentStateData);
                     pkt.Write(selectChainResponse); // Index of selected item to chain, or -1 for none if allowed (4 bytes)
                     break;
                 case BotState.SelectCounter:
                     if (OnSelectCounterAction == null)
                         return false;
                     var selectCounterState = await WebHandler.DownloadObject<SelectCounterState>(BotStateURL);
-                    var selectCounterResponse = await OnSelectCounterAction(selectCounterState);
+                    var selectCounterResponse = await OnSelectCounterAction(selectCounterState.CurrentStateData);
                     pkt.Write((byte)selectCounterResponse.Count); // Amount of indexes on the selection (1 byte)
                     foreach (short counterAmount in selectCounterResponse)
                         pkt.Write(counterAmount); // Amount of counters picked from this index (2 bytes)
@@ -244,42 +247,42 @@ namespace OmegaBotWrapper
                     if (OnSelectDisfieldAction == null)
                         return false;
                     var selectDisfieldState = await WebHandler.DownloadObject<SelectDisfieldState>(BotStateURL);
-                    var selectDisfieldResponse = await OnSelectDisfieldAction(selectDisfieldState);
+                    var selectDisfieldResponse = await OnSelectDisfieldAction(selectDisfieldState.CurrentStateData);
                     pkt.Write(selectDisfieldResponse); // integer of the zone selected (4 bytes)
                     break;
                 case BotState.SelectEffectYn:
                     if (OnSelectEffectYnAction == null)
                         return false;
                     var selectEffectYnState = await WebHandler.DownloadObject<SelectEffectYnState>(BotStateURL);
-                    var selectEffectYnResponse = await OnSelectEffectYnAction(selectEffectYnState);
+                    var selectEffectYnResponse = await OnSelectEffectYnAction(selectEffectYnState.CurrentStateData);
                     pkt.Write((byte)(selectEffectYnResponse ? 1 : 0)); // True = 1, False = 0 (1 byte)
                     break;
                 case BotState.SelectOption:
                     if (OnSelectOptionAction == null)
                         return false;
                     var selectOptionState = await WebHandler.DownloadObject<SelectOptionState>(BotStateURL);
-                    var selectedOptionResponse = await OnSelectOptionAction(selectOptionState);
+                    var selectedOptionResponse = await OnSelectOptionAction(selectOptionState.CurrentStateData);
                     pkt.Write(selectedOptionResponse); // Index of the selected option (4 bytes)
                     break;
                 case BotState.SelectPlace:
                     if (OnSelectPlaceAction == null)
                         return false;
                     var selectPlaceState = await WebHandler.DownloadObject<SelectPlaceState>(BotStateURL);
-                    var selectPlaceResponse = await OnSelectPlaceAction(selectPlaceState);
+                    var selectPlaceResponse = await OnSelectPlaceAction(selectPlaceState.CurrentStateData);
                     pkt.Write(selectPlaceResponse); // integer of the zone selected (4 bytes)
                     break;
                 case BotState.SelectPosition:
                     if (OnSelectPositionAction == null)
                         return false;
                     var selectPositionState = await WebHandler.DownloadObject<SelectPositionState>(BotStateURL);
-                    var selectPositionResponse = await OnSelectPositionAction(selectPositionState);
+                    var selectPositionResponse = await OnSelectPositionAction(selectPositionState.CurrentStateData);
                     pkt.Write((byte)selectPositionResponse); // Position selected (1 byte)
                     break;
                 case BotState.SelectSum:
                     if (OnSelectSumAction == null)
                         return false;
                     var selectSumState = await WebHandler.DownloadObject<SelectSumState>(BotStateURL);
-                    var selectSumResponse = await OnSelectSumAction(selectSumState) ?? Array.Empty<byte>();
+                    var selectSumResponse = await OnSelectSumAction(selectSumState.CurrentStateData) ?? Array.Empty<byte>();
                     pkt.Write((byte)selectSumResponse.Count); // Length of the selected options (1 byte)
                     foreach (byte optionIndex in selectSumResponse)
                         pkt.Write(optionIndex); // Index of the option picked (1 byte)
@@ -288,7 +291,7 @@ namespace OmegaBotWrapper
                     if (OnSelectTributeAction == null)
                         return false;
                     var selectTributeState = await WebHandler.DownloadObject<SelectTributeState>(BotStateURL);
-                    var selectTributeResponse = await OnSelectTributeAction(selectTributeState) ?? Array.Empty<byte>();
+                    var selectTributeResponse = await OnSelectTributeAction(selectTributeState.CurrentStateData) ?? Array.Empty<byte>();
                     pkt.Write((byte)selectTributeResponse.Count); // Length of the selected options (1 byte)
                     foreach (byte optionIndex in selectTributeResponse)
                         pkt.Write(optionIndex); // Index of the option picked (1 byte)
@@ -297,7 +300,7 @@ namespace OmegaBotWrapper
                     if (OnAnnounceAttributeAction == null)
                         return false;
                     var announceAttributeState = await WebHandler.DownloadObject<AnnounceAttributeState>(BotStateURL);
-                    var announceAttributeResponse = await OnAnnounceAttributeAction(announceAttributeState);
+                    var announceAttributeResponse = await OnAnnounceAttributeAction(announceAttributeState.CurrentStateData);
                     int announcedAttribute = 0; // Initializes a mask with no attribute selected
                     foreach (var attributeSelected in announceAttributeResponse)
                         announcedAttribute += (int)attributeSelected; // Add the selected attribute to the selection mask
@@ -307,21 +310,21 @@ namespace OmegaBotWrapper
                     if (OnAnnounceCardAction == null)
                         return false;
                     var announceCardState = await WebHandler.DownloadObject<AnnounceCardState>(BotStateURL);
-                    var announceCardResponse = await OnAnnounceCardAction(announceCardState);
+                    var announceCardResponse = await OnAnnounceCardAction(announceCardState.CurrentStateData);
                     pkt.Write(announceCardResponse); // ID of the selected card (4 bytes)
                     break;
                 case BotState.AnnounceNumber:
                     if (OnAnnounceNumberAction == null)
                         return false;
                     var announceNumberState = await WebHandler.DownloadObject<AnnounceNumberState>(BotStateURL);
-                    var announceNumberResponse = await OnAnnounceNumberAction(announceNumberState);
+                    var announceNumberResponse = await OnAnnounceNumberAction(announceNumberState.CurrentStateData);
                     pkt.Write(announceNumberResponse); // Selected index from the selectable number options (4 bytes)
                     break;
                 case BotState.AnnounceRace:
                     if (OnAnnounceRaceAction == null)
                         return false;
                     var announceRaceState = await WebHandler.DownloadObject<AnnounceRaceState>(BotStateURL);
-                    var announceRaceResponse = await OnAnnounceRaceAction(announceRaceState);
+                    var announceRaceResponse = await OnAnnounceRaceAction(announceRaceState.CurrentStateData);
                     int announcedRace = 0; // Initializes a mask with no race selected
                     foreach (var raceSelected in announceRaceResponse)
                         announcedRace += (int)raceSelected; // Add the selected race to the selection mask
@@ -331,14 +334,14 @@ namespace OmegaBotWrapper
                     if (OnAnnounceCardFilterAction == null)
                         return false;
                     var announceCardFilterState = await WebHandler.DownloadObject<AnnounceCardFilterState>(BotStateURL);
-                    var announceCardFilterResponse = await OnAnnounceCardFilterAction(announceCardFilterState);
+                    var announceCardFilterResponse = await OnAnnounceCardFilterAction(announceCardFilterState.CurrentStateData);
                     pkt.Write(announceCardFilterResponse); // ID of the selected card (4 bytes)
                     break;
                 case BotState.SelectYesNo:
                     if (OnSelectYesNoAction == null)
                         return false;
                     var selectYesNoState = await WebHandler.DownloadObject<SelectYesNoState>(BotStateURL);
-                    var selectYesNoResponse = await OnSelectYesNoAction(selectYesNoState);
+                    var selectYesNoResponse = await OnSelectYesNoAction(selectYesNoState.CurrentStateData);
                     pkt.Write((byte)(selectYesNoResponse ? 1 : 0)); // True = 1, False = 0 (1 byte)
                     break;
                 case BotState.RockPaperScissors:
@@ -351,7 +354,7 @@ namespace OmegaBotWrapper
                     if (OnSortCardAction == null)
                         return false;
                     var sortCardState = await WebHandler.DownloadObject<SortCardState>(BotStateURL);
-                    var sortCardResponse = await OnSortCardAction(sortCardState);
+                    var sortCardResponse = await OnSortCardAction(sortCardState.CurrentStateData);
                     pkt.Write((byte)sortCardResponse.Count); // Size of the selection (should always be same size as the selectable cards size)
                     foreach (var sortedCardIndex in sortCardResponse)
                         pkt.Write(sortedCardIndex); // Index of the selectable card to be on this position
@@ -423,7 +426,7 @@ namespace OmegaBotWrapper
         /// </summary>
         /// <param name="filters">Filters to match cards</param>
         /// <returns>List of cards that matched the filters</returns>
-        public async Task<DBCardList> GetMatchingCards(params int[] filters)
+        public static async Task<DBCardList> GetMatchingCards(params int[] filters)
         {
             var endPoint = $"{Const.GET_MATCHING_CARDS}/";
             foreach (var filter in filters)

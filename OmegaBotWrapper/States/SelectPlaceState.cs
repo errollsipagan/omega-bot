@@ -1,9 +1,9 @@
-﻿namespace OmegaBotWrapper.Struct
+﻿namespace OmegaBotWrapper.States
 {
     /// <summary>
-    /// State where the bot has to select field zone(s) for being disabled
+    /// State where the bot has to select field zone(s) for something
     /// </summary>
-    public struct SelectDisfieldState
+    public struct SelectPlaceState
     {
         /// <summary>
         /// Header representing the current state
@@ -12,12 +12,12 @@
         /// <summary>
         /// Data about the bot current state
         /// </summary>
-        public SelectDisfieldData CurrentStateData;
+        public SelectPlaceData CurrentStateData;
     }
     /// <summary>
     /// Specific data about this state
     /// </summary>
-    public struct SelectDisfieldData
+    public struct SelectPlaceData
     {
         /// <summary>
         /// ID of the card that triggered this effect

@@ -1,4 +1,6 @@
-﻿namespace OmegaBotWrapper.Struct
+﻿using OmegaBotWrapper.Struct;
+
+namespace OmegaBotWrapper.States
 {
     /// <summary>
     /// State where the bot has to select yes or no for an effect

@@ -1,9 +1,9 @@
-﻿namespace OmegaBotWrapper.Struct
+﻿namespace OmegaBotWrapper.States
 {
     /// <summary>
-    /// State where the bot has to announce attribute(s)
+    /// State where the bot has to select one position for a card
     /// </summary>
-    public struct AnnounceAttributeState
+    public struct SelectPositionState
     {
         /// <summary>
         /// Header representing the current state
@@ -12,20 +12,20 @@
         /// <summary>
         /// Data about the bot current state
         /// </summary>
-        public AnnounceAttributeData CurrentStateData;
+        public SelectPositionData CurrentStateData;
     }
     /// <summary>
     /// Specific data about this state
     /// </summary>
-    public struct AnnounceAttributeData
+    public struct SelectPositionData
     {
         /// <summary>
-        /// Amount of required attributes to be selected
+        /// ID of the card that is being selected position for
         /// </summary>
-        public int RequiredCount;
+        public int CardID;
         /// <summary>
-        /// Attributes that can be selected
+        /// Possible positions that you can assign to this card
         /// </summary>
-        public byte[] SelectableOptions;
+        public byte[] Positions;
     }
 }

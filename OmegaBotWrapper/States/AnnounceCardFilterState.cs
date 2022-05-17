@@ -1,9 +1,9 @@
-﻿namespace OmegaBotWrapper.Struct
+﻿namespace OmegaBotWrapper.States
 {
     /// <summary>
-    /// State where the bot has to announce race(s)
+    /// State where the bot has to announce a card with filter
     /// </summary>
-    public struct AnnounceRaceState
+    public struct AnnounceCardFilterState
     {
         /// <summary>
         /// Header representing the current state
@@ -12,20 +12,20 @@
         /// <summary>
         /// Data about the bot current state
         /// </summary>
-        public AnnounceRaceData CurrentStateData;
+        public AnnounceCardFilterData CurrentStateData;
     }
     /// <summary>
     /// Specific data about this state
     /// </summary>
-    public struct AnnounceRaceData
+    public struct AnnounceCardFilterData
     {
         /// <summary>
-        /// Required amount of races to be selected
+        /// Amount of filters
         /// </summary>
-        public int RequiredCount;
+        public byte FilterCount;
         /// <summary>
-        /// Races that can be selected from
+        /// Filters that apply to whether you can or not select a card
         /// </summary>
-        public int[] SelectableOptions;
+        public int[] AppliableFilters;
     }
 }

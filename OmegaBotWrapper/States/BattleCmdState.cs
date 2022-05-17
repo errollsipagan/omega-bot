@@ -1,4 +1,6 @@
-﻿namespace OmegaBotWrapper.Struct
+﻿using OmegaBotWrapper.Struct;
+
+namespace OmegaBotWrapper.States
 {
     /// <summary>
     /// State defines that the bot is waiting for a command during battle phase
@@ -12,12 +14,12 @@
         /// <summary>
         /// Data about the bot current state
         /// </summary>
-        public BattleCmdStateData CurrentStateData;
+        public BattleCmdData CurrentStateData;
     }
     /// <summary>
     /// Specific data about this state
     /// </summary>
-    public struct BattleCmdStateData
+    public struct BattleCmdData
     {
         /// <summary>
         /// Which cards can attack

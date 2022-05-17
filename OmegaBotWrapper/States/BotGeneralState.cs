@@ -1,9 +1,9 @@
-﻿namespace OmegaBotWrapper.Struct
+﻿namespace OmegaBotWrapper.States
 {
     /// <summary>
-    /// State where the bot has sort a list of cards into desired order
+    /// General state information of the bot when not into other specific states
     /// </summary>
-    public struct SortCardState
+    public struct BotGeneralState
     {
         /// <summary>
         /// Header representing the current state
@@ -12,16 +12,16 @@
         /// <summary>
         /// Data about the bot current state
         /// </summary>
-        public SortCardData CurrentStateData;
+        public BotGeneralStateData CurrentStateData;
     }
     /// <summary>
     /// Specific data about this state
     /// </summary>
-    public struct SortCardData
+    public struct BotGeneralStateData
     {
         /// <summary>
-        /// Cards that can be sorted
+        /// Whether the bot is ready or not
         /// </summary>
-        public DynamicCard[] SelectableCards;
+        public bool IsReady;
     }
 }

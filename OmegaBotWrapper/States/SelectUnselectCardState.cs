@@ -1,9 +1,11 @@
-﻿namespace OmegaBotWrapper.Struct
+﻿using OmegaBotWrapper.Struct;
+
+namespace OmegaBotWrapper.States
 {
     /// <summary>
-    /// State on where the bot has select card(s)
+    /// State where the bot has to select or unselect card(s)
     /// </summary>
-    public struct SelectCardState
+    public struct SelectUnselectCardState
     {
         /// <summary>
         /// Header representing the current state
@@ -12,12 +14,12 @@
         /// <summary>
         /// Data about the bot current state
         /// </summary>
-        public SelectCardStateData CurrentStateData;
+        public SelectUnselectCardData CurrentStateData;
     }
     /// <summary>
     /// Specific data about this state
     /// </summary>
-    public struct SelectCardStateData
+    public struct SelectUnselectCardData
     {
         /// <summary>
         /// Cards that can be selected

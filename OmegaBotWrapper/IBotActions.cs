@@ -1,4 +1,5 @@
 ﻿using OmegaBotWrapper.Enum;
+using OmegaBotWrapper.States;
 using OmegaBotWrapper.Struct;
 #pragma warning disable 1998
 namespace OmegaBotWrapper
@@ -51,40 +52,40 @@ namespace OmegaBotWrapper
         /// <summary>
         /// Action to be taken at battle phase, should return the action and its index (or 0 if not applicable)
         /// </summary>
-        async Task<Tuple<BattleAction, ushort>> OnBattleCmd(BattleCmdState state)
+        async Task<BattleCmdResponse> OnBattleCmd(BattleCmdData state)
         {
-            if (state.CurrentStateData.AttackableCards.Any())
-                return new(BattleAction.Attack, (ushort)state.CurrentStateData.AttackableCards.First().ActionIndex[(int)BattleAction.Attack]);
-            if (state.CurrentStateData.CanMainPhaseTwo)
-                return new(BattleAction.ToMainPhaseTwo, 0);
-            return new(BattleAction.ToEndPhase, 0);
+            if (state.AttackableCards.Any())
+                return state.AttackableCards.First().DeclareAttack();
+            if (state.CanMainPhaseTwo)
+                return BattleAction.ToMainPhaseTwo;
+            return BattleAction.ToEndPhase;
         }
         /// <summary>
         /// Action to be taken at main phase, should return the action and its index (or 0 if not applicable)
         /// </summary>
-        async Task<Tuple<MainAction, ushort>> OnIdleCmd(IdleCmdState state)
+        async Task<IdleCmdResponse> OnIdleCmd(IdleCmdData state)
         {
-            if (state.CurrentStateData.SummonableCards.Any())
-                return new(MainAction.Summon, (ushort)state.CurrentStateData.SummonableCards.First().ActionIndex[(int)MainAction.Summon]);
-            if (state.CurrentStateData.CanBattlePhase)
-                return new(MainAction.ToBattlePhase, 0);
-            return new(MainAction.ToEndPhase, 0);
+            if (state.SummonableCards.Any())
+                return state.SummonableCards.First().NormalSummon();
+            if (state.CanBattlePhase)
+                return MainAction.ToBattlePhase;
+            return MainAction.ToEndPhase;
         }
         /// <summary>
         /// Action to be taken when selecting something to chain, should return the index of the selected chain to activate or, if allowed, -1 for none
         /// </summary>
-        async Task<int> OnSelectChain(SelectChainState state)
+        async Task<int> OnSelectChain(SelectChainData state)
         {
-            if (!state.CurrentStateData.Forced)
+            if (!state.Forced)
                 return -1;
             return 0;
         }
         /// <summary>
         /// Action to be taken when selecting tribute(s), should return the indexes that was selected from the selectable options
         /// </summary>
-        async Task<IList<byte>?> OnSelectCard(SelectCardState state)
+        async Task<IList<byte>?> OnSelectCard(SelectCardData state)
         {
-            byte[] selection = new byte[state.CurrentStateData.Minimum];
+            byte[] selection = new byte[state.Minimum];
             for (int i = 0; i<selection.Length; i++)
                 selection[i] = (byte) i;
             return selection;
@@ -92,23 +93,23 @@ namespace OmegaBotWrapper
         /// <summary>
         /// Action to be taken when selecting tribute(s), should return the indexes that was selected from the selectable options
         /// </summary>
-        async Task<IList<byte>?> OnSelectTribute(SelectTributeState state)
+        async Task<IList<byte>?> OnSelectTribute(SelectTributeData state)
         {
             List<byte> resp = new();
-            for (byte i = 0; i < state.CurrentStateData.Minimum; i++)
+            for (byte i = 0; i < state.Minimum; i++)
                 resp.Add(i);
             return resp;
         }
         /// <summary>
         /// Action to be taken when selecting a sum (eg. synchro/ritual), should return the indexes that was selected from the selectable options
         /// </summary>
-        async Task<IList<byte>?> OnSelectSum(SelectSumState state)
+        async Task<IList<byte>?> OnSelectSum(SelectSumData state)
         {
             int s1, s2;
-            int min = state.CurrentStateData.Minimum;
-            int max = state.CurrentStateData.Maximum;
-            var cards = state.CurrentStateData.SelectableCards;
-            int sum = state.CurrentStateData.Sum;
+            int min = state.Minimum;
+            int max = state.Maximum;
+            var cards = state.SelectableCards;
+            int sum = state.Sum;
             int i = (min <= 1) ? 2 : min;
             while (i <= max && i <= cards.Length)
             {
@@ -122,9 +123,9 @@ namespace OmegaBotWrapper
                         s1 += card.OpParam1;
                         s2 += (card.OpParam2 != 0) ? card.OpParam2 : card.OpParam1;
                     }
-                    if (s1 == sum || s2 == sum || (!state.CurrentStateData.MustBeExactValue && (s1 >= sum || s2 >= sum)))
+                    if (s1 == sum || s2 == sum || (!state.MustBeExactValue && (s1 >= sum || s2 >= sum)))
                     {
-                        return combo.Select(c => (byte)Array.IndexOf(state.CurrentStateData.SelectableCards, c)).ToList();
+                        return combo.Select(c => (byte)Array.IndexOf(state.SelectableCards, c)).ToList();
                     }
                 }
                 i++;
@@ -134,77 +135,75 @@ namespace OmegaBotWrapper
         // <summary>
         /// Action to be taken when announcing attribute(s), should return the attribute(s) selected
         /// </summary>
-        async Task<IList<CardAttribute>> OnAnnounceAttribute(AnnounceAttributeState state)
+        async Task<IList<CardAttribute>> OnAnnounceAttribute(AnnounceAttributeData state)
         {
             List<CardAttribute> cas = new();
             foreach (CardAttribute ca in System.Enum.GetValues(typeof(CardAttribute)))
-                if (state.CurrentStateData.SelectableOptions.Contains((byte)ca))
+                if (state.SelectableOptions.Contains((byte)ca))
                     cas.Add(ca);
             Random rng = new();
-            return cas.OrderBy(x => rng.Next()).Take(state.CurrentStateData.RequiredCount).ToList();
+            return cas.OrderBy(x => rng.Next()).Take(state.RequiredCount).ToList();
         }
         /// <summary>
         /// Action to be taken when announcing race(s), should return the race(s) selected
         /// </summary>
-        async Task<IList<CardRace>> OnAnnounceRace(AnnounceRaceState state)
+        async Task<IList<CardRace>> OnAnnounceRace(AnnounceRaceData state)
         {
             List<CardRace> cas = new();
             foreach (CardRace ca in System.Enum.GetValues(typeof(CardRace)))
-                if (state.CurrentStateData.SelectableOptions.Contains((byte)ca))
+                if (state.SelectableOptions.Contains((byte)ca))
                     cas.Add(ca);
             Random rng = new();
-            return cas.OrderBy(x => rng.Next()).Take(state.CurrentStateData.RequiredCount).ToList();
+            return cas.OrderBy(x => rng.Next()).Take(state.RequiredCount).ToList();
         }
         /// <summary>
         /// Action to be taken when announcing a number, should return the index of the number selected from the selectable options
         /// </summary>
-        async Task<int> OnAnnounceNumber(AnnounceNumberState state)
+        async Task<int> OnAnnounceNumber(AnnounceNumberData state)
         {
-            return state.CurrentStateData.SelectableOptions[0];
+            return state.SelectableOptions[0];
         }
         /// <summary>
         /// Action to be taken when announcing a card, should return the card id that was selected
         /// </summary>
-        async Task<int> OnAnnounceCard(AnnounceCardState state)
+        async Task<int> OnAnnounceCard(AnnounceCardData state)
         {
-            var filters = state.CurrentStateData.AppliableFilters;
-            if (BotWrapper == null) return 89631139; // Blue-eyes white dragon
-            var cards = await BotWrapper.GetMatchingCards(filters);
+            var filters = state.AppliableFilters;
+            var cards = await DuelBotWrapper.GetMatchingCards(filters);
             Random rng = new();
             return cards.Cards.ElementAt(rng.Next(0, cards.Cards.Length)).ID;
         }
         /// <summary>
         /// Action to be taken when announcing a card with filter, should return the card id that was selected
         /// </summary>
-        async Task<int> OnAnnounceCardFilter(AnnounceCardFilterState state)
+        async Task<int> OnAnnounceCardFilter(AnnounceCardFilterData state)
         {
-            var filters = state.CurrentStateData.AppliableFilters;
-            if (BotWrapper == null) return 89631139; // Blue-eyes white dragon
-            var cards = await BotWrapper.GetMatchingCards(filters);
+            var filters = state.AppliableFilters;
+            var cards = await DuelBotWrapper.GetMatchingCards(filters);
             Random rng = new();
             return cards.Cards.ElementAt(rng.Next(0, cards.Cards.Length)).ID;
         }
         /// <summary>
         /// Action to be taken when selecting/unselecting card(s), should return the indexes that was selected from the selectable options
         /// </summary>
-        async Task<IList<byte>?> OnSelectUnselectCard(SelectUnselectCardState state)
+        async Task<IList<byte>?> OnSelectUnselectCard(SelectUnselectCardData state)
         {
             List<byte> selection = new();
-            for (int i = 0; i < state.CurrentStateData.Minimum; i++)
+            for (int i = 0; i < state.Minimum; i++)
                 selection[i] = (byte)i;
             return selection;
         }
         /// <summary>
         /// Action to be taken when selecting counter(s), should return the amount of counters picked from each of the indexes that was present on the selectable options
         /// </summary>
-        async Task<IList<short>> OnSelectCounter(SelectCounterState state)
+        async Task<IList<short>> OnSelectCounter(SelectCounterData state)
         {
             List<short> resp = new();
-            short need = state.CurrentStateData.RequiredQuantity;
+            short need = state.RequiredQuantity;
             byte i = 0;
             while (need > 0)
             {
-                var amt = state.CurrentStateData.Counters[i];
+                var amt = state.Counters[i];
                 if (amt > need)
                 {
                     resp.Add(need);
@@ -218,45 +217,45 @@ namespace OmegaBotWrapper
         /// <summary>
         /// Action to be taken when selecting field zone for disabling, should return the integer representing the zone selected (use the 'Zones' class helper for values)
         /// </summary>
-        async Task<int> OnSelectDisfield(SelectDisfieldState state)
+        async Task<int> OnSelectDisfield(SelectDisfieldData state)
         {
             int[] zones = new int[] { Zones.z0, Zones.z1, Zones.z2, Zones.z3, Zones.z4, Zones.z5, Zones.z6 };
             byte seq;
             for (seq = 0; seq < 7; ++seq)
-                if (Zones.IsAvailable(zones[seq], state.CurrentStateData.Filter))
+                if (Zones.IsAvailable(zones[seq], state.Filter))
                     break;
-            return BitConverter.ToInt32(new byte[] { state.CurrentStateData.Player, (byte)state.CurrentStateData.Location, seq, 0 });
+            return BitConverter.ToInt32(new byte[] { state.Player, (byte)state.Location, seq, 0 });
         }
         /// <summary>
         /// Action to be taken when selecting field zone, should return the integer representing the zone selected (use the 'Zones' class helper for values)
         /// </summary>
-        async Task<int> OnSelectPlace(SelectPlaceState state)
+        async Task<int> OnSelectPlace(SelectPlaceData state)
         {
             int[] zones = new int[] { Zones.z0, Zones.z1, Zones.z2, Zones.z3, Zones.z4, Zones.z5, Zones.z6 };
             byte seq;
             for (seq = 0; seq < 7; ++seq)
-                if (Zones.IsAvailable(zones[seq], state.CurrentStateData.Filter))
+                if (Zones.IsAvailable(zones[seq], state.Filter))
                     break;
-            return BitConverter.ToInt32(new byte[] { state.CurrentStateData.Player, (byte)state.CurrentStateData.Location, seq, 0 });
+            return BitConverter.ToInt32(new byte[] { state.Player, (byte)state.Location, seq, 0 });
         }
         /// <summary>
         /// Action to be taken when selecting yes or no for an effect, should return true or false
         /// </summary>
-        async Task<bool> OnSelectEffectYn(SelectEffectYnState state)
+        async Task<bool> OnSelectEffectYn(SelectEffectYnData state)
         {
             return false;
         }
         /// <summary>
         /// Action to be taken when selecting yes or no, should return true or false
         /// </summary>
-        async Task<bool> OnSelectYesNo(SelectYesNoState state)
+        async Task<bool> OnSelectYesNo(SelectYesNoData state)
         {
             return false;
         }
         /// <summary>
         /// Action to be taken when selecting an option, should return the index of the selected option
         /// </summary>
-        async Task<int> OnSelectOption(SelectOptionState state)
+        async Task<int> OnSelectOption(SelectOptionData state)
         {
             return 0;
         }
@@ -270,17 +269,17 @@ namespace OmegaBotWrapper
         /// <summary>
         /// Action to be taken when selecting position, should return the position selected
         /// </summary>
-        async Task<CardPosition> OnSelectPosition(SelectPositionState state)
+        async Task<CardPosition> OnSelectPosition(SelectPositionData state)
         {
-            return (CardPosition)state.CurrentStateData.Positions[0];
+            return (CardPosition)state.Positions[0];
         }
         /// <summary>
         /// Action to be taken when sorting cards, should return the indexes of the selectable cards in the desired order
         /// </summary>
-        async Task<IList<byte>> OnSortCard(SortCardState state)
+        async Task<IList<byte>> OnSortCard(SortCardData state)
         {
             List<byte> resp = new();
-            for (byte i = 0; i < state.CurrentStateData.SelectableCards.Length; ++i)
+            for (byte i = 0; i < state.SelectableCards.Length; ++i)
                 resp.Add(i);
             return resp;
         }

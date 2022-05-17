@@ -1,4 +1,4 @@
-﻿namespace OmegaBotWrapper.Struct
+﻿namespace OmegaBotWrapper.States
 {
     /// <summary>
     /// State where the bot has to announce a card

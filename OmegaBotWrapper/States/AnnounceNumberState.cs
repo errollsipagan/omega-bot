@@ -1,9 +1,9 @@
-﻿namespace OmegaBotWrapper.Struct
+﻿namespace OmegaBotWrapper.States
 {
     /// <summary>
-    /// General state information of the bot when not into other specific states
+    /// State where the bot has to announce a number
     /// </summary>
-    public struct BotGeneralState
+    public struct AnnounceNumberState
     {
         /// <summary>
         /// Header representing the current state
@@ -12,16 +12,16 @@
         /// <summary>
         /// Data about the bot current state
         /// </summary>
-        public BotGeneralStateData CurrentStateData;
+        public AnnounceNumberData CurrentStateData;
     }
     /// <summary>
     /// Specific data about this state
     /// </summary>
-    public struct BotGeneralStateData
+    public struct AnnounceNumberData
     {
         /// <summary>
-        /// Whether the bot is ready or not
+        /// Selectable numbers
         /// </summary>
-        public bool IsReady;
+        public int[] SelectableOptions;
     }
 }

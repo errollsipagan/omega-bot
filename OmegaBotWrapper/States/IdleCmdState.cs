@@ -1,4 +1,6 @@
-﻿namespace OmegaBotWrapper.Struct
+﻿using OmegaBotWrapper.Struct;
+
+namespace OmegaBotWrapper.States
 {
     /// <summary>
     /// State defines that the bot is waiting for a command during main phase
@@ -12,12 +14,12 @@
         /// <summary>
         /// Data about the bot current state
         /// </summary>
-        public IdleCmdStateData CurrentStateData;
+        public IdleCmdData CurrentStateData;
     }
     /// <summary>
     /// Specific data about this state
     /// </summary>
-    public struct IdleCmdStateData
+    public struct IdleCmdData
     {
         /// <summary>
         /// Cards that the bot can summon

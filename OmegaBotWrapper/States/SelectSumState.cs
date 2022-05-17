@@ -1,9 +1,11 @@
-﻿namespace OmegaBotWrapper.Struct
+﻿using OmegaBotWrapper.Struct;
+
+namespace OmegaBotWrapper.States
 {
     /// <summary>
-    /// State where the bot has to select tributes for a summon
+    /// State where the bot has to select sum for a summon (eg. synchro/ritual)
     /// </summary>
-    public struct SelectTributeState
+    public struct SelectSumState
     {
         /// <summary>
         /// Header representing the current state
@@ -12,19 +14,23 @@
         /// <summary>
         /// Data about the bot current state
         /// </summary>
-        public SelectTributeData CurrentStateData;
+        public SelectSumData CurrentStateData;
     }
     /// <summary>
     /// Specific data about this state
     /// </summary>
-    public struct SelectTributeData
+    public struct SelectSumData
     {
         /// <summary>
-        /// Cards that can be selected
+        /// Cards that you can select
         /// </summary>
         public DynamicCard[] SelectableCards;
         /// <summary>
-        /// Minimum amount of cards that needs to be selected
+        /// The sum that must be achieved for the summon
+        /// </summary>
+        public int Sum;
+        /// <summary>
+        /// Minimum amount of cards that must be selected
         /// </summary>
         public int Minimum;
         /// <summary>
@@ -32,16 +38,16 @@
         /// </summary>
         public int Maximum;
         /// <summary>
-        /// Selection description hint of the state
+        /// Selection description hint for this state 
         /// </summary>
         public int SelectionHint;
         /// <summary>
-        /// Whether can be canceled or not (-1 to cancel if its possible)
+        /// Whether the sum must be exact the sum value or if it can be greater than it
         /// </summary>
-        public bool Cancelable;
+        public bool MustBeExactValue;
         /// <summary>
-        /// Amount of selectable cards
+        /// Cards that are mandatory to be selected for this summon
         /// </summary>
-        public byte SelectableCount;
+        public DynamicCard[] MandatoryCards;
     }
 }

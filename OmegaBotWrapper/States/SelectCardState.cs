@@ -1,9 +1,11 @@
-﻿namespace OmegaBotWrapper.Struct
+﻿using OmegaBotWrapper.Struct;
+
+namespace OmegaBotWrapper.States
 {
     /// <summary>
-    /// State where the bot has to select sum for a summon (eg. synchro/ritual)
+    /// State on where the bot has select card(s)
     /// </summary>
-    public struct SelectSumState
+    public struct SelectCardState
     {
         /// <summary>
         /// Header representing the current state
@@ -12,23 +14,19 @@
         /// <summary>
         /// Data about the bot current state
         /// </summary>
-        public SelectSumData CurrentStateData;
+        public SelectCardData CurrentStateData;
     }
     /// <summary>
     /// Specific data about this state
     /// </summary>
-    public struct SelectSumData
+    public struct SelectCardData
     {
         /// <summary>
-        /// Cards that you can select
+        /// Cards that can be selected
         /// </summary>
         public DynamicCard[] SelectableCards;
         /// <summary>
-        /// The sum that must be achieved for the summon
-        /// </summary>
-        public int Sum;
-        /// <summary>
-        /// Minimum amount of cards that must be selected
+        /// Minimum amount of cards required to be selected
         /// </summary>
         public int Minimum;
         /// <summary>
@@ -36,16 +34,16 @@
         /// </summary>
         public int Maximum;
         /// <summary>
-        /// Selection description hint for this state 
+        /// Hint description for this selection
         /// </summary>
         public int SelectionHint;
         /// <summary>
-        /// Whether the sum must be exact the sum value or if it can be greater than it
+        /// Whether this selection is cancelable or not (response with -1 for cancel)
         /// </summary>
-        public bool MustBeExactValue;
+        public bool Cancelable;
         /// <summary>
-        /// Cards that are mandatory to be selected for this summon
+        /// Amount of cards that are selectable
         /// </summary>
-        public DynamicCard[] MandatoryCards;
+        public byte SelectableCount;
     }
 }

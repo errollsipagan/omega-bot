@@ -1,9 +1,11 @@
-﻿namespace OmegaBotWrapper.Struct
+﻿using OmegaBotWrapper.Struct;
+
+namespace OmegaBotWrapper.States
 {
     /// <summary>
-    /// State where the bot has to select or unselect card(s)
+    /// State where the bot has to select tributes for a summon
     /// </summary>
-    public struct SelectUnselectCardState
+    public struct SelectTributeState
     {
         /// <summary>
         /// Header representing the current state
@@ -12,19 +14,19 @@
         /// <summary>
         /// Data about the bot current state
         /// </summary>
-        public SelectUnselectCardData CurrentStateData;
+        public SelectTributeData CurrentStateData;
     }
     /// <summary>
     /// Specific data about this state
     /// </summary>
-    public struct SelectUnselectCardData
+    public struct SelectTributeData
     {
         /// <summary>
         /// Cards that can be selected
         /// </summary>
         public DynamicCard[] SelectableCards;
         /// <summary>
-        /// Minimum amount of cards required to be selected
+        /// Minimum amount of cards that needs to be selected
         /// </summary>
         public int Minimum;
         /// <summary>
@@ -32,15 +34,15 @@
         /// </summary>
         public int Maximum;
         /// <summary>
-        /// Hint description for this selection
+        /// Selection description hint of the state
         /// </summary>
         public int SelectionHint;
         /// <summary>
-        /// Whether this selection is cancelable or not (response with -1 for cancel)
+        /// Whether can be canceled or not (-1 to cancel if its possible)
         /// </summary>
         public bool Cancelable;
         /// <summary>
-        /// Amount of cards that are selectable
+        /// Amount of selectable cards
         /// </summary>
         public byte SelectableCount;
     }

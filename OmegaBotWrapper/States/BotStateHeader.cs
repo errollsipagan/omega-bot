@@ -1,4 +1,4 @@
-﻿namespace OmegaBotWrapper.Struct
+﻿namespace OmegaBotWrapper.States
 {
     /// <summary>
     /// General header for bot state request information
