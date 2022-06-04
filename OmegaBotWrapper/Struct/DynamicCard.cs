@@ -153,5 +153,9 @@ namespace OmegaBotWrapper.Struct
         /// Current status of this card
         /// </summary>
         public int Status;
+        /// <summary>
+        /// ID of the cover (sleeve) of this card
+        /// </summary>
+        public int Cover;
     }
 }

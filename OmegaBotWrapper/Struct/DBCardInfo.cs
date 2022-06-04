@@ -93,5 +93,9 @@
         /// Card's pendulum text on current client language
         /// </summary>
         public string PendulumText;
+        /// <summary>
+        /// ID of the cover (sleeve) of this card
+        /// </summary>
+        public int Cover;
     }
 }
