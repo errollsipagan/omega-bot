@@ -28,6 +28,18 @@
         /// </summary>
         public int LinkedZones;
         /// <summary>
+        /// Whether this side of the field is under attack
+        /// </summary>
+        public bool UnderAttack;
+        /// <summary>
+        /// Whether this side of the field contains a monster on battle state
+        /// </summary>
+        public bool HasBattlingMonster;
+        /// <summary>
+        /// Contains the battling monster information in case there is one
+        /// </summary>
+        public DynamicCard BattlingMonster;
+        /// <summary>
         /// Card ids known for main deck
         /// </summary>
         public int[] Main;

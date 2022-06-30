@@ -1,6 +1,6 @@
 ﻿namespace OmegaBotWrapper.Enum
 {
-    // <summary>
+    /// <summary>
     /// Hexdecimal mask for the position of an card
     /// </summary>
     public enum CardPosition

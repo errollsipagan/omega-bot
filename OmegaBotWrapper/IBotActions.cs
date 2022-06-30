@@ -132,7 +132,7 @@ namespace OmegaBotWrapper
             }
             return null; // Can't find any combination
         }
-        // <summary>
+        /// <summary>
         /// Action to be taken when announcing attribute(s), should return the attribute(s) selected
         /// </summary>
         async Task<IList<CardAttribute>> OnAnnounceAttribute(AnnounceAttributeData state)
