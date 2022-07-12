@@ -117,9 +117,21 @@ namespace OmegaBotWrapper.Struct
         /// Locations of all cards that are equipped to this card
         /// </summary>
         public CardCoordinate[] EquipCards;
+        /// <summary>
+        /// Targets of this own card
+        /// </summary>
         public CardCoordinate[] OwnTargets;
+        /// <summary>
+        /// Targets of this own card during the current chain only
+        /// </summary>
         public CardCoordinate[] ChainOnlyOwnTargets;
+        /// <summary>
+        /// Target cards of this card
+        /// </summary>
         public CardCoordinate[] TargetCards;
+        /// <summary>
+        /// Target cards of this card during the current chain only
+        /// </summary>
         public CardCoordinate[] CurrentChainTargets;
         /// <summary>
         /// IDs of the cards that are XYZ materials for this card currently

@@ -84,9 +84,20 @@ namespace OmegaBotWrapper
         /// <returns>Will only return once the bot has finished executing</returns>
         public async Task Start()
         {
-            while (await Heartbeat())
+            try
             {
-                await Task.Delay(Const.HEARTBEAT_DELAY);
+                while (await Heartbeat())
+                {
+                    await Task.Delay(Const.HEARTBEAT_DELAY);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Bot heartbeat returned non-success message: {ex.Message}");
+            }
+            finally
+            {
+                Console.WriteLine("The bot has finished execution");
             }
         }
         /// <summary>
