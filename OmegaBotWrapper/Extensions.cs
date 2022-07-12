@@ -97,6 +97,6 @@ namespace OmegaBotWrapper
             return k == 0 ? new[] { Array.Empty<T>() } :
               elements.SelectMany((e, i) =>
                 elements.Skip(i + 1).GetCombinations(k - 1).Select(c => (new[] { e }).Concat(c)));
-        }
+        }        
     }
 }

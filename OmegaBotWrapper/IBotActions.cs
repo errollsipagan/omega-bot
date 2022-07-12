@@ -86,7 +86,7 @@ namespace OmegaBotWrapper
         async Task<IList<byte>?> OnSelectCard(SelectCardData state)
         {
             byte[] selection = new byte[state.Minimum];
-            for (int i = 0; i<selection.Length; i++)
+            for (int i = 0; i < selection.Length; i++)
                 selection[i] = (byte) i;
             return selection;
         }
