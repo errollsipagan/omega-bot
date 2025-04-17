@@ -95,6 +95,16 @@ namespace OmegaBotWrapper
             return true;
         }
         /// <summary>
+        /// Extension methods for card collections.
+        /// </summary>
+        public static bool TryGetByID(this IEnumerable<DynamicCard> cards, int id, out DynamicCard card, out int index)
+        {
+            var cardList = cards.ToList();
+            index = cardList.FindIndex(c => c.ID == id);
+            card = index >= 0 ? cardList[index] : default;
+            return index >= 0;
+        }
+        /// <summary>
         /// value representing the status this card will use on the battle on its current state
         /// </summary>
         /// <param name="card">Card reference</param>

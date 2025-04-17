@@ -1,4 +1,4 @@
-﻿namespace DuelBot.Game.AI.Enums
+﻿namespace OmegaBotWrapper.Game.AI.Enums
 {
     /// <summary>
     /// Cards that are can't be selected as target of spell&trap's effect, or immuned to spell&trap's effect.
@@ -9,6 +9,7 @@
         ApoqliphortTowers = 27279764,
         ApoqliphortSkybase = 40061558,
         TheLegendaryFishermanIII = 44968687,
-        ChaosAncientGearGiant = 51788412
+        ChaosAncientGearGiant = 51788412,
+        DrytronMeteonisQuadrantids = 95209656
     }
 }

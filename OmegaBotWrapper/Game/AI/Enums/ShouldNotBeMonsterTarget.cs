@@ -1,4 +1,4 @@
-﻿namespace DuelBot.Game.AI.Enums
+﻿namespace OmegaBotWrapper.Game.AI.Enums
 {
     /// <summary>
     /// Cards that are can't be selected as target of monster's effect, or immuned to monster's effect.
@@ -13,6 +13,10 @@
         CXyzSimontheGreatMoralLeader = 41147577,
         PaleozoicAnomalocaris = 61307542,
         PaleozoicOpabinia = 37649320,
-        BorreloadDragon = 31833038
+        BorreloadDragon = 31833038,
+        BorrelendDragon = 98630720,
+        DrytronMeteonisDraconids = 69815951,
+        MyutantBeast = 34695290,
+        VeidosTheDragonOfEndlessDarkness = 8540986
     }
 }

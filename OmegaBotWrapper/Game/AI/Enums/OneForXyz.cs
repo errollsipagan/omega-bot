@@ -1,4 +1,4 @@
-﻿namespace DuelBot.Game.AI.Enums
+﻿namespace OmegaBotWrapper.Game.AI.Enums
 {
     public enum OneForXyz
     {
