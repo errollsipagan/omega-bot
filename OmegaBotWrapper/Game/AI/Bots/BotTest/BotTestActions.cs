@@ -3,35 +3,27 @@ using OmegaBotWrapper.Enum;
 using OmegaBotWrapper.Game.Base;
 using OmegaBotWrapper.States;
 using OmegaBotWrapper.Struct;
+using OmegaBotWrapper.Utils;
+using System.Collections.Generic;
+using System.Linq;
 
-namespace OmegaBotWrapper.Game.AI.Bots
+namespace OmegaBotWrapper.Game.AI.Bots.BotTest
 {
     /// <summary>
-    /// Class representing a bot action rule for sequential execution.
+    /// Defines constant Card IDs with descriptive names.
     /// </summary>
-    public class ActionRule
+    public class CardId
     {
-        public MainAction Action { get; }
-        public int CardId { get; }
-        public Func<IdleCmdData, IEnumerable<DynamicCard>> CardSelector { get; }
-        public Func<IdleCmdData, DynamicCard, bool> Condition { get; }
-
-        public ActionRule(
-            MainAction action,
-            int cardId,
-            Func<IdleCmdData, IEnumerable<DynamicCard>> cardSelector,
-            Func<IdleCmdData, DynamicCard, bool>? condition = null)
-        {
-            Action = action;
-            CardId = cardId;
-            CardSelector = cardSelector;
-            Condition = condition ?? ((_, _) => true); // Default condition always returns true
-        }
+        public const int ShinyBlack = 04148264;
+        public const int CardDestruction = 72892473;
+        public const int Jinzo = 77585513;
+        public const int BlueEyes = 89631139;
     }
 
     public class BotTestActions : BaseBotActions
     {
         private readonly List<ActionRule> _actionRules;
+        private readonly Dictionary<int, Base.CardInfo> _cardInfoMap;
 
         public BotTestActions(DeckId deckId = DeckId.BotTest)
         {
@@ -39,40 +31,55 @@ namespace OmegaBotWrapper.Game.AI.Bots
             DeckHash = DeckManager.GetDeckHash(deckId);
 
             _actionRules = new List<ActionRule>();
+            _cardInfoMap = new Dictionary<int, Base.CardInfo>();
+
+            // Initialize card info mapping
+            AddCardInfo(CardId.ShinyBlack, "Shiny Black");
+            AddCardInfo(CardId.CardDestruction, "Card Destruction");
+            AddCardInfo(CardId.Jinzo, "Jinzo");
+            AddCardInfo(CardId.BlueEyes, "Blue-Eyes");
 
             AddBotAction(new ActionRule(
                 action: MainAction.Summon,
-                cardId: 04148264, //Shiny Black
+                cardId: CardId.ShinyBlack,
                 cardSelector: s => s.SummonableCards,
                 condition: (s, c) => s.SummonableCards.Any()
             ));
 
             AddBotAction(new ActionRule(
                 action: MainAction.Activate,
-                cardId: 72892473, //Card Destruction
+                cardId: CardId.CardDestruction,
                 cardSelector: s => s.ActivableCards,
                 condition: (s, c) => s.ActivableCards.Any()
             ));
 
             AddBotAction(new ActionRule(
                 action: MainAction.Summon,
-                cardId: 77585513, //Jinzo
+                cardId: CardId.Jinzo,
                 cardSelector: s => s.SummonableCards,
                 condition: (s, c) => s.SummonableCards.Any()
             ));
 
             AddBotAction(new ActionRule(
                 action: MainAction.Summon,
-                cardId: 89631139, //Blue-Eyes
+                cardId: CardId.BlueEyes,
                 cardSelector: s => s.SummonableCards,
                 condition: (s, c) => s.SummonableCards.Any()
             ));
         }
 
         /// <summary>
+        /// Adds a card info entry to the mapping.
+        /// </summary>
+        private void AddCardInfo(int cardId, string cardName)
+        {
+            _cardInfoMap[cardId] = new Base.CardInfo(cardId, cardName);
+        }
+
+        /// <summary>
         /// Adds a bot action rule to the list.
         /// </summary>
-        public void AddBotAction(ActionRule rule)
+        private void AddBotAction(ActionRule rule)
         {
             _actionRules.Add(rule);
         }
@@ -96,6 +103,11 @@ namespace OmegaBotWrapper.Game.AI.Bots
                 var cards = rule.CardSelector(state).ToList();
                 if (cards.TryGetByID(rule.CardId, out var card, out var index) && rule.Condition(state, card))
                 {
+                    // Get card name from mapping, fallback to CardId if not found
+                    string cardDisplay = _cardInfoMap.TryGetValue(rule.CardId, out var cardInfo)
+                        ? cardInfo.CardName
+                        : rule.CardId.ToString();
+                    ConsoleUtils.PrintColored($"BotTestActions => ExecuteAction. Card: {cardDisplay}");
                     return ExecuteAction(rule.Action, (ushort)index);
                 }
             }
