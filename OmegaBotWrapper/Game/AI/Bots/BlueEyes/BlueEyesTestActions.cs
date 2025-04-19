@@ -2,9 +2,11 @@
 using OmegaBotWrapper.Enum;
 using OmegaBotWrapper.Game.AI.Bots.BotTest;
 using OmegaBotWrapper.Game.Base;
+using OmegaBotWrapper.Game.Field;
 using OmegaBotWrapper.States;
 using OmegaBotWrapper.Struct;
 using OmegaBotWrapper.Utils;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -33,10 +35,11 @@ namespace OmegaBotWrapper.Game.AI.Bots.BlueEyes
             AddCardInfo(BlueEyesCardId.DragonSpiritOfWhite, "Dragon Spirit Of White");
 
             // Normal Summons
+            // Add DragonSpiritOfWhite summon rule with custom condition
             AddBotAction(new ActionRule(
-                action: MainAction.Summon,
-                cardId: BlueEyesCardId.DragonSpiritOfWhite,
-                condition: (s, c) => s.SummonableCards.Any()
+            action: MainAction.Summon,
+            cardId: BlueEyesCardId.DragonSpiritOfWhite,
+            condition: DragonSpiritOfWhiteSummon
             ));
 
             AddBotAction(new ActionRule(
@@ -122,8 +125,11 @@ namespace OmegaBotWrapper.Game.AI.Bots.BlueEyes
         /// </summary>
         public override async Task<IdleCmdResponse> OnIdleCmd(IdleCmdData state)
         {
+            await GameFieldInitialize();
+
             //Activable cards, for each
-            foreach (var cards in state.ActivableCards) {
+            foreach (var cards in state.ActivableCards)
+            {
                 Console.WriteLine($"[Activable cards] => {cards.ID}");
             }
 
@@ -193,6 +199,43 @@ namespace OmegaBotWrapper.Game.AI.Bots.BlueEyes
         protected virtual IdleCmdResponse ExecuteAction(MainAction action, ushort index)
         {
             return new IdleCmdResponse(action, index);
+        }
+        private static async Task GameFieldInitialize()
+        {
+            await GameField.Initialize();
+
+            var ownMonsterZones = GameField.OwnSide.MonsterZones;
+            var enemyMonsterZones = GameField.EnemySide.MonsterZones;
+
+            //Player (Me)
+            int ownMonsterCount = GameField.GetOwnMonsterZoneCardCount();
+            Console.WriteLine($"Player (Me) [MonsterZones] => {ownMonsterCount}");
+            int ownSpellZone0Count = GameField.GetOwnSpellZoneCardCount();
+            Console.WriteLine($"Player (Me) [SpellZones] =>  {ownSpellZone0Count}");
+
+            //Bot
+            int enemyMonsterCount = GameField.GetEnemyMonsterZoneCardCount();
+            Console.WriteLine($"Bot [MonsterZones] => : {enemyMonsterCount}");
+            int enemySpellZone0Count = GameField.GetEnemyZoneCardCount(0, isMonsterZone: false);
+            Console.WriteLine($"Bot [SpellZones] => : {enemySpellZone0Count}");
+        }
+
+        /// <summary>
+        /// Condition to summon DragonSpiritOfWhite: checks if there are cards in the SpellZone and if the card is summonable.
+        /// </summary>
+        private bool DragonSpiritOfWhiteSummon(IdleCmdData state, DynamicCard card)
+        {
+            // Checks for cards in player's SpellZones
+            int ownSpellZoneCount = GameField.GetOwnSpellZoneCardCount();
+            bool hasSpellCards = ownSpellZoneCount > 0;
+
+            // Checks for summonable cards
+            bool canSummon = state.SummonableCards.Any(c => c.ID == BlueEyesCardId.DragonSpiritOfWhite);
+
+            if (hasSpellCards && canSummon)
+                ConsoleUtils.PrintColored($"DragonSpiritOfWhiteSummon: Can summon (SpellZoneCount: {ownSpellZoneCount})");
+
+            return hasSpellCards && canSummon;
         }
     }
 }

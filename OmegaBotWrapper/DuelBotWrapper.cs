@@ -449,7 +449,7 @@ namespace OmegaBotWrapper
         /// <summary>
         /// While on end screen on rematchable duel it will send the rematch request as if you tapped rematch
         /// </summary>
-        /// <returns>Rematch Duel without UI interaction</returns>
+        /// <returns>Rematch Duel</returns>
         public static Task RematchDuel()
         {
             return WebHandler.DownloadString($"{Const.REMATCH_DUEL}");
