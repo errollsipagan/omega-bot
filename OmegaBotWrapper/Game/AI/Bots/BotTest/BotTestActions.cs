@@ -9,17 +9,6 @@ using System.Linq;
 
 namespace OmegaBotWrapper.Game.AI.Bots.BotTest
 {
-    /// <summary>
-    /// Defines constant Card IDs with descriptive names.
-    /// </summary>
-    public class CardId
-    {
-        public const int ShinyBlack = 04148264;
-        public const int CardDestruction = 72892473;
-        public const int Jinzo = 77585513;
-        public const int BlueEyes = 89631139;
-    }
-
     public class BotTestActions : BaseBotActions
     {
         private readonly List<ActionRule> _actionRules;
@@ -34,35 +23,35 @@ namespace OmegaBotWrapper.Game.AI.Bots.BotTest
             _cardInfoMap = new Dictionary<int, Base.CardInfo>();
 
             // Initialize card info mapping
-            AddCardInfo(CardId.ShinyBlack, "Shiny Black");
-            AddCardInfo(CardId.CardDestruction, "Card Destruction");
-            AddCardInfo(CardId.Jinzo, "Jinzo");
-            AddCardInfo(CardId.BlueEyes, "Blue-Eyes");
+            AddCardInfo(BotTestCardId.ShinyBlack, "Shiny Black");
+            AddCardInfo(BotTestCardId.CardDestruction, "Card Destruction");
+            AddCardInfo(BotTestCardId.Jinzo, "Jinzo");
+            AddCardInfo(BotTestCardId.BlueEyes, "Blue-Eyes");
 
             AddBotAction(new ActionRule(
                 action: MainAction.Summon,
-                cardId: CardId.ShinyBlack,
+                cardId: BotTestCardId.ShinyBlack,
                 cardSelector: s => s.SummonableCards,
                 condition: (s, c) => s.SummonableCards.Any()
             ));
 
             AddBotAction(new ActionRule(
                 action: MainAction.Activate,
-                cardId: CardId.CardDestruction,
+                cardId: BotTestCardId.CardDestruction,
                 cardSelector: s => s.ActivableCards,
                 condition: (s, c) => s.ActivableCards.Any()
             ));
 
             AddBotAction(new ActionRule(
                 action: MainAction.Summon,
-                cardId: CardId.Jinzo,
+                cardId: BotTestCardId.Jinzo,
                 cardSelector: s => s.SummonableCards,
                 condition: (s, c) => s.SummonableCards.Any()
             ));
 
             AddBotAction(new ActionRule(
                 action: MainAction.Summon,
-                cardId: CardId.BlueEyes,
+                cardId: BotTestCardId.BlueEyes,
                 cardSelector: s => s.SummonableCards,
                 condition: (s, c) => s.SummonableCards.Any()
             ));

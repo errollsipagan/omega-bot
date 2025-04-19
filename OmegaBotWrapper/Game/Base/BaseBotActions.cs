@@ -133,34 +133,57 @@ namespace OmegaBotWrapper.Game.Base
         {
             ConsoleUtils.PrintColored("OnSelectSum");
 
-            int s1, s2;
+            int sum = state.Sum;
             int min = state.Minimum;
             int max = state.Maximum;
             var cards = state.SelectableCards;
-            int sum = state.Sum;
-            int i = (min <= 1) ? 2 : min;
-            while (i <= max && i <= cards.Length)
+
+            // Check if a single card satisfies the sum
+            for (int i = 0; i < cards.Length; i++)
             {
-                var combos = cards.GetCombinations(i);
+                var card = cards[i];
+                int param1 = card.OpParam1;
+                int param2 = card.OpParam2 != 0 ? card.OpParam2 : card.OpParam1;
+
+                // If a single card has param1 or param2 equal to sum and min <= 1
+                if ((param1 == sum || param2 == sum) && min <= 1)
+                {
+                    return new List<byte> { (byte)i };
+                }
+            }
+
+            // Check combinations of more cards if necessary
+            int start = Math.Max(1, min); // Start with the minimum number of cards
+            for (int count = start; count <= max && count <= cards.Length; count++)
+            {
+                var combos = cards.GetCombinations(count);
                 foreach (var combo in combos)
                 {
-                    s1 = 0;
-                    s2 = 0;
+                    int sumParam1 = 0;
+                    int sumParam2 = 0;
                     foreach (var card in combo)
                     {
-                        s1 += card.OpParam1;
-                        s2 += (card.OpParam2 != 0) ? card.OpParam2 : card.OpParam1;
+                        sumParam1 += card.OpParam1;
+                        sumParam2 += card.OpParam2 != 0 ? card.OpParam2 : card.OpParam1;
                     }
-                    if (s1 == sum || s2 == sum || (!state.MustBeExactValue && (s1 >= sum || s2 >= sum)))
+
+                    // Check if the sum is exactly equal to sum
+                    if (sumParam1 == sum || sumParam2 == sum)
+                    {
+                        return combo.Select(c => (byte)Array.IndexOf(state.SelectableCards, c)).ToList();
+                    }
+
+                    // If it doesn't need to be exact, check if it is greater than or equal to
+                    if (!state.MustBeExactValue && (sumParam1 >= sum || sumParam2 >= sum))
                     {
                         return combo.Select(c => (byte)Array.IndexOf(state.SelectableCards, c)).ToList();
                     }
                 }
-                i++;
             }
+
             return null; // Can't find any combination
         }
-
+      
         /// <summary>
         /// Action to be taken when announcing attribute(s), should return the attribute(s) selected
         /// </summary>
@@ -234,10 +257,16 @@ namespace OmegaBotWrapper.Game.Base
         {
             ConsoleUtils.PrintColored("OnSelectUnselectCard");
 
-            List<byte> selection = new();
+            byte[] selection = new byte[state.Minimum];
+
+            for (int i = 0; i < selection.Length; i++)
+                selection[i] = (byte)i;
+            return selection;
+
+            /*List<byte> selection = new();
             for (int i = 0; i < state.Minimum; i++)
                 selection.Add((byte)i);
-            return selection;
+            return selection;*/
         }
 
         /// <summary>
