@@ -84,6 +84,16 @@ namespace OmegaBotWrapper.Game.AI.Bots.BlueEyes
                 condition: (s, c) => s.SpecialSummonableCards.Any()
             ));
 
+            AddBotAction(new ActionRule(
+                action: MainAction.SpSummon,
+                cardId: BlueEyesCardId.HieraticSunDragonOverlordOfHeliopolis
+            ));
+
+            AddBotAction(new ActionRule(
+                action: MainAction.SpSummon,
+                cardId: BlueEyesCardId.Number46Dragluon
+            ));
+
             // Activable cards
             AddBotAction(new ActionRule(
                 action: MainAction.Activate,

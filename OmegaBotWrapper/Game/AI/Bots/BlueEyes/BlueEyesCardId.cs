@@ -18,5 +18,10 @@ namespace OmegaBotWrapper.Game.AI.Bots.BlueEyes
         public const int MaidenOfEyesOfBlue = 88241506;
         public const int BlueEyesSpiritDragon = 59822133;
         public const int DragonSpiritOfWhite = 45467446;
+
+        //XYZ
+        public const int Number46Dragluon = 02978414;
+        public const int HieraticSunDragonOverlordOfHeliopolis = 64332231;
+
     }
 }

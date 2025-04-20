@@ -33,7 +33,7 @@ namespace OmegaBotWrapper.Decks
                 DeckId.BlueEyes,
                 (
                     DeckName: "Blue-Eyes",
-                    DeckHash: "M2cwO76V6eVub6b5v61ZkkqdWEH04pXhrEuBeBkQg+RA+GbvJcYKXltmxkQBiNqaHUww3PzgIAsMG94RZHTfU8sAw9sbfJl3APFyDWvGxXsmsoJwQgYv49YyPsa1lVoM16QPMqb32bJ0zWJgTsrazAzSD8Igt4Dwyfj9zOWzJzM1zo1jflanwHB37jqGs07hrKYXJjDDcLBZARMMM8U0wTHIHwA="
+                    DeckHash: "M2cwO76V6eVub6b5v61ZkkqdWEH04pXhrEuBeBkQg+RA+GbvJcYKXltmxkQBiNqaHUww3PzgIAsMG94RZHTfU8sAw9sbfJl3APFyDWvGxXsmsoJwQgYv49YyPsa1lVoM16QPMqb32bJ0zWJgTsrazAzSD8Igt4DwszoFhrNO4aymFyYww3CwWQETDDPFNMHx5N5gprwiXYbjC68yZ0UrMoL8AQA="
                 )
             }
             ,
