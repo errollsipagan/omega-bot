@@ -205,6 +205,23 @@ namespace OmegaBotWrapper.Game.Base
                 }
             }
 
+            if (state.SelectionHint.Equals((int)DHint.DESTROY))
+            {
+                ConsoleUtils.PrintColored("OnSelectCard - Selecting Card to DESTROY");
+
+                // Filter cards where Owner = 1 (Player) because using Player Vision
+                var botCards = state.SelectableCards.Select((card, index) => new { Card = card, Index = index })
+                                                    .Where(x => x.Card.Owner == 1)
+                                                    .Take(state.Minimum)
+                                                    .Select(x => (byte)x.Index).ToArray();
+                // Respect Minimum (or Maximum if needed)
+                if (botCards.Any())
+                {
+                    ConsoleUtils.PrintColored($"Selected {botCards.Length} bot-owned cards for destruction.");
+                    return botCards;
+                }
+            }
+
             // Default logic if defenderIndex is not valid or not available
             ConsoleUtils.PrintColored("No specific defender index available, using default selection.");
             byte[] selection = new byte[state.Minimum];

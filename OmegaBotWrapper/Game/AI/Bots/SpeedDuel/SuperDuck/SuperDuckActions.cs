@@ -28,36 +28,21 @@ namespace OmegaBotWrapper.Game.AI.Bots.SpeedDuel.SuperDuck
             DeckName = DeckManager.GetDeckName(deck);
             DeckHash = DeckManager.GetDeckHash(deck);
 
-            // Activable cards
-            AddBotActionAsync(new ActionRule(
+            AddBotAction(new ActionRule(
                 action: MainAction.Activate,
-                cardId: SuperDuckCardId.HammerShot, // Use HammerShot ID
-                asyncCondition: HammerShotCondition // Use the async condition
+                cardId: SuperDuckCardId.HammerShot,
+                condition: HammerShotCondition
             ));
 
             AddBotAction(new ActionRule(
                 action: MainAction.Activate,
-                cardId: SuperDuckCardId.HammerShot
+                cardId: SuperDuckCardId.EnchantingFittingRoom
             ));
         }
 
         private void AddBotAction(ActionRule rule)
         {
             _actionRules.Add(rule);
-        }
-        protected static async void AddBotActionAsync(ActionRule rule)
-        {
-            // Store the rule or evaluate it
-            if (rule.AsyncCondition != null)
-            {
-                bool conditionMet = await rule.AsyncCondition();
-                if (conditionMet)
-                {
-                    // Proceed with the action (e.g., add to a list of executable actions)
-                    ConsoleUtils.PrintColored($"ActionRule added with async condition for card ID {rule.CardId}");
-                    // Add logic to store or execute the rule
-                }
-            }
         }
 
         /// <summary>
@@ -134,11 +119,13 @@ namespace OmegaBotWrapper.Game.AI.Bots.SpeedDuel.SuperDuck
             await GameField.Initialize();
         }
 
-        private async Task<bool> HammerShotCondition()
+        private bool HammerShotCondition(IdleCmdData state, DynamicCard card)
         {
-            bool isOpponentMonsterStrongest = await GameField.IsOpponentMonsterStrongest();
-            Console.WriteLine($"Hammer Shot Condition: {isOpponentMonsterStrongest}");
-            return isOpponentMonsterStrongest;
+            bool canActivate = state.ActivableCards.Any(c => c.ID == SuperDuckCardId.HammerShot);
+            bool opponentHasStrongest = GameField.IsStrongestMonsterOpponent();
+            if (canActivate && opponentHasStrongest)
+                ConsoleUtils.PrintColored($"HammerShotCondition: Can activate Hammer Shot (Opponent has strongest monster)");
+            return canActivate && opponentHasStrongest;
         }
     }
 }
