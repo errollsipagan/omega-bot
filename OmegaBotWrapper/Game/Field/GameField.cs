@@ -307,7 +307,7 @@ namespace OmegaBotWrapper.Game.Field
         /// <param name="location">Location to check (default is CardLocation.MonsterZone)</param>
         /// <param name="useDefense">If true, compares defense instead of attack (not used in this implementation)</param>
         /// <returns>True if the opponent's face-up monster has the highest attack or if the opponent has monsters and the bot has none</returns>
-        public static async Task<bool> IsStrongestMonsterOpponentAsync(CardLocation location = CardLocation.MonsterZone)
+        public static async Task<bool> IsStrongestMonsterOpponent(CardLocation location = CardLocation.MonsterZone)
         {
             // Step 1: Check monster counts
             int botMonsterCount = GetEnemyMonsterZoneCardCount();
@@ -322,12 +322,12 @@ namespace OmegaBotWrapper.Game.Field
                 return true;
             }
 
-            // Step 2: Get lists of face-up monsters
+            // Step 2: Get lists of face-up + attack face-up monsters
             var opponentMonsters = await GetCardsWithTypeInLocation(location, CardType.Monster, controller: 0);
             var botMonsters = await GetCardsWithTypeInLocation(location, CardType.Monster, controller: 1);
 
-            var opponentFaceUpMonsters = opponentMonsters.Where(card => card.IsFaceup()).ToList();
-            var botFaceUpMonsters = botMonsters.Where(card => card.IsFaceup()).ToList();
+            var opponentFaceUpMonsters = opponentMonsters.Where(card => card.IsFaceup() && card.IsAttack()).ToList();
+            var botFaceUpMonsters = botMonsters.Where(card => card.IsFaceup() && card.IsAttack()).ToList();
 
             // Step 3: Calculate maximum attack values
             int opponentMaxAttack = opponentFaceUpMonsters.Any() ? opponentFaceUpMonsters.Max(card => card.Attack) : 0;
@@ -336,17 +336,6 @@ namespace OmegaBotWrapper.Game.Field
             // Step 4: Compare max attack values
             Console.WriteLine($"Opponent Max Attack: {opponentMaxAttack}, Bot Max Attack: {botMaxAttack}");
             return opponentMaxAttack >= botMaxAttack;
-        }
-
-        /// <summary>
-        /// Synchronously checks if the strongest face-up monster on the field belongs to the opponent
-        /// </summary>
-        /// <param name="location">Location to check (default is CardLocation.MonsterZone)</param>
-        /// <param name="useDefense">If true, compares defense instead of attack</param>
-        /// <returns>True if the strongest face-up monster is controlled by the opponent (controller = 0)</returns>
-        public static bool IsStrongestMonsterOpponent(CardLocation location = CardLocation.MonsterZone)
-        {
-            return IsStrongestMonsterOpponentAsync(location).Result;
         }
     }
 }

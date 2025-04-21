@@ -122,7 +122,7 @@ namespace OmegaBotWrapper.Game.AI.Bots.SpeedDuel.SuperDuck
         private bool HammerShotCondition(IdleCmdData state, DynamicCard card)
         {
             bool canActivate = state.ActivableCards.Any(c => c.ID == SuperDuckCardId.HammerShot);
-            bool opponentHasStrongest = GameField.IsStrongestMonsterOpponent();
+            bool opponentHasStrongest = GameField.IsStrongestMonsterOpponent().Result;
             if (canActivate && opponentHasStrongest)
                 ConsoleUtils.PrintColored($"HammerShotCondition: Can activate Hammer Shot (Opponent has strongest monster)");
             return canActivate && opponentHasStrongest;
