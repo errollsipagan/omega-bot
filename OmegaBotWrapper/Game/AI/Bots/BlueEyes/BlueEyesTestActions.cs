@@ -33,6 +33,8 @@ namespace OmegaBotWrapper.Game.AI.Bots.BlueEyes
             AddCardInfo(BlueEyesCardId.MaidenOfEyesOfBlue, "Maiden of Eyes Of Blue");
             AddCardInfo(BlueEyesCardId.BlueEyesSpiritDragon, "Blue Eyes Spirit Dragon");
             AddCardInfo(BlueEyesCardId.DragonSpiritOfWhite, "Dragon Spirit Of White");
+            AddCardInfo(BlueEyesCardId.HieraticSunDragonOverlordOfHeliopolis, "Hieratic Sun Dragon Overlord Of Heliopolis");
+            AddCardInfo(BlueEyesCardId.Number46Dragluon, "Number 46 Dragluon");
 
             // Normal Summons
             // Add DragonSpiritOfWhite summon rule with custom condition
@@ -136,6 +138,10 @@ namespace OmegaBotWrapper.Game.AI.Bots.BlueEyes
         public override async Task<IdleCmdResponse> OnIdleCmd(IdleCmdData state)
         {
             await GameFieldInitialize();
+
+            await CheckDarkAttributeCard();
+            await GetEnemyGraveyardCards();
+            await GetStrongestMonster();
 
             //Activable cards, for each
             foreach (var cards in state.ActivableCards)
@@ -246,6 +252,42 @@ namespace OmegaBotWrapper.Game.AI.Bots.BlueEyes
                 ConsoleUtils.PrintColored($"DragonSpiritOfWhiteSummon: Can summon (SpellZoneCount: {ownSpellZoneCount})");
 
             return hasSpellCards && canSummon;
+        }
+
+        //Verificar se há uma carta com atributo Dark na mão do jogador:
+        private static async Task CheckDarkAttributeCard()
+        {
+            Console.WriteLine("#### Check Dark Attribute Card! ####");
+            //await GameField.Initialize();
+            bool hasDarkCard = await GameField.HasCardWithAttributeInHand(CardAttribute.Dark);
+            Console.WriteLine(hasDarkCard ? "Found a Dark attribute card in hand!" : "No Dark attribute card in hand.");
+        }
+        private static async Task GetEnemyGraveyardCards()
+        {
+            Console.WriteLine("#### GetEnemyGraveyardCards! ####");
+            //await GameField.Initialize();
+            var graveCards = await GameField.GetCardsInLocation(location: CardLocation.Grave, controller: 1);
+            Console.WriteLine($"Enemy graveyard has {graveCards.Count} cards:");
+            foreach (var card in graveCards)
+            {
+                // Convert the numeric Attribute to a string of attribute names
+                string attributeNames = card.Attribute == 0 ? "None" : string.Join(", ", System.Enum.GetValues(typeof(CardAttribute))
+                    .Cast<CardAttribute>()
+                    .Where(attr => attr != CardAttribute.None && card.Attribute.Equals((byte)attr))
+                    .Select(attr => attr.ToString()));
+                Console.WriteLine($"Card ID: {card.ID}, Attribute: {attributeNames}");
+            }
+        }
+
+        //Find the strongest monster in the player's monster zone:
+        private static async Task GetStrongestMonster()
+        {
+            //await GameField.Initialize();
+            var strongestMonster = await GameField.GetStrongestMonsterInLocation(CardLocation.MonsterZone);
+            if (strongestMonster.ID > 0)
+                Console.WriteLine($"Strongest face-up monster: ID {strongestMonster.ID}, Attack {strongestMonster.Attack}");
+            else
+                Console.WriteLine("No face-up monsters found in the monster zone.");
         }
     }
 }

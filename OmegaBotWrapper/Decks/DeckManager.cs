@@ -26,14 +26,14 @@ namespace OmegaBotWrapper.Decks
                 DeckId.BotTest,
                 (
                     DeckName: "BotTest",
-                    DeckHash: "02KwdIhg0fCxZ8hOv8cAomHsxSvDWYVuLmDKvDOfBcRn8xdhhOHJP8vh+NyMiUww7LrgAhxzXrgFx1942eGYIcsMjj+6tTPDMMguEF6jH8oIwyA3XBINZgLRIHcBAA=="
+                    DeckHash: "02KwdIhg4bxwi+mSaDCTho89Q3b6PQYQnXlnPguMv3hlOKvQzQVMIDabvwgjDE/+WQ7H52ZMZIJh1wUX4BhkNgh/4WWHY4YsMzj+6NbODMMgO0B4jX4oIwyD7AZhkFsA"
                 )
             },
             {
                 DeckId.BlueEyes,
                 (
                     DeckName: "Blue-Eyes",
-                    DeckHash: "M2cwO76V6eVub6b5v61ZkkqdWEH04pXhrEuBeBkQg+RA+GbvJcYKXltmxkQBiNqaHUww3PzgIAsMG94RZHTfU8sAw9sbfJl3APFyDWvGxXsmsoJwQgYv49YyPsa1lVoM16QPMqb32bJ0zWJgTsrazAzSD8Igt4DwszoFhrNO4aymFyYww3CwWQETDDPFNMHx5N5gprwiXYbjC68yZ0UrMoL8AQA="
+                    DeckHash: "M2cwO76VaXuDL/PiPRNZl2tYM77c7c00/7c1S1KpEyuIXrwynHUpEC8DYpAcCN/svcRYwWvLzJgoAFFbs4MJhpsfHGSBYcM7gozue2oZYHgH1J6EDF7GrWV8jGsrtRiuSR9kTO+zZemaxcCclLWZGaQHhEH2g/CzOgWGs07hrKYXJjDDcLBZARMMM8U0wfHk3mCmvCJdhuMLrzJnRSsygtwOAA=="
                 )
             }
             ,
