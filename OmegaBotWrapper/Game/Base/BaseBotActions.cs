@@ -1,4 +1,5 @@
 ﻿using OmegaBotWrapper.Enum;
+using OmegaBotWrapper.Game.Field;
 using OmegaBotWrapper.States;
 using OmegaBotWrapper.Struct;
 using OmegaBotWrapper.Utils;
@@ -30,6 +31,9 @@ namespace OmegaBotWrapper.Game.Base
         /// Deck code to be used
         /// </summary>
         public string? DeckHash { get; set; }
+
+        // Armazena o índice do defensor selecionado para uso em OnSelectCard
+        private byte? _selectedDefenderIndex;
 
         /// <summary>
         /// Registers all the actions the bot should take during specific states
@@ -65,10 +69,87 @@ namespace OmegaBotWrapper.Game.Base
         /// </summary>
         public virtual async Task<BattleCmdResponse> OnBattleCmd(BattleCmdData state)
         {
-            ConsoleUtils.PrintColored("OnBattleCmd");
+            ConsoleUtils.PrintColored("OnBattleCmd - Optimized Smart Attack Logic with Defender Index Tracking");
 
-            if (state.AttackableCards.Any())
-                return state.AttackableCards.First().DeclareAttack();
+            await GameField.Initialize();
+
+            // Gets the BOT (Enemy) monsters that can attack, sorted by attack (highest first)
+            var attackableCards = state.AttackableCards
+                .Where(card => !card.Attacked && !card.IsDisabled()) // Ignores cards that have already attacked or are disabled
+                .OrderByDescending(card => card.Attack) // Prioritizes monsters with higher ATK
+                .ToList();
+
+            if (!attackableCards.Any())
+            {
+                ConsoleUtils.PrintColored("No attackable cards available.");
+                _selectedDefenderIndex = null; // Resets the selected defender
+                if (state.CanMainPhaseTwo)
+                    return BattleAction.ToMainPhaseTwo;
+                return BattleAction.ToEndPhase;
+            }
+
+            // Obtains player's (Own) monsters in the MonsterZone, with original indexes
+            var opponentMonsters = (await GameField.GetCardsInLocation(CardLocation.MonsterZone, controller: 0))
+                .Select((card, index) => new { Card = card, OriginalIndex = index })
+                .Where(x => !x.Card.IsDisabled()) // Ignora monstros desabilitados
+                .OrderByDescending(x => x.Card.IsDefense() ? x.Card.Defense : x.Card.Attack) // Prioritizes higher DEF or ATK
+                .ToList();
+
+            // Check direct attack
+            if (!opponentMonsters.Any())
+            {
+                var directAttacker = attackableCards.FirstOrDefault(card => card.CanDirectAttack);
+                if (directAttacker.ID > 0 && directAttacker.ID > 0 && state.AttackableCards.TryGetByID(directAttacker.ID, out DynamicCard _, out int index))
+                {
+                    ConsoleUtils.PrintColored($"Direct Attack with Card ID: {directAttacker.ID}, Attack: {directAttacker.Attack}, Index: {index}");
+                    _selectedDefenderIndex = null; // No defender for direct attack
+                    return new BattleCmdResponse(BattleAction.Attack, (ushort)index);
+                }
+                ConsoleUtils.PrintColored("No direct attack possible.");
+                _selectedDefenderIndex = null;
+                if (state.CanMainPhaseTwo)
+                    return BattleAction.ToMainPhaseTwo;
+                return BattleAction.ToEndPhase;
+            }
+
+            // Select the attacker with the highest attack
+            var bestAttacker = attackableCards.First(); // First in the ordered list (highest attack)
+            int attackerPower = bestAttacker.GetRealPower();
+            ConsoleUtils.PrintColored($"Selected best attacker: ID {bestAttacker.ID}, Power {attackerPower}");
+
+            // Try to attack the defender with the highest defense (or face-down)
+            foreach (var target in opponentMonsters)
+            {
+                var defender = target.Card;
+                bool isFaceUp = defender.IsFaceup();
+                int defenderPower = defender.GetRealPower();
+                int defenderIndex = target.OriginalIndex;
+
+                // Check if the attack is advantageous
+                if (isFaceUp && attackerPower > defenderPower)
+                {
+                    if (state.AttackableCards.TryGetByID(bestAttacker.ID, out DynamicCard _, out int index))
+                    {
+                        ConsoleUtils.PrintColored($"Attacking face-up monster (ID: {defender.ID}, Power: {defenderPower}, Field Index: {defenderIndex}) with Card ID: {bestAttacker.ID}, Power: {attackerPower}, Attacker Index: {index}");
+                        _selectedDefenderIndex = (byte)defenderIndex; // store index defender
+                        return state.AttackableCards[(ushort)index].DeclareAttack();
+                        //return new BattleCmdResponse(BattleAction.Attack, (ushort)index);
+                    }
+                }
+                else if (!isFaceUp && defender.IsDefense())
+                {
+                    if (state.AttackableCards.TryGetByID(bestAttacker.ID, out DynamicCard _, out int index))
+                    {
+                        ConsoleUtils.PrintColored($"Attacking face-down monster (ID: {defender.ID}, Field Index: {defenderIndex}) with Card ID: {bestAttacker.ID}, Power: {attackerPower}, Attacker Index: {index}");
+                        _selectedDefenderIndex = (byte)defenderIndex; // store index defender
+                        return new BattleCmdResponse(BattleAction.Attack, (ushort)index);
+                    }
+                }
+            }
+
+            // If there are no advantageous targets, move to Main Phase 2 or end the turn.
+            ConsoleUtils.PrintColored("No advantageous attack targets found.");
+            _selectedDefenderIndex = null; // Resets the selected defender
             if (state.CanMainPhaseTwo)
                 return BattleAction.ToMainPhaseTwo;
             return BattleAction.ToEndPhase;
@@ -105,8 +186,24 @@ namespace OmegaBotWrapper.Game.Base
         /// </summary>
         public virtual async Task<IList<byte>?> OnSelectCard(SelectCardData state)
         {
-            ConsoleUtils.PrintColored("OnSelectCard");
+            if (state.SelectionHint.Equals((int)DHint.ATTACKTARGET))
+            {
+                ConsoleUtils.PrintColored("--------SelectionHint.DHint.ATTACKTARGET----------");
+                ConsoleUtils.PrintColored("OnSelectCard - Selecting Defender");
 
+                if (_selectedDefenderIndex.HasValue)
+                {
+                    // Checks whether defenderIndex is valid and meets selection requirements
+                    if (state.Minimum <= 1 && state.Maximum >= 1)
+                    {
+                        ConsoleUtils.PrintColored($"Selecting defender with index: {_selectedDefenderIndex.Value}");
+                        return new List<byte> { _selectedDefenderIndex.Value };
+                    }
+                }
+            }
+
+            // Default logic if defenderIndex is not valid or not available
+            ConsoleUtils.PrintColored("No specific defender index available, using default selection.");
             byte[] selection = new byte[state.Minimum];
             for (int i = 0; i < selection.Length; i++)
                 selection[i] = (byte)i;
@@ -183,7 +280,7 @@ namespace OmegaBotWrapper.Game.Base
 
             return null; // Can't find any combination
         }
-      
+
         /// <summary>
         /// Action to be taken when announcing attribute(s), should return the attribute(s) selected
         /// </summary>

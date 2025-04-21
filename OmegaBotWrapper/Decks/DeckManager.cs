@@ -26,7 +26,7 @@ namespace OmegaBotWrapper.Decks
                 DeckId.BotTest,
                 (
                     DeckName: "BotTest",
-                    DeckHash: "02KwdIhg4bxwi+mSaDCTho89Q3b6PQYQnXlnPguMv3hlOKvQzQVMIDabvwgjDE/+WQ7H52ZMZIJh1wUX4BhkNgh/4WWHY4YsMzj+6NbODMMgO0B4jX4oIwyD7AZhkFsA"
+                    DeckHash: "02ewdIhgme1uxrBGP5RRw8eeAcQuezqXkSHLjOmjWzsziM954RZTdvo9BpB85p35LCAaxF+8MpxV6OYCsBybvwgjDE/+WQ7H52ZMZIJh1wUX4BhkJgh/4WWHY5CdMHtBGGQ2CIPcBsIg+0AY5D4QBrkDAA=="
                 )
             },
             {
