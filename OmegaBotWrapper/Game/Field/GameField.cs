@@ -214,6 +214,22 @@ namespace OmegaBotWrapper.Game.Field
         }
 
         /// <summary>
+        /// Gets the strongest monster card in a specific location (based on attack or defense)
+        /// </summary>
+        /// <param name="location">Location to check (e.g., CardLocation.MonsterZone)</param>
+        /// <param name="controller">Controller of the cards (0 for player, 1 for opponent)</param>
+        /// <param name="useDefense">If true, compares defense instead of attack</param>
+        /// <returns>DynamicCard with the highest attack or defense in the specified location</returns>
+        public static async Task<IEnumerable<DynamicCard>> GetMonsterInLocation(CardLocation location, int controller = 0)
+        {
+            var monsters = await GetCardsWithTypeInLocation(location, CardType.Monster, controller);
+            return monsters
+                .Where(card => card.IsFaceup())
+                .OrderByDescending(card => card.ID)
+                .ToList();
+        }
+
+        /// <summary>
         /// Checks if a card with a specific ID exists in a given location
         /// </summary>
         /// <param name="cardId">ID of the card to search for</param>

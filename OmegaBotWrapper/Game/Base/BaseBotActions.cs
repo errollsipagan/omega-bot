@@ -1,4 +1,5 @@
 ﻿using OmegaBotWrapper.Enum;
+using OmegaBotWrapper.Game.AI.Actions;
 using OmegaBotWrapper.Game.Field;
 using OmegaBotWrapper.States;
 using OmegaBotWrapper.Struct;
@@ -125,6 +126,9 @@ namespace OmegaBotWrapper.Game.Base
                 int defenderPower = defender.GetRealPower();
                 int defenderIndex = target.OriginalIndex;
 
+                if (!await new DefaultActions().OnPreBattleBetween(bestAttacker, defender))
+                    continue;
+
                 // Check if the attack is advantageous
                 if (isFaceUp && attackerPower > defenderPower)
                 {
@@ -188,7 +192,6 @@ namespace OmegaBotWrapper.Game.Base
         {
             if (state.SelectionHint.Equals((int)DHint.ATTACKTARGET))
             {
-                ConsoleUtils.PrintColored("--------SelectionHint.DHint.ATTACKTARGET----------");
                 ConsoleUtils.PrintColored("OnSelectCard - Selecting Defender");
 
                 if (_selectedDefenderIndex.HasValue)

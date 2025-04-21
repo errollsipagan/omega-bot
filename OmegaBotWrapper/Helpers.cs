@@ -215,5 +215,8 @@ namespace OmegaBotWrapper
         /// <param name="cardid">Card ID being searched for</param>
         /// <returns>True if the card xyz material count is equal or bigger than the desired count and at least one of the desired card ID is found, false otherwise</returns>
         public static bool HasXyzMaterial(this DynamicCard card, int count, int cardid) => card.HasXyzMaterial(count) && card.Overlays.Contains(cardid);
+
+        public static bool HasAttribute(this DynamicCard card, CardAttribute attribute) => (card.Attribute & (byte)attribute) != 0;
+
     }
 }
