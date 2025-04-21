@@ -307,7 +307,7 @@ namespace OmegaBotWrapper.Game.Field
         /// <param name="location">Location to check (default is CardLocation.MonsterZone)</param>
         /// <param name="useDefense">If true, compares defense instead of attack (not used in this implementation)</param>
         /// <returns>True if the opponent's face-up monster has the highest attack or if the opponent has monsters and the bot has none</returns>
-        public static async Task<bool> IsStrongestMonsterOpponent(CardLocation location = CardLocation.MonsterZone)
+        public static async Task<bool> IsFaceUpAttackStrongestMonsterOpponent(CardLocation location = CardLocation.MonsterZone)
         {
             // Step 1: Check monster counts
             int botMonsterCount = GetEnemyMonsterZoneCardCount();
