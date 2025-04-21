@@ -17,10 +17,10 @@ namespace OmegaBotWrapper.Game.AI.Bots.BlueEyes
         private readonly List<ActionRule> _actionRules;
         private readonly Dictionary<int, Base.CardInfo> _cardInfoMap;
 
-        public BlueEyesTestActions(DeckId deckId = DeckId.BlueEyes)
+        public BlueEyesTestActions(MasterDuelDeck deck = MasterDuelDeck.BlueEyes)
         {
-            DeckName = DeckManager.GetDeckName(deckId);
-            DeckHash = DeckManager.GetDeckHash(deckId);
+            DeckName = DeckManager.GetDeckName(deck);
+            DeckHash = DeckManager.GetDeckHash(deck);
 
             _actionRules = new List<ActionRule>();
             _cardInfoMap = new Dictionary<int, Base.CardInfo>();

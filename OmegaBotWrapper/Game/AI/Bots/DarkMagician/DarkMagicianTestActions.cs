@@ -12,7 +12,7 @@ namespace OmegaBotWrapper.Game.AI.Bots.DarkMagician
 
     public class DarkMagicianTestActions : BaseBotActions
     {
-        public DarkMagicianTestActions(DeckId deckId = DeckId.DarkMagician)
+        public DarkMagicianTestActions(MasterDuelDeck deckId = MasterDuelDeck.DarkMagician)
         {
             DeckName = DeckManager.GetDeckName(deckId);
             DeckHash = DeckManager.GetDeckHash(deckId);

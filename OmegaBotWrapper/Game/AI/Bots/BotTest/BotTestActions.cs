@@ -14,10 +14,10 @@ namespace OmegaBotWrapper.Game.AI.Bots.BotTest
         private readonly List<ActionRule> _actionRules;
         private readonly Dictionary<int, Base.CardInfo> _cardInfoMap;
 
-        public BotTestActions(DeckId deckId = DeckId.BotTest)
+        public BotTestActions(MasterDuelDeck deck = MasterDuelDeck.BotTest)
         {
-            DeckName = DeckManager.GetDeckName(deckId);
-            DeckHash = DeckManager.GetDeckHash(deckId);
+            DeckName = DeckManager.GetDeckName(deck);
+            DeckHash = DeckManager.GetDeckHash(deck);
 
             _actionRules = new List<ActionRule>();
             _cardInfoMap = new Dictionary<int, Base.CardInfo>();

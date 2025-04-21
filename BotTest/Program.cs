@@ -4,6 +4,7 @@ using OmegaBotWrapper.Game.AI.Bots;
 using OmegaBotWrapper.Game.AI.Bots.BlueEyes;
 using OmegaBotWrapper.Game.AI.Bots.BotTest;
 using OmegaBotWrapper.Game.AI.Bots.DarkMagician;
+using OmegaBotWrapper.Game.AI.Bots.SpeedDuel.SuperDuck;
 using OmegaBotWrapper.Game.Base;
 using System;
 using System.Collections.Generic;
@@ -14,24 +15,48 @@ namespace BotTest
 {
     class Program
     {
+        enum DuelFormat { MasterDuel, SpeedDuel }
+
         static async Task Main(string[] args)
         {
             while (true)
             {
-                // Get deck options
-                var deckOptions = DeckManager.GetDeckOptions().ToList();
+                // Prompt for duel format (Master Duel or Speed Duel)
+                var formatOptions = new List<string> { "Master Duel", "Speed Duel" };
+                int formatChoice = SelectMenuOption(formatOptions, "Select a duel format:");
+                DuelFormat selectedFormat = (DuelFormat)formatChoice;
+
+                // Get deck options based on the selected format
+                List<DeckOption> deckOptions = selectedFormat == DuelFormat.MasterDuel
+                    ? DeckManager.GetDeckOptions().ToList()
+                    : DeckManager.GetSpeedDuelDeckOptions().ToList();
+
+                if (!deckOptions.Any())
+                {
+                    Console.WriteLine($"No decks available for {selectedFormat}. Exiting...");
+                    break;
+                }
 
                 // Select deck using arrow keys with colored highlight
-                int selectedIndex = SelectMenuOption(deckOptions.Select(d => d.Name).ToList(), "Select a deck to duel with:");
-                DeckId selectedDeckId = deckOptions[selectedIndex].Id;
+                int selectedIndex = SelectMenuOption(deckOptions.Select(d => d.Name).ToList(), $"Select a {selectedFormat} deck to duel with:");
+                var selectedDeck = deckOptions[selectedIndex];
 
-                // Instantiate the appropriate bot actions based on DeckId
-                BaseBotActions botActions = selectedDeckId switch
+                // Instantiate the appropriate bot actions based on DeckId and format
+                BaseBotActions botActions = selectedFormat switch
                 {
-                    DeckId.BotTest => new BotTestActions(selectedDeckId),
-                    DeckId.BlueEyes => new BlueEyesTestActions(selectedDeckId),
-                    DeckId.DarkMagician => new DarkMagicianTestActions(selectedDeckId),
-                    _ => throw new InvalidOperationException($"No bot actions defined for DeckId: {selectedDeckId}")
+                    DuelFormat.MasterDuel => selectedDeck.Id switch
+                    {
+                        MasterDuelDeck.BotTest => new BotTestActions((MasterDuelDeck)selectedDeck.Id),
+                        MasterDuelDeck.BlueEyes => new BlueEyesTestActions((MasterDuelDeck)selectedDeck.Id),
+                        MasterDuelDeck.DarkMagician => new DarkMagicianTestActions((MasterDuelDeck)selectedDeck.Id),
+                        _ => throw new InvalidOperationException($"No bot actions defined for Master Duel DeckId: {selectedDeck.Id}")
+                    },
+                    DuelFormat.SpeedDuel => selectedDeck.Id switch
+                    {
+                        SpeedDuelDeck.SuperDuck => new SuperDuckActions((SpeedDuelDeck)selectedDeck.Id),
+                        _ => throw new InvalidOperationException($"No bot actions defined for Speed Duel DeckId: {selectedDeck.Id}")
+                    },
+                    _ => throw new InvalidOperationException("Invalid duel format.")
                 };
 
                 // Create and start the bot
@@ -91,7 +116,7 @@ namespace BotTest
 
             do
             {
-                //Console.Clear();
+                Console.Clear();
                 Console.WriteLine(prompt);
                 Console.WriteLine();
 
@@ -105,7 +130,6 @@ namespace BotTest
                     else
                     {
                         Console.BackgroundColor = ConsoleColor.Black; // Reset background
-                        // Use custom color if provided, otherwise default to white
                         Console.ForegroundColor = optionColors != null && optionColors.TryGetValue(i, out var color)
                             ? color
                             : ConsoleColor.White;
@@ -127,7 +151,7 @@ namespace BotTest
                 }
             } while (key != ConsoleKey.Enter);
 
-            //Console.Clear();
+            Console.Clear();
             return selectedIndex;
         }
     }
