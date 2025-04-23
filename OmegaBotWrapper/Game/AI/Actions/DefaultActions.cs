@@ -1,5 +1,4 @@
 ﻿using OmegaBotWrapper.Enum;
-using OmegaBotWrapper.Game.Field;
 using OmegaBotWrapper.Struct;
 using System;
 using System.Collections.Generic;
@@ -20,7 +19,7 @@ namespace OmegaBotWrapper.Game.AI.Actions
         /// <returns>false if the attack shouldn't be done.</returns>
         public async Task<bool> OnPreBattleBetween(DynamicCard attacker, DynamicCard defender)
         {
-            await GameField.Initialize();
+            //await GameField.Initialize();
 
             var fieldInfo = DuelBotWrapper.GetPlayerFieldInfo();
 
@@ -95,7 +94,7 @@ namespace OmegaBotWrapper.Game.AI.Actions
                 }
             }
 
-            IEnumerable<DynamicCard> EnemiesMonstersZone = await GameField.GetMonsterInLocation(CardLocation.MonsterZone);
+            IEnumerable<DynamicCard> EnemiesMonstersZone = null;// await GameField.GetMonsterInLocation(CardLocation.MonsterZone);
 
             if (EnemiesMonstersZone.TryGetByID(CardId.MekkKnightCrusadiaAstram, out _) && !defender.IsCode(CardId.MekkKnightCrusadiaAstram))
                 return false;

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OmegaBotWrapper.Utils
+namespace BotTest.Utils
 {
     /// <summary>
     /// Utility class for console-related operations.
