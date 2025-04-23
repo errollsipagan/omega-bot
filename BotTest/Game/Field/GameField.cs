@@ -15,6 +15,17 @@ namespace BotTest.Game.Field
     public class GameField
     {
         private readonly DuelBotWrapper _botWrapper;
+        private FieldInfo _fieldInfo;
+
+        /// <summary>
+        /// OwnSide
+        /// </summary>
+        public CardInfo OwnSide => _fieldInfo.OwnSide;
+
+        /// <summary>
+        /// EnemySide
+        /// </summary>
+        public CardInfo EnemySide => _fieldInfo.EnemySide;
 
         public GameField(DuelBotWrapper botWrapper)
         {
@@ -27,7 +38,8 @@ namespace BotTest.Game.Field
         /// <returns>Estrutura FieldInfo com os dados do campo do Bot.</returns>
         public async Task<FieldInfo> GetBotField()
         {
-            return await _botWrapper.GetBotFieldInfo();
+            _fieldInfo = await _botWrapper.GetBotFieldInfo();
+            return _fieldInfo;
         }
 
         /// <summary>
@@ -36,7 +48,8 @@ namespace BotTest.Game.Field
         /// <returns>Estrutura FieldInfo com os dados do campo do Player.</returns>
         public async Task<FieldInfo> GetPlayerField()
         {
-            return await DuelBotWrapper.GetPlayerFieldInfo();
+            _fieldInfo = await DuelBotWrapper.GetPlayerFieldInfo();
+            return _fieldInfo;
         }
 
         /// <summary>
@@ -459,6 +472,24 @@ namespace BotTest.Game.Field
             var side = isOwnSide ? field.OwnSide : field.EnemySide;
             return side.HasBattlingMonster ? side.BattlingMonster : default;
         }
+
+        /// <summary>
+        /// Gets the card count in the bot's SpellZones
+        /// </summary>
+        public int GetPlayerSpellZoneCardCount()
+        {
+            return CountCardsInZones(OwnSide.SpellZones);
+        }
+
+        /// <summary>
+        /// Counts the total number of cards in a zone array
+        /// </summary>
+        private int CountCardsInZones(CardArray[] zones)
+        {
+            if (zones == null) return 0;
+            return zones.Sum(zone => zone.Cards?.Length ?? 0);
+        }
+
     }
 
 }

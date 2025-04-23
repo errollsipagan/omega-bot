@@ -100,90 +100,94 @@ namespace BotTest.Game.Base
 
 
             //Obtains player's (Own) monsters in the MonsterZone, with original indexes
-            var botMonsters = await _gameField.GetBotCardsInZone(CardLocation.MonsterZone);            
+            //var botMonsters = await _gameField.GetBotCardsInZone(CardLocation.MonsterZone);
 
-            if (botMonsters.Any())
-            {
-                foreach (var opponent in botMonsters)
-                {
-                    ConsoleUtils.PrintColored($"Bot Monsters => {opponent.ID}");
-                }
-            }
+            //if (botMonsters.Any())
+            //{
+            //    foreach (var opponent in botMonsters)
+            //    {
+            //        ConsoleUtils.PrintColored($"Bot Monsters => {opponent.ID}");
+            //    }
+            //}
+            //var opponentMonsters = await _gameField.GetPlayerCardsInZone(CardLocation.MonsterZone);
 
-            var opponentMonsters = botMonsters
+            var opponentMonsters = (await _gameField.GetPlayerCardsInZone(CardLocation.MonsterZone))
                 .Select((card, index) => new { Card = card, OriginalIndex = index })
                 .Where(x => !x.Card.IsDisabled()) // Ignora monstros desabilitados
                 .OrderByDescending(x => x.Card.IsDefense() ? x.Card.Defense : x.Card.Attack) // Prioritizes higher DEF or ATK
                 .ToList();
 
             // Check direct attack
-            //if (!opponentMonsters.Any())
-            //{
-            //    var directAttacker = attackableCards.FirstOrDefault(card => card.CanDirectAttack);
-            //    if (directAttacker.ID > 0 && directAttacker.ID > 0 && state.AttackableCards.TryGetByID(directAttacker.ID, out DynamicCard _, out int index))
-            //    {
-            //        ConsoleUtils.PrintColored($"Direct Attack with Card ID: {directAttacker.ID}, Attack: {directAttacker.Attack}, Index: {index}");
-            //        _selectedDefenderIndex = null; // No defender for direct attack
-            //        return new BattleCmdResponse(BattleAction.Attack, (ushort)index);
-            //    }
-            //    ConsoleUtils.PrintColored("No direct attack possible.");
-            //    _selectedDefenderIndex = null;
-            //    if (state.CanMainPhaseTwo)
-            //        return BattleAction.ToMainPhaseTwo;
-            //    return BattleAction.ToEndPhase;
-            //}
+            if (!opponentMonsters.Any())
+            {
+                var directAttacker = attackableCards.FirstOrDefault(card => card.CanDirectAttack);
+                if (directAttacker.ID > 0 && directAttacker.ID > 0 && state.AttackableCards.TryGetByID(directAttacker.ID, out DynamicCard _, out int index))
+                {
+                    ConsoleUtils.PrintColored($"Direct Attack with Card ID: {directAttacker.ID}, Attack: {directAttacker.Attack}, Index: {index}");
+                    _selectedDefenderIndex = null; // No defender for direct attack
+                    return state.AttackableCards[index].DeclareAttack();
+                    //return new BattleCmdResponse(BattleAction.Attack, (ushort)index);
+                }
+                ConsoleUtils.PrintColored("No direct attack possible.");
+                _selectedDefenderIndex = null;
+                if (state.CanMainPhaseTwo)
+                    return BattleAction.ToMainPhaseTwo;
+                return BattleAction.ToEndPhase;
+            }
 
-            //// Select the attacker with the highest attack
-            //var bestAttacker = attackableCards.First(); // First in the ordered list (highest attack)
-            //int attackerPower = bestAttacker.GetRealPower();
-            //ConsoleUtils.PrintColored($"Selected best attacker: ID {bestAttacker.ID}, Power {attackerPower}");
+            // Select the attacker with the highest attack
+            var bestAttacker = attackableCards.First(); // First in the ordered list (highest attack)
+            int attackerPower = bestAttacker.GetRealPower();
+            ConsoleUtils.PrintColored($"Selected best attacker: ID {bestAttacker.ID}, Power {attackerPower}");
 
-            //// Try to attack the defender with the highest defense (or face-down)
-            //foreach (var target in opponentMonsters)
-            //{
-            //    var defender = target.Card;
-            //    bool isFaceUp = defender.IsFaceup();
-            //    int defenderPower = defender.GetRealPower();
-            //    int defenderIndex = target.OriginalIndex;
+            // Try to attack the defender with the highest defense (or face-down)
+            foreach (var target in opponentMonsters)
+            {
+                var defender = target.Card;
+                bool isFaceUp = defender.IsFaceup();
+                int defenderPower = defender.GetRealPower();
+                int defenderIndex = target.OriginalIndex;
 
-            //    if (!await new DefaultActions().OnPreBattleBetween(bestAttacker, defender))
-            //        continue;
+                //Check here!
+                //if (!await new DefaultActions().OnPreBattleBetween(bestAttacker, defender))
+                //    continue;
 
-            //    // Check if the attack is advantageous
-            //    if (isFaceUp && attackerPower > defenderPower)
-            //    {
-            //        if (state.AttackableCards.TryGetByID(bestAttacker.ID, out DynamicCard _, out int index))
-            //        {
-            //            ConsoleUtils.PrintColored($"Attacking face-up monster (ID: {defender.ID}, Power: {defenderPower}, Field Index: {defenderIndex}) with Card ID: {bestAttacker.ID}, Power: {attackerPower}, Attacker Index: {index}");
-            //            _selectedDefenderIndex = (byte)defenderIndex; // store index defender
-            //            return state.AttackableCards[(ushort)index].DeclareAttack();
-            //            //return new BattleCmdResponse(BattleAction.Attack, (ushort)index);
-            //        }
-            //    }
-            //    else if (!isFaceUp && defender.IsDefense())
-            //    {
-            //        if (state.AttackableCards.TryGetByID(bestAttacker.ID, out DynamicCard _, out int index))
-            //        {
-            //            ConsoleUtils.PrintColored($"Attacking face-down monster (ID: {defender.ID}, Field Index: {defenderIndex}) with Card ID: {bestAttacker.ID}, Power: {attackerPower}, Attacker Index: {index}");
-            //            _selectedDefenderIndex = (byte)defenderIndex; // store index defender
-            //            return new BattleCmdResponse(BattleAction.Attack, (ushort)index);
-            //        }
-            //    }
-            //}
+                // Check if the attack is advantageous
+                if (isFaceUp && attackerPower > defenderPower)
+                {
+                    if (state.AttackableCards.TryGetByID(bestAttacker.ID, out DynamicCard _, out int index))
+                    {
+                        ConsoleUtils.PrintColored($"Attacking face-up monster (ID: {defender.ID}, Power: {defenderPower}, Field Index: {defenderIndex}) with Card ID: {bestAttacker.ID}, Power: {attackerPower}, Attacker Index: {index}");
+                        _selectedDefenderIndex = (byte)defenderIndex; // store index defender
+                        return state.AttackableCards[index].DeclareAttack();
+                        //return new BattleCmdResponse(BattleAction.Attack, (ushort)index);
+                    }
+                }
+                else if (!isFaceUp && defender.IsDefense())
+                {
+                    if (state.AttackableCards.TryGetByID(bestAttacker.ID, out DynamicCard _, out int index))
+                    {
+                        ConsoleUtils.PrintColored($"Attacking face-down monster (ID: {defender.ID}, Field Index: {defenderIndex}) with Card ID: {bestAttacker.ID}, Power: {attackerPower}, Attacker Index: {index}");
+                        _selectedDefenderIndex = (byte)defenderIndex; // store index defender
+                        return state.AttackableCards[index].DeclareAttack();
+                        //return new BattleCmdResponse(BattleAction.Attack, (ushort)index);
+                    }
+                }
+            }
 
-            //// If there are no advantageous targets, move to Main Phase 2 or end the turn.
-            //ConsoleUtils.PrintColored("No advantageous attack targets found.");
-            //_selectedDefenderIndex = null; // Resets the selected defender
-            //if (state.CanMainPhaseTwo)
-            //    return BattleAction.ToMainPhaseTwo;
-            //return BattleAction.ToEndPhase;
-
+            // If there are no advantageous targets, move to Main Phase 2 or end the turn.
+            ConsoleUtils.PrintColored("No advantageous attack targets found.");
             _selectedDefenderIndex = null; // Resets the selected defender
-            if (state.AttackableCards.Any())
-                return state.AttackableCards.First().DeclareAttack();
             if (state.CanMainPhaseTwo)
                 return BattleAction.ToMainPhaseTwo;
             return BattleAction.ToEndPhase;
+
+            //_selectedDefenderIndex = null; // Resets the selected defender
+            //if (state.AttackableCards.Any())
+            //    return state.AttackableCards.First().DeclareAttack();
+            //if (state.CanMainPhaseTwo)
+            //    return BattleAction.ToMainPhaseTwo;
+            //return BattleAction.ToEndPhase;
         }
 
         /// <summary>
