@@ -8,7 +8,7 @@ using OmegaBotWrapper.States;
 using OmegaBotWrapper.Struct;
 
 
-namespace BotTest.Game.AI.Bots.BlueEyes
+namespace BotTest.Game.AI.Bots.MasterDuel.BlueEyes
 {
     public class BlueEyesActions : BaseBotActions
     {
@@ -150,7 +150,7 @@ namespace BotTest.Game.AI.Bots.BlueEyes
         public override async Task<IdleCmdResponse> OnIdleCmd(IdleCmdData state)
         {
             await _gameField.GetBotField();
-            await _gameField.GetPlayerField();
+            //await _gameField.GetPlayerField();
 
             //Activable cards, for each
             foreach (var cards in state.ActivableCards)
@@ -225,38 +225,14 @@ namespace BotTest.Game.AI.Bots.BlueEyes
         {
             return new IdleCmdResponse(action, index);
         }
-        //private static async Task GameFieldInitialize()
-        //{
-        //    await GameField.Initialize();
-
-        //    var ownMonsterZones = GameField.OwnSide.MonsterZones;
-        //    var enemyMonsterZones = GameField.EnemySide.MonsterZones;
-
-        //    Player(Me)
-        //    int ownMonsterCount = GameField.GetOwnMonsterZoneCardCount();
-        //    Console.WriteLine($"Player (Me) [MonsterZones] => {ownMonsterCount}");
-        //    int ownSpellZone0Count = GameField.GetOwnSpellZoneCardCount();
-        //    Console.WriteLine($"Player (Me) [SpellZones] =>  {ownSpellZone0Count}");
-
-        //    Bot
-        //    int enemyMonsterCount = GameField.GetEnemyMonsterZoneCardCount();
-        //    Console.WriteLine($"Bot [MonsterZones] => : {enemyMonsterCount}");
-        //    int enemySpellZone0Count = GameField.GetEnemyZoneCardCount(0, isMonsterZone: false);
-        //    Console.WriteLine($"Bot [SpellZones] => : {enemySpellZone0Count}");
-        //}
 
         /// <summary>
         /// Condition to summon DragonSpiritOfWhite: checks if there are cards in the SpellZone and if the card is summonable.
         /// </summary>
         private bool DragonSpiritOfWhiteSummon(IdleCmdData state, DynamicCard card)
         {
-            if (_gameField == null)
-            {
-                Console.WriteLine("Erro: _gameField é null!");
-                return false;
-            }
             //Checks for cards in player's SpellZones
-            int playerSpellZoneCount = _gameField.GetPlayerSpellZoneCardCount();
+            int playerSpellZoneCount = _gameField.GetPlayerSpellZoneCount().Result;
             bool hasSpellCards = playerSpellZoneCount > 0;
 
             //Checks for summonable cards

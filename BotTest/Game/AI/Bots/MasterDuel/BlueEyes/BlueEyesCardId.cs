@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BotTest.Game.AI.Bots.BlueEyes
+namespace BotTest.Game.AI.Bots.MasterDuel.BlueEyes
 {
     /// <summary>
     /// Defines constant Card IDs with descriptive names.
