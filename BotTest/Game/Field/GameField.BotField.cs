@@ -197,7 +197,7 @@ namespace BotTest.Game.Field
         /// <returns>True se a carta estiver presente, false caso contrário.</returns>
         public async Task<bool> IsCardInBotZone(int cardId, CardLocation location, bool isOwnSide = true)
         {
-            var cards = await GetBotCardsInZone(location, isOwnSide);
+            var cards = await GetPlayerCardsInZone(location, isOwnSide);
             return cards.Any(card => card.IsCode(cardId));
         }
 
@@ -295,30 +295,6 @@ namespace BotTest.Game.Field
             var field = await GetBotField();
             var side = isOwnSide ? field.OwnSide : field.EnemySide;
             return side.HasBattlingMonster ? side.BattlingMonster : default;
-        }
-
-        /// <summary>
-        /// Obtém o monstro em batalha no campo do Player, se houver.
-        /// </summary>
-        /// <param name="isOwnSide">Se true, verifica o lado do Player; se false, verifica o lado do oponente.</param>
-        /// <returns>DynamicCard do monstro em batalha ou default se não houver.</returns>
-        public async Task<DynamicCard> GetPlayerBattlingMonster(bool isOwnSide = true)
-        {
-            var field = await GetPlayerField();
-            var side = isOwnSide ? field.OwnSide : field.EnemySide;
-            return side.HasBattlingMonster ? side.BattlingMonster : default;
-        }
-
-        /// <summary>
-        /// Gets a specific card's information from the player's perspective
-        /// </summary>
-        /// <param name="controller">Controller of the card (0 for player, 1 for opponent)</param>
-        /// <param name="location">Location of the card (e.g., CardLocation.Hand, CardLocation.MonsterZone)</param>
-        /// <param name="sequence">Sequence of the card in the given location</param>
-        /// <returns>DynamicCard containing the card's information</returns>
-        public async Task<DynamicCard> GetPlayerFieldCardInfo(int controller, CardLocation location, int sequence)
-        {
-            return await DuelBotWrapper.GetPlayerFieldCardInfo(controller, (int)location, sequence);
         }
 
         /// <summary>
@@ -466,11 +442,11 @@ namespace BotTest.Game.Field
         /// <summary>
         /// Counts the total number of cards in a zone array
         /// </summary>
-        private int CountCardsInZones(CardArray[] zones)
-        {
-            if (zones == null) return 0;
-            return zones.Sum(zone => zone.Cards?.Length ?? 0);
-        }
+        //private int CountCardsInZones(CardArray[] zones)
+        //{
+        //    if (zones == null) return 0;
+        //    return zones.Sum(zone => zone.Cards?.Length ?? 0);
+        //}
 
         /// <summary>
         /// Checks if the strongest face-up monster on the field belongs to the opponent
@@ -495,8 +471,8 @@ namespace BotTest.Game.Field
             }
 
             // Step 2: Get lists of face-up + attack face-up monsters
-            var opponentMonsters = await GetCardsWithTypeInLocation(location, CardType.Monster, controller: 0);
-            var botMonsters = await GetCardsWithTypeInLocation(location, CardType.Monster, controller: 1);
+            var botMonsters = await GetCardsWithTypeInLocation(location, CardType.Monster, controller: 0);
+            var opponentMonsters = await GetCardsWithTypeInLocation(location, CardType.Monster, controller: 1);
 
             var opponentFaceUpMonsters = opponentMonsters.Where(card => card.IsFaceup() && card.IsAttack()).ToList();
             var botFaceUpMonsters = botMonsters.Where(card => card.IsFaceup() && card.IsAttack()).ToList();
@@ -507,7 +483,48 @@ namespace BotTest.Game.Field
 
             // Step 4: Compare max attack values
             Console.WriteLine($"Bot Max Attack: {botMaxAttack}, Opponent Max Attack: {opponentMaxAttack}");
-            return botMaxAttack >= opponentMaxAttack;
+            return opponentMaxAttack >= botMaxAttack;
+        }
+
+        /// <summary>
+        /// Checks if there is a card with the specified attribute in the player's hand
+        /// </summary>
+        /// <param name="attribute">Attribute to check (e.g., CardAttribute.Dark)</param>
+        /// <returns>True if a card with the specified attribute is found in the player's hand</returns>
+        public async Task<bool> HasCardWithAttributeInHand(CardAttribute attribute)
+        {
+            var handCards = await GetCardsInLocation(CardLocation.Hand);
+            return handCards.Any(card => (card.Attribute & (byte)attribute) != 0);
+        }
+
+        /// <summary>
+        /// Gets all cards in the player's hand with a specific attribute
+        /// </summary>
+        /// <param name="attribute">Attribute to filter by (e.g., CardAttribute.Dark)</param>
+        /// <returns>List of DynamicCard with the specified attribute in the player's hand</returns>
+        public async Task<List<DynamicCard>> GetCardsWithAttributeInHand(CardAttribute attribute)
+        {
+            var handCards = await GetCardsInLocation(CardLocation.Hand);
+            return handCards.Where(card => (card.Attribute & (byte)attribute) != 0).ToList();
+        }
+
+        /// <summary>
+        /// Checks if there is a card with the specified type in a given location
+        /// </summary>
+        /// <param name="location">Location to check (e.g., CardLocation.Hand, CardLocation.MonsterZone)</param>
+        /// <param name="type">Card type to check (e.g., CardType.Monster)</param>
+        /// <param name="controller">Controller of the cards (0 for player, 1 for opponent)</param>
+        /// <returns>True if a card with the specified type is found in the location</returns>
+        public async Task<bool> HasCardWithTypeInLocation(CardLocation location, CardType type, int controller = 0)
+        {
+            var cards = await GetCardsInLocation(location, controller);
+            return cards.Any(card => card.HasType(type));
+        }
+
+        public async Task<int> GetMonstersCount()
+        {
+            var monstersCards = await GetCardsInLocation(CardLocation.MonsterZone);
+            return monstersCards.Where(card => (card.ID != 0)).Count();
         }
     }
 

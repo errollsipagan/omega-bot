@@ -245,7 +245,6 @@ namespace BotTest.Game.Field
         /// <summary>
         /// Gets the card count in the player's SpellZone
         /// </summary>
-
         public async Task<int> GetPlayerSpellZoneCount(CardLocation location = CardLocation.SpellZone)
         {
             await GetPlayerField();
@@ -253,6 +252,30 @@ namespace BotTest.Game.Field
             IEnumerable<DynamicCard> playerSpells = await GetPlayerSpellZoneInLocation(location);
             int playerSpellCount = playerSpells.Count();
             return playerSpellCount;
+        }
+
+        /// <summary>
+        /// Obtém o monstro em batalha no campo do Player, se houver.
+        /// </summary>
+        /// <param name="isOwnSide">Se true, verifica o lado do Player; se false, verifica o lado do oponente.</param>
+        /// <returns>DynamicCard do monstro em batalha ou default se não houver.</returns>
+        public async Task<DynamicCard> GetPlayerBattlingMonster(bool isOwnSide = true)
+        {
+            var field = await GetPlayerField();
+            var side = isOwnSide ? field.OwnSide : field.EnemySide;
+            return side.HasBattlingMonster ? side.BattlingMonster : default;
+        }
+
+        /// <summary>
+        /// Gets a specific card's information from the player's perspective
+        /// </summary>
+        /// <param name="controller">Controller of the card (0 for player, 1 for opponent)</param>
+        /// <param name="location">Location of the card (e.g., CardLocation.Hand, CardLocation.MonsterZone)</param>
+        /// <param name="sequence">Sequence of the card in the given location</param>
+        /// <returns>DynamicCard containing the card's information</returns>
+        public async Task<DynamicCard> GetPlayerFieldCardInfo(int controller, CardLocation location, int sequence)
+        {
+            return await DuelBotWrapper.GetPlayerFieldCardInfo(controller, (int)location, sequence);
         }
     }
 }

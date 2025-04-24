@@ -25,6 +25,7 @@ namespace BotTest.Game.Base
             { MainAction.SpSummon, s => s.SpecialSummonableCards },
             { MainAction.Activate, s => s.ActivableCards },
             { MainAction.SetMonster, s => s.MonsterSetableCards },
+            { MainAction.SetSpell, s => s.SpellSetableCards },
             { MainAction.Repos, s => s.ReposableCards }
         };
 

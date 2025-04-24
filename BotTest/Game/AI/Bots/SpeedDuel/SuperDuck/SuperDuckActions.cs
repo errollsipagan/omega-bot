@@ -7,6 +7,7 @@ using OmegaBotWrapper;
 using OmegaBotWrapper.Enum;
 using OmegaBotWrapper.States;
 using OmegaBotWrapper.Struct;
+using System.Data;
 
 #pragma warning disable CS8618
 
@@ -18,6 +19,7 @@ namespace BotTest.Game.AI.Bots.SpeedDuel.SuperDuck
 
         private readonly List<ActionRule> _actionRules;
         private readonly Dictionary<int, Base.CardInfo> _cardInfoMap;
+        private readonly Dictionary<int, bool> _selectChainMap = new();
 
         public SuperDuckActions(SpeedDuelDeck deck = SpeedDuelDeck.SuperDuck)
         {
@@ -29,6 +31,12 @@ namespace BotTest.Game.AI.Bots.SpeedDuel.SuperDuck
             //Initialize card info mapping
             AddCardInfo(SuperDuckCardId.HammerShot, "Hammer Shot");
             AddCardInfo(SuperDuckCardId.EnchantingFittingRoom, "Enchanting Fitting Room");
+            AddCardInfo(SuperDuckCardId.AllureOfDarkness, "Allure Of Darkness");
+            AddCardInfo(SuperDuckCardId.AllureOfDarkness, "Room For Growth");
+            AddCardInfo(SuperDuckCardId.Waboku, "Waboku");
+            AddCardInfo(SuperDuckCardId.WakingTheDragon, "Waking The Dragon");
+            AddCardInfo(SuperDuckCardId.JustiBreak, "Justi-Break");
+            AddCardInfo(SuperDuckCardId.FloodgateTrapHole, "Floodgate Trap Hole");
 
             DeckName = DeckManager.GetDeckName(deck);
             DeckHash = DeckManager.GetDeckHash(deck);
@@ -41,7 +49,45 @@ namespace BotTest.Game.AI.Bots.SpeedDuel.SuperDuck
 
             AddBotAction(new ActionRule(
                 action: MainAction.Activate,
-                cardId: SuperDuckCardId.EnchantingFittingRoom
+                cardId: SuperDuckCardId.EnchantingFittingRoom,
+                condition: EnchantingFittingRoomCondition
+            ));
+
+            AddBotAction(new ActionRule(
+                action: MainAction.Activate,
+                cardId: SuperDuckCardId.AllureOfDarkness,
+                condition: AllureOfDarknessCondition
+            ));
+
+            AddBotAction(new ActionRule(
+                action: MainAction.Activate,
+                cardId: SuperDuckCardId.RoomForGrowth
+            ));
+
+            //Set Trap
+            AddBotAction(new ActionRule(
+                action: MainAction.SetSpell,
+                cardId: SuperDuckCardId.Waboku
+            ));
+
+            AddBotAction(new ActionRule(
+                action: MainAction.SetSpell,
+                cardId: SuperDuckCardId.WakingTheDragon
+            ));
+
+            AddBotAction(new ActionRule(
+                action: MainAction.SetSpell,
+                cardId: SuperDuckCardId.JustiBreak
+            ));
+
+            AddBotAction(new ActionRule(
+                action: MainAction.SetSpell,
+                cardId: SuperDuckCardId.FloodgateTrapHole
+            ));
+
+            AddBotAction(new ActionRule(
+                action: MainAction.Activate,
+                cardId: SuperDuckCardId.SphereKuriboh
             ));
         }
 
@@ -78,7 +124,7 @@ namespace BotTest.Game.AI.Bots.SpeedDuel.SuperDuck
         {
             await _gameField.GetBotField();
             //await _gameField.GetPlayerField();
-
+            _selectChainMap.Clear();
             //Activable cards, for each
             foreach (var cards in state.ActivableCards)
             {
@@ -107,6 +153,43 @@ namespace BotTest.Game.AI.Bots.SpeedDuel.SuperDuck
             return response ?? await base.OnIdleCmd(state); // Fallback to base implementation
         }
 
+        public override async Task<int> OnSelectChain(SelectChainData state)
+        {
+            Console.WriteLine("OnSelectChain entrei aqui!");
+            //Selectable cards, for each
+            foreach (var cards in state.SelectableCards)
+            {
+                Console.WriteLine($"[Selectable cards] => {cards.ID}");
+            }
+
+            //Descriptions cards, for each
+            foreach (var cards in state.Descriptions)
+            {
+                Console.WriteLine($"[Descriptions cards] => {cards}");
+            }
+            
+            //bool wabokuIsFaceUp = await _gameField.IsCardInBotZone(SuperDuckCardId.Waboku, CardLocation.SpellZone, isOwnSide: false);
+            if (state.SelectableCards.TryGetByID(SuperDuckCardId.Waboku, out var card, out var index) && !_selectChainMap.ContainsKey(card.ID))
+            {
+                _selectChainMap.Add(SuperDuckCardId.Waboku, true);
+                return index;
+            }
+
+            if (state.SelectableCards.TryGetByID(SuperDuckCardId.FloodgateTrapHole, out _, out index))
+                return index;
+
+            if (state.SelectableCards.TryGetByID(SuperDuckCardId.JustiBreak, out _, out index))
+                return index;
+
+            if (state.SelectableCards.TryGetByID(SuperDuckCardId.WakingTheDragon, out _, out index))
+                return index;
+
+            if (state.SelectableCards.TryGetByID(SuperDuckCardId.SphereKuriboh, out _, out index))
+                return index;
+
+            return await base.OnSelectChain(state); // Fallback to base implementation
+        }
+
         /// <summary>
         /// Executes the first valid action from the rules in list order.
         /// </summary>
@@ -121,7 +204,7 @@ namespace BotTest.Game.AI.Bots.SpeedDuel.SuperDuck
                     string cardDisplay = _cardInfoMap.TryGetValue(rule.CardId, out var cardInfo)
                         ? cardInfo.CardName
                         : rule.CardId.ToString();
-                    ////ConsoleUtils.PrintColored($"Bot Actions => ExecuteAction. Card: {cardDisplay}");
+                    ConsoleUtils.PrintColored($"Bot Actions => ExecuteAction. Card: {cardDisplay}");
                     return ExecuteAction(rule.Action, (ushort)index);
                 }
             }
@@ -144,6 +227,26 @@ namespace BotTest.Game.AI.Bots.SpeedDuel.SuperDuck
             if (canActivate && opponentHasStrongest)
                 ConsoleUtils.PrintColored($"HammerShotCondition: Can activate Hammer Shot (Opponent has strongest monster)");
             return canActivate && opponentHasStrongest;
+        }
+
+        private bool EnchantingFittingRoomCondition(IdleCmdData state, DynamicCard card)
+        {
+            bool canActivate = state.ActivableCards.Any(c => c.ID == SuperDuckCardId.EnchantingFittingRoom);
+            int botMonstersCount = _gameField.GetMonstersCount().Result;
+            Console.WriteLine($"[EnchantingFittingRoomCondition] botMonstersCount {botMonstersCount}");
+            bool botMonstersCondition = botMonstersCount <= 1;
+            if (canActivate && botMonstersCondition)
+                ConsoleUtils.PrintColored($"EnchantingFittingRoom: Can activate Enchanting Fitting Room");
+            return canActivate && botMonstersCondition;
+        }
+
+        private bool AllureOfDarknessCondition(IdleCmdData state, DynamicCard card)
+        {
+            bool canActivate = state.ActivableCards.Any(c => c.ID == SuperDuckCardId.AllureOfDarkness);
+            bool botHasDarkAttribute = _gameField.HasCardWithAttributeInHand(attribute: CardAttribute.Dark).Result;
+            if (canActivate && botHasDarkAttribute)
+                ConsoleUtils.PrintColored($"AllureOfDarknessCondition: Can activate Allure of Darkness");
+            return canActivate && botHasDarkAttribute;
         }
     }
 }
