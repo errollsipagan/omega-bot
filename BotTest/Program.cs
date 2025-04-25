@@ -27,7 +27,7 @@ using BotTest.Game.AI.Bots.RushDuel.SevensRoad;
 using BotTest.Game.AI.Bots.SpeedDuel.SuperDuck;
 using BotTest.Game.Base;
 using OmegaBotWrapper;
-
+#pragma warning disable CS8625
 namespace BotTest
 {
     class Program

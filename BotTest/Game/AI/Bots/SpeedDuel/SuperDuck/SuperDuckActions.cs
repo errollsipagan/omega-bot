@@ -1,7 +1,5 @@
 ﻿using BotTest.Decks;
-using BotTest.Game.AI.Bots.MasterDuel.BlueEyes;
 using BotTest.Game.Base;
-using BotTest.Game.Field;
 using BotTest.Utils;
 using OmegaBotWrapper;
 using OmegaBotWrapper.Enum;
@@ -9,8 +7,6 @@ using OmegaBotWrapper.States;
 using OmegaBotWrapper.Struct;
 using System.Data;
 
-#pragma warning disable CS8618
-#pragma warning disable CS8602
 namespace BotTest.Game.AI.Bots.SpeedDuel.SuperDuck
 {
     public class SuperDuckActions : RuleBasedBotActions

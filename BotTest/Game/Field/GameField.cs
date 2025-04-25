@@ -1,10 +1,5 @@
 ﻿using OmegaBotWrapper;
 using OmegaBotWrapper.Struct;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BotTest.Game.Field
 {

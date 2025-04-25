@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿#pragma warning disable CS8618
 namespace BotTest.Decks
 {
     /// <summary>
@@ -11,7 +6,7 @@ namespace BotTest.Decks
     /// </summary>
     public class DeckOption
     {
-        public object Id { get; set; } // Holds MasterDuelDeck or SpeedDuelDeck
+        public object Id { get; set; }
         public string Name { get; set; }
     }
 
