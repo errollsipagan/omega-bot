@@ -222,6 +222,9 @@ namespace BotTest.Game.Base
         /// </summary>
         public virtual async Task<IList<byte>?> OnSelectCard(SelectCardData state)
         {
+            ConsoleUtils.PrintColored($"OnSelectCard");
+            ConsoleUtils.PrintColored($"[OnSelectCard] => {(DHint)state.SelectionHint}");
+
             if (state.SelectionHint.Equals((int)DHint.ATTACKTARGET))
             {
                 ConsoleUtils.PrintColored("OnSelectCard - Selecting Defender");

@@ -25,9 +25,21 @@ namespace BotTest.Game.AI.Bots.SpeedDuel.SuperDuck
         public const int FloodgateTrapHole = 69599136;
         public const int JustiBreak = 62271284;
 
-        //Monsters Effect
+        //Effect Monsters
         public const int SphereKuriboh = 33245030;
         public const int BreakerTheMagicalWarrior = 71413901;
+
+        //Normal Monsters
+        public const int HunterDragon = 96005454;
+        public const int SonicDuck = 84696266;
+        public const int DragonZombie = 84696266;
+
+        //Fusions Monsters
+        public const int CyberEndDragon = 01546123;
+        public const int DestinyEndDragon = 76263644;
+        public const int ArcanaKnightJoker = 0615044;
+        public const int SuperVehicroidJumboDrill = 36256625;
+        public const int OjamaKing = 90140980;
 
 
     }

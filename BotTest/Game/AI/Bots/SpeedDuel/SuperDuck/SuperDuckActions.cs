@@ -90,6 +90,61 @@ namespace BotTest.Game.AI.Bots.SpeedDuel.SuperDuck
                 cardId: SuperDuckCardId.BreakerTheMagicalWarrior,
                 condition: BreakerTheMagicalWarriorCondition
             ));
+
+            //Repos if Face-up defense
+            AddBotAction(new ActionRule(
+                action: MainAction.Repos,
+                cardId: SuperDuckCardId.HunterDragon,
+                condition: ReposableCondition
+            ));
+
+            AddBotAction(new ActionRule(
+                action: MainAction.Repos,
+                cardId: SuperDuckCardId.SonicDuck,
+                condition: ReposableCondition
+            ));
+
+            AddBotAction(new ActionRule(
+                action: MainAction.Repos,
+                cardId: SuperDuckCardId.DragonZombie,
+                condition: ReposableCondition
+            ));
+
+            AddBotAction(new ActionRule(
+                action: MainAction.Repos,
+                cardId: SuperDuckCardId.DragonZombie,
+                condition: ReposableCondition
+            ));
+
+            AddBotAction(new ActionRule(
+                action: MainAction.Repos,
+                cardId: SuperDuckCardId.CyberEndDragon,
+                condition: ReposableCondition
+            ));
+
+            AddBotAction(new ActionRule(
+                action: MainAction.Repos,
+                cardId: SuperDuckCardId.DestinyEndDragon,
+                condition: ReposableCondition
+            ));
+
+            AddBotAction(new ActionRule(
+                action: MainAction.Repos,
+                cardId: SuperDuckCardId.ArcanaKnightJoker,
+                condition: ReposableCondition
+            ));
+
+            AddBotAction(new ActionRule(
+                action: MainAction.Repos,
+                cardId: SuperDuckCardId.SuperVehicroidJumboDrill,
+                condition: ReposableCondition
+            ));
+
+            AddBotAction(new ActionRule(
+                action: MainAction.Repos,
+                cardId: SuperDuckCardId.OjamaKing,
+                condition: ReposableConditionForOjamaKing
+            ));
         }
 
         /// <summary>
@@ -208,6 +263,7 @@ namespace BotTest.Game.AI.Bots.SpeedDuel.SuperDuck
 
         public override async Task<bool> OnSelectEffectYn(SelectEffectYnData state)
         {
+            Console.WriteLine($"[override] [OnSelectEffectYn]");
             if (state.EffectCard.ID.Equals(SuperDuckCardId.SphereKuriboh) &&
                 !_selectChainMap.ContainsKey(SuperDuckCardId.Waboku))
                 return true;
@@ -216,6 +272,52 @@ namespace BotTest.Game.AI.Bots.SpeedDuel.SuperDuck
                 return true;
 
             return await base.OnSelectEffectYn(state);
+        }
+
+        public override async Task<IList<byte>?> OnSelectCard(SelectCardData state)
+        {
+            //Check if Monsters Zone from Player are empty (Ojama King)
+            /*bool monstersZonePlayer = _gameField.GetPlayerMonsterZoneCount().Result == 1;*/
+
+            if (state.SelectionHint.Equals((int)DHint.SPSUMMON))
+            {
+                ConsoleUtils.PrintColored("[override][OnSelectCard] - Selecting Card to SPSUMMON");
+
+                /*if (monstersZonePlayer)
+                {
+                    var ojamaKing = state.SelectableCards.Select((card, index) => new { Card = card, Index = index })
+                                                        .Where(x => x.Card.ID == SuperDuckCardId.OjamaKing)
+                                                        .Take(state.Minimum)
+                                                        .Select(x => (byte)x.Index).ToArray();
+
+                    if (ojamaKing.Any())
+                        return ojamaKing;
+                }*/
+
+                var botCards = state.SelectableCards
+                                    .Select((card, index) => new { Card = card, Index = index })
+                                    .OrderByDescending(x => x.Card.Attack) // Ordena pelo maior Attack
+                                    .Take(state.Minimum)
+                                    .Select(x => (byte)x.Index)
+                                    .ToArray();
+                // Respect Minimum (or Maximum if needed)
+                if (botCards.Any())
+                {
+                    ConsoleUtils.PrintColored($"Selected {botCards.Length} bot-owned cards for SPSUMMON.");
+                    return botCards;
+                }
+            }
+
+            return await base.OnSelectCard(state);
+        }
+
+        public override async Task<CardPosition> OnSelectPosition(SelectPositionData state)
+        {
+            ConsoleUtils.PrintColored("[override][OnSelectPosition]");
+            if (state.CardID.Equals(SuperDuckCardId.OjamaKing))
+                return (CardPosition)state.Positions[1]; //Face-up Defense
+
+            return await base.OnSelectPosition(state);
         }
 
         /// <summary>
@@ -250,7 +352,7 @@ namespace BotTest.Game.AI.Bots.SpeedDuel.SuperDuck
 
         private bool HammerShotCondition(IdleCmdData state, DynamicCard card)
         {
-            bool canActivate = state.ActivableCards.Any(c => c.ID == SuperDuckCardId.HammerShot);
+            bool canActivate = card.IsCode(SuperDuckCardId.HammerShot);
             bool opponentHasStrongest = _gameField.IsFaceUpAttackStrongestMonsterPlayer().Result;
             if (canActivate && opponentHasStrongest)
                 ConsoleUtils.PrintColored($"HammerShotCondition: Can activate Hammer Shot (Opponent has strongest monster)");
@@ -259,7 +361,7 @@ namespace BotTest.Game.AI.Bots.SpeedDuel.SuperDuck
 
         private bool EnchantingFittingRoomCondition(IdleCmdData state, DynamicCard card)
         {
-            bool canActivate = state.ActivableCards.Any(c => c.ID == SuperDuckCardId.EnchantingFittingRoom);
+            bool canActivate = card.IsCode(SuperDuckCardId.EnchantingFittingRoom);
             int botMonstersCount = _gameField.GetMonstersCount().Result;
             Console.WriteLine($"[EnchantingFittingRoomCondition] botMonstersCount {botMonstersCount}");
             bool botMonstersCondition = botMonstersCount <= 1;
@@ -270,7 +372,7 @@ namespace BotTest.Game.AI.Bots.SpeedDuel.SuperDuck
 
         private bool AllureOfDarknessCondition(IdleCmdData state, DynamicCard card)
         {
-            bool canActivate = state.ActivableCards.Any(c => c.ID == SuperDuckCardId.AllureOfDarkness);
+            bool canActivate = card.IsCode(SuperDuckCardId.AllureOfDarkness);
             bool botHasDarkAttribute = _gameField.HasCardWithAttributeInHand(attribute: CardAttribute.Dark).Result;
             if (canActivate && botHasDarkAttribute)
                 ConsoleUtils.PrintColored($"AllureOfDarknessCondition: Can activate Allure of Darkness");
@@ -279,13 +381,25 @@ namespace BotTest.Game.AI.Bots.SpeedDuel.SuperDuck
 
         private bool BreakerTheMagicalWarriorCondition(IdleCmdData state, DynamicCard card)
         {
-            bool canActivate = state.ActivableCards.Any(c => c.ID == SuperDuckCardId.BreakerTheMagicalWarrior);
+            bool canActivate = card.IsCode(SuperDuckCardId.BreakerTheMagicalWarrior);
             int playerSpellsCount = _gameField.GetPlayerSpellsCount().Result;
             Console.WriteLine($"BreakerTheMagicalWarriorCondition : playerSpellsCount {playerSpellsCount}");
             bool playerHasSpells = playerSpellsCount > 0;
             if (canActivate && playerHasSpells)
                 ConsoleUtils.PrintColored($"BreakerTheMagicalWarrior: Can activate Breaker The Magical Warrior");
             return canActivate && playerHasSpells;
+        }
+
+        private bool ReposableCondition(IdleCmdData state, DynamicCard card)
+        {
+            bool isFaceUpDefense = card.IsFaceup() && card.IsDefense();
+            return isFaceUpDefense;
+        }
+
+        private bool ReposableConditionForOjamaKing(IdleCmdData state, DynamicCard card)
+        {
+            bool isFaceUpAttack = card.IsFaceup() && card.IsAttack();
+            return isFaceUpAttack;
         }
 
         //JustiBreak Condition

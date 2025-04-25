@@ -256,6 +256,15 @@ namespace BotTest.Game.Field
                 .ToList();
         }
 
+        public async Task<IEnumerable<DynamicCard>> GetPlayerMonsterZoneInLocation(CardLocation location, int controller = 0)
+        {
+            var spells = await GetPlayerCardsWithTypeInLocation(location, CardType.Monster, controller);
+            return spells
+                .Where(card => card.IsFacedown() || card.IsFaceup())
+                .OrderByDescending(card => card.ID)
+                .ToList();
+        }
+
         /// <summary>
         /// Gets the card count in the player's SpellZone
         /// </summary>
@@ -266,6 +275,18 @@ namespace BotTest.Game.Field
             IEnumerable<DynamicCard> playerSpells = await GetPlayerSpellZoneInLocation(location);
             int playerSpellCount = playerSpells.Count();
             return playerSpellCount;
+        }
+
+        /// <summary>
+        /// Gets the card count in the player's SpellZone
+        /// </summary>
+        public async Task<int> GetPlayerMonsterZoneCount(CardLocation location = CardLocation.MonsterZone)
+        {
+            await GetPlayerField();
+
+            IEnumerable<DynamicCard> playerMonsters = await GetPlayerMonsterZoneInLocation(location);
+            int playerMonstersCount = playerMonsters.Count();
+            return playerMonstersCount;
         }
 
         /// <summary>

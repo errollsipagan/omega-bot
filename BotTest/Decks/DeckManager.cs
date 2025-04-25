@@ -34,6 +34,14 @@ namespace BotTest.Decks
     }
 
     /// <summary>
+    /// Enum to identify available Speed Duel decks.
+    /// </summary>
+    public enum RushDuelDeck
+    {
+        SevensRoad
+    }
+
+    /// <summary>
     /// Manages deck names and hashes, providing access to deck data and options.
     /// </summary>
     public static class DeckManager
@@ -70,6 +78,17 @@ namespace BotTest.Decks
                 (
                     DeckName: "Super Duck",
                     DeckHash: "k2UrsbZkv3n/IqNv3AGG901iDPwskxlBGCTm93YHKwyfiuEB453hP5l7NziypLn/ZgSpB6lb8F+Vpf//EgYQNtHfxgwyC4S7p4sz3NnQzQLCc67HMhRaazKZFMaDzQDpB9lzePJNMAbpA9kDAA=="
+                )
+            }
+        };
+
+        private static readonly Dictionary<RushDuelDeck, (string DeckName, string DeckHash)> _RDdecks = new()
+        {
+            {
+                RushDuelDeck.SevensRoad,
+                (
+                    DeckName: "Sevens Road",
+                    DeckHash: "s2KY+0STHYZ1V2jAcaaLJhwbAfkgvJVbC46fbNeA44uPEFj3uBYcb9ytwa65AoEtz0Ow8TJNOL4ENAuGw45D8FluBDYF6oPhjUD+eiS8CQm/0EPgpVYI7H0cgkHqAQ=="
                 )
             }
         };
