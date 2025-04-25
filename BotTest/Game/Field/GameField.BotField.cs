@@ -34,7 +34,7 @@ namespace BotTest.Game.Field
         /// <returns>Estrutura DynamicCard com os dados da carta.</returns>
         public async Task<DynamicCard> GetBotFieldCard(int controller, int location, int sequence)
         {
-            Console.WriteLine($"controller: {controller} / location: {location} / sequence: {sequence}");
+            //Console.WriteLine($"controller: {controller} / location: {location} / sequence: {sequence}");
             return await _botWrapper.GetBotFieldCardInfo(controller, location, sequence);
         }
 
@@ -327,7 +327,7 @@ namespace BotTest.Game.Field
 
                     for (int sequence = 0; sequence < cardIds.Length; sequence++)
                     {
-                        Console.WriteLine("cardIds[sequence] => " + cardIds[sequence]);
+                        //Console.WriteLine("cardIds[sequence] => " + cardIds[sequence]);
 
                         if (cardIds[sequence] > 0) // Checks for a potentially valid card
                         {
@@ -366,7 +366,7 @@ namespace BotTest.Game.Field
                         {
                             var zone = zones[zoneIndex];
                             var cardZone = zone.Cards.FirstOrDefault();
-                            Console.WriteLine($"cardZone {cardZone}");
+                            //Console.WriteLine($"cardZone {cardZone}");
 
                             if (cardZone > 0)
                             {
@@ -407,19 +407,6 @@ namespace BotTest.Game.Field
         public async Task<List<DynamicCard>> GetCardsWithTypeInLocation(CardLocation location, CardType type, int controller = 0)
         {
             var cards = await GetCardsInLocation(location, controller);
-            return cards.Where(card => card.HasType(type)).ToList();
-        }
-
-        /// <summary>
-        /// Gets all cards in a specific location with a specific type
-        /// </summary>
-        /// <param name="location">Location to check (e.g., CardLocation.Hand, CardLocation.MonsterZone)</param>
-        /// <param name="type">Card type to filter by (e.g., CardType.Monster)</param>
-        /// <param name="controller">Controller of the cards (0 for player, 1 for opponent)</param>
-        /// <returns>List of DynamicCard with the specified type in the specified location</returns>
-        public async Task<List<DynamicCard>> GetPlayerCardsWithTypeInLocation(CardLocation location, CardType type, int controller = 0)
-        {
-            var cards = await GetPlayerCardsInLocation(location, controller);
             return cards.Where(card => card.HasType(type)).ToList();
         }
 

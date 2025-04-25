@@ -10,7 +10,7 @@ using OmegaBotWrapper.Struct;
 using System.Data;
 
 #pragma warning disable CS8618
-
+#pragma warning disable CS8602
 namespace BotTest.Game.AI.Bots.SpeedDuel.SuperDuck
 {
     public class SuperDuckActions : BaseBotActions
@@ -87,7 +87,8 @@ namespace BotTest.Game.AI.Bots.SpeedDuel.SuperDuck
 
             AddBotAction(new ActionRule(
                 action: MainAction.Activate,
-                cardId: SuperDuckCardId.SphereKuriboh
+                cardId: SuperDuckCardId.BreakerTheMagicalWarrior,
+                condition: BreakerTheMagicalWarriorCondition
             ));
         }
 
@@ -123,8 +124,15 @@ namespace BotTest.Game.AI.Bots.SpeedDuel.SuperDuck
         public override async Task<IdleCmdResponse> OnIdleCmd(IdleCmdData state)
         {
             await _gameField.GetBotField();
-            //await _gameField.GetPlayerField();
-            _selectChainMap.Clear();
+
+            if (_selectChainMap.Any())
+                _selectChainMap.Clear();
+
+            /// <summary>
+            /// Removes the SphereKuriboh directly from state.SummonableCards.
+            /// </summary>
+            state.SummonableCards = state.SummonableCards.Where(card => card.ID != SuperDuckCardId.SphereKuriboh).ToArray();
+
             //Activable cards, for each
             foreach (var cards in state.ActivableCards)
             {
@@ -155,11 +163,10 @@ namespace BotTest.Game.AI.Bots.SpeedDuel.SuperDuck
 
         public override async Task<int> OnSelectChain(SelectChainData state)
         {
-            Console.WriteLine("OnSelectChain entrei aqui!");
             //Selectable cards, for each
             foreach (var cards in state.SelectableCards)
             {
-                Console.WriteLine($"[Selectable cards] => {cards.ID}");
+                Console.WriteLine($"[OnSelectChain] [Selectable cards] => {cards.ID}");
             }
 
             //Descriptions cards, for each
@@ -167,16 +174,25 @@ namespace BotTest.Game.AI.Bots.SpeedDuel.SuperDuck
             {
                 Console.WriteLine($"[Descriptions cards] => {cards}");
             }
-            
+
             //bool wabokuIsFaceUp = await _gameField.IsCardInBotZone(SuperDuckCardId.Waboku, CardLocation.SpellZone, isOwnSide: false);
-            if (state.SelectableCards.TryGetByID(SuperDuckCardId.Waboku, out var card, out var index) && !_selectChainMap.ContainsKey(card.ID))
+            bool battleStartPhase = GetCurrentDuelPhase() == DuelPhase.BattleStart;
+            bool currentBotPlayer = GetCurrentPlayer() == 1; //Opponent/Player/Enemy
+            if (state.SelectableCards.TryGetByID(SuperDuckCardId.Waboku, out var card, out var index) &&
+                !_selectChainMap.ContainsKey(card.ID) &&
+                battleStartPhase &&
+                currentBotPlayer)
             {
-                _selectChainMap.Add(SuperDuckCardId.Waboku, true);
+                _selectChainMap.Add(SuperDuckCardId.Waboku, true); //unique trap
                 return index;
             }
 
-            if (state.SelectableCards.TryGetByID(SuperDuckCardId.FloodgateTrapHole, out _, out index))
+            if (state.SelectableCards.TryGetByID(SuperDuckCardId.FloodgateTrapHole, out _, out index) &&
+                !_selectChainMap.ContainsKey(card.ID))
+            {
+                _selectChainMap.Add(SuperDuckCardId.FloodgateTrapHole, true);
                 return index;
+            }
 
             if (state.SelectableCards.TryGetByID(SuperDuckCardId.JustiBreak, out _, out index))
                 return index;
@@ -188,6 +204,18 @@ namespace BotTest.Game.AI.Bots.SpeedDuel.SuperDuck
                 return index;
 
             return await base.OnSelectChain(state); // Fallback to base implementation
+        }
+
+        public override async Task<bool> OnSelectEffectYn(SelectEffectYnData state)
+        {
+            if (state.EffectCard.ID.Equals(SuperDuckCardId.SphereKuriboh) &&
+                !_selectChainMap.ContainsKey(SuperDuckCardId.Waboku))
+                return true;
+
+            if (state.EffectCard.ID.Equals(SuperDuckCardId.WakingTheDragon))
+                return true;
+
+            return await base.OnSelectEffectYn(state);
         }
 
         /// <summary>
@@ -248,5 +276,20 @@ namespace BotTest.Game.AI.Bots.SpeedDuel.SuperDuck
                 ConsoleUtils.PrintColored($"AllureOfDarknessCondition: Can activate Allure of Darkness");
             return canActivate && botHasDarkAttribute;
         }
+
+        private bool BreakerTheMagicalWarriorCondition(IdleCmdData state, DynamicCard card)
+        {
+            bool canActivate = state.ActivableCards.Any(c => c.ID == SuperDuckCardId.BreakerTheMagicalWarrior);
+            int playerSpellsCount = _gameField.GetPlayerSpellsCount().Result;
+            Console.WriteLine($"BreakerTheMagicalWarriorCondition : playerSpellsCount {playerSpellsCount}");
+            bool playerHasSpells = playerSpellsCount > 0;
+            if (canActivate && playerHasSpells)
+                ConsoleUtils.PrintColored($"BreakerTheMagicalWarrior: Can activate Breaker The Magical Warrior");
+            return canActivate && playerHasSpells;
+        }
+
+        //JustiBreak Condition
+        //RoomForGrowth condition and Selectable
+        //Reposable Condition
     }
 }

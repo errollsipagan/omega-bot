@@ -143,6 +143,7 @@ namespace BotTest.Game.Field
         /// <returns>List of DynamicCard in the specified location</returns>
         public async Task<List<DynamicCard>> GetPlayerCardsInLocation(CardLocation location, int controller = 0)
         {
+            await GetPlayerField();
             var cards = new List<DynamicCard>();
             var side = controller == 0 ? OwnSide : EnemySide;
 
@@ -233,6 +234,19 @@ namespace BotTest.Game.Field
             return cards;
         }
 
+        /// <summary>
+        /// Gets all cards in a specific location with a specific type
+        /// </summary>
+        /// <param name="location">Location to check (e.g., CardLocation.Hand, CardLocation.MonsterZone)</param>
+        /// <param name="type">Card type to filter by (e.g., CardType.Monster)</param>
+        /// <param name="controller">Controller of the cards (0 for player, 1 for opponent)</param>
+        /// <returns>List of DynamicCard with the specified type in the specified location</returns>
+        public async Task<List<DynamicCard>> GetPlayerCardsWithTypeInLocation(CardLocation location, CardType type, int controller = 0)
+        {
+            var cards = await GetPlayerCardsInLocation(location, controller);
+            return cards.Where(card => card.HasType(type)).ToList();
+        }
+
         public async Task<IEnumerable<DynamicCard>> GetPlayerSpellZoneInLocation(CardLocation location, int controller = 0)
         {
             var spells = await GetPlayerCardsWithTypeInLocation(location, CardType.Spell, controller);
@@ -276,6 +290,12 @@ namespace BotTest.Game.Field
         public async Task<DynamicCard> GetPlayerFieldCardInfo(int controller, CardLocation location, int sequence)
         {
             return await DuelBotWrapper.GetPlayerFieldCardInfo(controller, (int)location, sequence);
+        }
+
+        public async Task<int> GetPlayerSpellsCount()
+        {
+            var spellsCards = await GetPlayerCardsInLocation(CardLocation.SpellZone);
+            return spellsCards.Where(card => ((card.ID != 0) && (card.Cover == 0))).Count();
         }
     }
 }

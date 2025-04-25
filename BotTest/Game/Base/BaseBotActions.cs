@@ -8,6 +8,7 @@ using OmegaBotWrapper.Struct;
 
 
 #pragma warning disable 1998
+#pragma warning disable 8602
 
 namespace BotTest.Game.Base
 {
@@ -533,6 +534,26 @@ namespace BotTest.Game.Base
             for (byte i = 0; i < state.SelectableCards.Length; ++i)
                 resp.Add(i);
             return resp;
+        }
+
+        /// <summary>
+        /// Returns the current phase of the duel based on the value of BotWrapper.CurrentStateHeader.CurrentPhase
+        /// </summary>
+        /// <returns>A value from the DuelPhase enum representing the current phase.</returns>
+        public DuelPhase GetCurrentDuelPhase()
+        {
+            ConsoleUtils.PrintColored($"Current Duel Phase: {(DuelPhase)BotWrapper.CurrentStateHeader.CurrentPhase}");
+            return (DuelPhase)BotWrapper.CurrentStateHeader.CurrentPhase;
+        }
+
+        /// <summary>
+        /// Returns the current player of the duel based on the value of BotWrapper.CurrentStateHeader.CurrentPlayer
+        /// </summary>
+        /// <returns>A value from the DuelPhase enum representing the current phase.</returns>
+        public int GetCurrentPlayer()
+        {
+            ConsoleUtils.PrintColored($"Current Player: {BotWrapper.CurrentStateHeader.CurrentPlayer}");
+            return BotWrapper.CurrentStateHeader.CurrentPlayer;
         }
     }
 }

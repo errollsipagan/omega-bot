@@ -43,7 +43,6 @@ namespace BotTest
         /// <param name="bot">Bot instance which actions are being registered to</param>
         public void RegisterActions(DuelBotWrapper bot)
         {
-            //BotWrapper = bot;
             _gameField = new GameField(bot);
 
             bot.OnBattleCmdAction = OnBattleCmd;
