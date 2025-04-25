@@ -119,7 +119,7 @@ namespace BotTest.Decks
         /// Gets a list of available Master Duel deck options for selection.
         /// </summary>
         /// <returns>A list of DeckOption objects containing DeckId and DeckName.</returns>
-        public static IEnumerable<DeckOption> GetDeckOptions()
+        public static IEnumerable<DeckOption> GetMasterDuelDeckOptions()
         {
             return _decks.Select(d => new DeckOption { Id = d.Key, Name = d.Value.DeckName });
         }
@@ -153,6 +153,37 @@ namespace BotTest.Decks
         public static IEnumerable<DeckOption> GetSpeedDuelDeckOptions()
         {
             return _SDdecks.Select(d => new DeckOption { Id = d.Key, Name = d.Value.DeckName });
+        }
+
+        /// <summary>
+        /// Gets the deck name for the specified Rush Duel deck ID.
+        /// </summary>
+        /// <param name="deckId">The deck ID.</param>
+        /// <returns>The deck name.</returns>
+        /// <exception cref="KeyNotFoundException">Thrown if the deck ID is not found.</exception>
+        public static string GetDeckName(RushDuelDeck deckId)
+        {
+            return _RDdecks[deckId].DeckName;
+        }
+
+        /// <summary>
+        /// Gets the deck hash for the specified Rush Duel deck ID.
+        /// </summary>
+        /// <param name="deckId">The deck ID.</param>
+        /// <returns>The deck hash.</returns>
+        /// <exception cref="KeyNotFoundException">Thrown if the deck ID is not found.</exception>
+        public static string GetDeckHash(RushDuelDeck deckId)
+        {
+            return _RDdecks[deckId].DeckHash;
+        }
+
+        /// <summary>
+        /// Gets a list of available Rush Duel deck options for selection.
+        /// </summary>
+        /// <returns>A list of DeckOption objects containing DeckId and DeckName.</returns>
+        public static IEnumerable<DeckOption> GetRushDuelDeckOptions()
+        {
+            return _RDdecks.Select(d => new DeckOption { Id = d.Key, Name = d.Value.DeckName });
         }
     }
 }

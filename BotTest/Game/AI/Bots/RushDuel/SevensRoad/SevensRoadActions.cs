@@ -10,7 +10,7 @@ namespace BotTest.Game.AI.Bots.RushDuel.SevensRoad
 {
     public class SevensRoadActions : BaseBotActions
     {
-        public SevensRoadActions(MasterDuelDeck deckId = MasterDuelDeck.DarkMagician)
+        public SevensRoadActions(RushDuelDeck deckId = RushDuelDeck.SevensRoad)
         {
             DeckName = DeckManager.GetDeckName(deckId);
             DeckHash = DeckManager.GetDeckHash(deckId);
