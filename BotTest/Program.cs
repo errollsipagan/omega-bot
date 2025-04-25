@@ -38,7 +38,7 @@ namespace BotTest
         {
             while (true)
             {
-                // Prompt for duel format (Master Duel or Speed Duel)
+                // Prompt for duel format (Master Duel or Speed Duel or Rush Duel)
                 var formatOptions = new List<string> { "Master Duel", "Speed Duel", "Rush Duel" };
                 int formatChoice = SelectMenuOption(formatOptions, "Select a duel format:");
                 DuelFormat selectedFormat = (DuelFormat)formatChoice;
