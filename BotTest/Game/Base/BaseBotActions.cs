@@ -2,7 +2,6 @@
 using BotTest.Utils;
 using OmegaBotWrapper;
 using OmegaBotWrapper.Enum;
-using OmegaBotWrapper.Game.AI.Actions;
 using OmegaBotWrapper.States;
 using OmegaBotWrapper.Struct;
 
@@ -98,19 +97,6 @@ namespace BotTest.Game.Base
                     return BattleAction.ToMainPhaseTwo;
                 return BattleAction.ToEndPhase;
             }
-
-
-            //Obtains player's (Own) monsters in the MonsterZone, with original indexes
-            //var botMonsters = await _gameField.GetBotCardsInZone(CardLocation.MonsterZone);
-
-            //if (botMonsters.Any())
-            //{
-            //    foreach (var opponent in botMonsters)
-            //    {
-            //        ConsoleUtils.PrintColored($"Bot Monsters => {opponent.ID}");
-            //    }
-            //}
-            //var opponentMonsters = await _gameField.GetPlayerCardsInZone(CardLocation.MonsterZone);
 
             var opponentMonsters = (await _gameField.GetPlayerCardsInZone(CardLocation.MonsterZone))
                 .Select((card, index) => new { Card = card, OriginalIndex = index })

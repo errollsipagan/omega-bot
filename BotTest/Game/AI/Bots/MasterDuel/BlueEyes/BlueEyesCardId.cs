@@ -23,5 +23,9 @@ namespace BotTest.Game.AI.Bots.MasterDuel.BlueEyes
         public const int Number46Dragluon = 02978414;
         public const int HieraticSunDragonOverlordOfHeliopolis = 64332231;
 
+        //Spell
+        public const int BingoMachineGo = 93437091;
+
+
     }
 }

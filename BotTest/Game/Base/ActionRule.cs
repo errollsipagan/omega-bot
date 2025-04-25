@@ -1,11 +1,6 @@
 ﻿using OmegaBotWrapper.Enum;
 using OmegaBotWrapper.States;
 using OmegaBotWrapper.Struct;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BotTest.Game.Base
 {
@@ -51,7 +46,7 @@ namespace BotTest.Game.Base
         {
             Action = action;
             CardId = cardId;
-            // Usa o seletor padrão baseado na ação, ou lança exceção se não for encontrado
+            // Use the default selector based on the action, or throw an exception if not found
             if (!DefaultSelectors.TryGetValue(action, out var selector))
             {
                 throw new ArgumentException($"No default card selector defined for action {action}.");

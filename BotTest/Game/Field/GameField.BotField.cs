@@ -1,24 +1,18 @@
 ﻿using OmegaBotWrapper.Enum;
 using OmegaBotWrapper.Struct;
 using OmegaBotWrapper;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using OmegaBotWrapper.Game.Field;
 
 namespace BotTest.Game.Field
 {
     /// <summary>
-    /// Classe para gerenciar e verificar o estado do campo do Bot e do Player usando FieldInfo.
+    /// Class to manage and check the state of the Bot and Player fields using FieldInfo.
     /// </summary>
     public partial class GameField
     {
         /// <summary>
-        /// Obtém informações detalhadas do campo do Bot.
+        /// Gets detailed information about the Bot field.
         /// </summary>
-        /// <returns>Estrutura FieldInfo com os dados do campo do Bot.</returns>
+        /// <returns>FieldInfo structure with the Bot field data.</returns>
         public async Task<FieldInfo> GetBotField()
         {
             _fieldInfo = await _botWrapper.GetBotFieldInfo();
@@ -26,12 +20,12 @@ namespace BotTest.Game.Field
         }
 
         /// <summary>
-        /// Obtém informações de uma carta específica no campo do Bot.
+        /// Gets information about a specific card in the Bot field.
         /// </summary>
-        /// <param name="controller">Controlador da carta (0 = Player, 1 = Bot).</param>
-        /// <param name="location">Localização da carta (ex.: MonsterZone, SpellZone).</param>
-        /// <param name="sequence">Sequência da carta na zona especificada.</param>
-        /// <returns>Estrutura DynamicCard com os dados da carta.</returns>
+        /// <param name="controller">Card controller (0 = Player, 1 = Bot).</param>
+        /// <param name="location">Location of the card (e.g. MonsterZone, SpellZone).</param>
+        /// <param name="sequence">Sequence of the card in the specified zone.</param>
+        /// <returns>DynamicCard structure with the card data.</returns>
         public async Task<DynamicCard> GetBotFieldCard(int controller, int location, int sequence)
         {
             //Console.WriteLine($"controller: {controller} / location: {location} / sequence: {sequence}");
@@ -39,11 +33,11 @@ namespace BotTest.Game.Field
         }
 
         /// <summary>
-        /// Verifica se há cartas em uma zona específica no campo do Bot.
+        /// Checks for cards in a specific zone on the Bot's field.
         /// </summary>
-        /// <param name="location">Localização a ser verificada (ex.: MonsterZone, SpellZone).</param>
-        /// <param name="isOwnSide">Se true, verifica o lado do Bot; se false, verifica o lado do oponente.</param>
-        /// <returns>True se houver cartas na zona especificada, false caso contrário.</returns>
+        /// <param name="location">Location to check (e.g. MonsterZone, SpellZone).</param>
+        /// <param name="isOwnSide">If true, checks the Bot's side; if false, checks the opponent's side.</param>
+        /// <returns>True if there are cards in the specified zone, false otherwise.</returns>
         public async Task<bool> HasCardsInBotZone(CardLocation location, bool isOwnSide = true)
         {
             var field = await GetBotField();
@@ -62,34 +56,11 @@ namespace BotTest.Game.Field
         }
 
         /// <summary>
-        /// Verifica se há cartas em uma zona específica no campo do Player.
+        /// Gets all cards in a specific zone in the Bot's field.
         /// </summary>
-        /// <param name="location">Localização a ser verificada (ex.: MonsterZone, SpellZone).</param>
-        /// <param name="isOwnSide">Se true, verifica o lado do Player; se false, verifica o lado do oponente.</param>
-        /// <returns>True se houver cartas na zona especificada, false caso contrário.</returns>
-        public async Task<bool> HasCardsInPlayerZone(CardLocation location, bool isOwnSide = true)
-        {
-            var field = await GetPlayerField();
-            var side = isOwnSide ? field.OwnSide : field.EnemySide;
-            return location switch
-            {
-                CardLocation.MonsterZone => side.MonsterZones.Any(zone => zone.Cards.Any()),
-                CardLocation.SpellZone => side.SpellZones.Any(zone => zone.Cards.Any()),
-                CardLocation.Hand => side.Hand.Any(),
-                CardLocation.Grave => side.Grave.Any(),
-                CardLocation.Removed => side.Banish.Any(),
-                CardLocation.Deck => side.Main.Any(),
-                CardLocation.Extra => side.Extra.Any(),
-                _ => false
-            };
-        }
-
-        /// <summary>
-        /// Obtém todas as cartas em uma zona específica no campo do Bot.
-        /// </summary>
-        /// <param name="location">Localização a ser verificada (ex.: MonsterZone, SpellZone).</param>
-        /// <param name="isOwnSide">Se true, verifica o lado do Bot; se false, verifica o lado do oponente.</param>
-        /// <returns>Lista de DynamicCard na zona especificada.</returns>
+        /// <param name="location">Location to check (e.g. MonsterZone, SpellZone).</param>
+        /// <param name="isOwnSide">If true, checks the Bot's side; if false, checks the opponent's side.</param>
+        /// <returns>List of DynamicCards in the specified zone.</returns>
         public async Task<List<DynamicCard>> GetBotCardsInZone(CardLocation location, bool isOwnSide = true)
         {
             var field = await GetBotField();
@@ -165,11 +136,11 @@ namespace BotTest.Game.Field
         }
 
         /// <summary>
-        /// Verifica se há cartas viradas para cima (FaceUp) em uma zona específica no campo do Bot.
+        /// Checks for face-up cards in a specific zone on the Bot's field.
         /// </summary>
-        /// <param name="location">Localização a ser verificada (ex.: MonsterZone, SpellZone).</param>
-        /// <param name="isOwnSide">Se true, verifica o lado do Bot; se false, verifica o lado do oponente.</param>
-        /// <returns>True se houver cartas FaceUp na zona, false caso contrário.</returns>
+        /// <param name="location">Location to check (e.g. MonsterZone, SpellZone).</param>
+        /// <param name="isOwnSide">If true, checks the Bot's side; if false, checks the opponent's side.</param>
+        /// <returns>True if there are FaceUp cards in the zone, false otherwise.</returns>
         public async Task<bool> HasFaceUpCardsInBotZone(CardLocation location, bool isOwnSide = true)
         {
             var cards = await GetBotCardsInZone(location, isOwnSide);
@@ -177,24 +148,24 @@ namespace BotTest.Game.Field
         }
 
         /// <summary>
-        /// Obtém a carta com maior poder de ataque em uma zona específica no campo do Bot.
+        /// Gets the card with the highest attack power in a specific zone on the Bot's field.
         /// </summary>
-        /// <param name="location">Localização a ser verificada (ex.: MonsterZone).</param>
-        /// <param name="isOwnSide">Se true, verifica o lado do Bot; se false, verifica o lado do oponente.</param>
-        /// <returns>DynamicCard com o maior poder de ataque ou default se não houver cartas.</returns>
+        /// <param name="location">Location to check (e.g. MonsterZone).</param>
+        /// <param name="isOwnSide">If true, checks the Bot's side; if false, checks the opponent's side.</param>
+        /// <returns>DynamicCard with the highest attack power or default if there are no cards.</returns>
         public async Task<DynamicCard> GetStrongestBotCardInZone(CardLocation location, bool isOwnSide = true)
         {
             var cards = await GetBotCardsInZone(location, isOwnSide);
             return cards.OrderByDescending(card => card.GetRealPower()).FirstOrDefault();
         }
-        
+
         /// <summary>
-        /// Verifica se uma carta específica (por ID) está presente em uma zona no campo do Bot.
+        /// Checks if a specific card (by ID) is present in a zone on the Bot's field.
         /// </summary>
-        /// <param name="cardId">ID da carta a ser verificada.</param>
-        /// <param name="location">Localização a ser verificada (ex.: MonsterZone, SpellZone).</param>
-        /// <param name="isOwnSide">Se true, verifica o lado do Bot; se false, verifica o lado do oponente.</param>
-        /// <returns>True se a carta estiver presente, false caso contrário.</returns>
+        /// <param name="cardId">ID of the card to check.</param>
+        /// <param name="location">Location to check (e.g. MonsterZone, SpellZone).</param>
+        /// <param name="isOwnSide">If true, checks the Bot's side; if false, checks the opponent's side.</param>
+        /// <returns>True if the card is present, false otherwise.</returns>
         public async Task<bool> IsCardInBotZone(int cardId, CardLocation location, bool isOwnSide = true)
         {
             var cards = await GetPlayerCardsInZone(location, isOwnSide);
@@ -202,12 +173,12 @@ namespace BotTest.Game.Field
         }
 
         /// <summary>
-        /// Verifica se uma carta específica (por ID) está presente em uma zona no campo do Player.
+        /// Checks if a specific card (by ID) is present in a zone in the Player's field.
         /// </summary>
-        /// <param name="cardId">ID da carta a ser verificada.</param>
-        /// <param name="location">Localização a ser verificada (ex.: MonsterZone, SpellZone).</param>
-        /// <param name="isOwnSide">Se true, verifica o lado do Player; se false, verifica o lado do oponente.</param>
-        /// <returns>True se a carta estiver presente, false caso contrário.</returns>
+        /// <param name="cardId">ID of the card to check.</param>
+        /// <param name="location">Location to check (e.g. MonsterZone, SpellZone).</param>
+        /// <param name="isOwnSide">If true, checks the Player's side; if false, checks the opponent's side.</param>
+        /// <returns>True if the card is present, false otherwise.</returns>
         public async Task<bool> IsCardInPlayerZone(int cardId, CardLocation location, bool isOwnSide = true)
         {
             var cards = await GetPlayerCardsInZone(location, isOwnSide);
@@ -215,11 +186,11 @@ namespace BotTest.Game.Field
         }
 
         /// <summary>
-        /// Obtém o número de cartas em uma zona específica no campo do Bot.
+        /// Gets the number of cards in a specific zone in the Bot's field.
         /// </summary>
-        /// <param name="location">Localização a ser verificada (ex.: MonsterZone, SpellZone).</param>
-        /// <param name="isOwnSide">Se true, verifica o lado do Bot; se false, verifica o lado do oponente.</param>
-        /// <returns>Número de cartas na zona especificada.</returns>
+        /// <param name="location">Location to check (e.g. MonsterZone, SpellZone).</param>
+        /// <param name="isOwnSide">If true, checks the Bot's side; if false, checks the opponent's side.</param>
+        /// <returns>Number of cards in the specified zone.</returns>
         public async Task<int> GetBotZoneCardCount(CardLocation location, bool isOwnSide = true)
         {
             var field = await GetBotField();
@@ -238,10 +209,10 @@ namespace BotTest.Game.Field
         }
 
         /// <summary>
-        /// Obtém os pontos de vida (LifePoints) do Bot.
+        /// Gets the Bot's LifePoints.
         /// </summary>
-        /// <param name="isOwnSide">Se true, retorna os pontos de vida do Bot; se false, do oponente.</param>
-        /// <returns>Pontos de vida do lado especificado.</returns>
+        /// <param name="isOwnSide">If true, returns the Bot's lifepoints; if false, the opponent's.</param>
+        /// <returns>Lifepoints of the specified side.</returns>
         public async Task<int> GetBotLifePoints(bool isOwnSide = true)
         {
             var field = await GetBotField();
@@ -250,10 +221,10 @@ namespace BotTest.Game.Field
         }
 
         /// <summary>
-        /// Obtém os pontos de vida (LifePoints) do Player.
+        /// Gets the Player's LifePoints.
         /// </summary>
-        /// <param name="isOwnSide">Se true, retorna os pontos de vida do Player; se false, do oponente.</param>
-        /// <returns>Pontos de vida do lado especificado.</returns>
+        /// <param name="isOwnSide">If true, returns the Player's lifepoints; if false, the opponent's.</param>
+        /// <returns>Lifepoints of the specified side.</returns>
         public async Task<int> GetPlayerLifePoints(bool isOwnSide = true)
         {
             var field = await GetPlayerField();
@@ -262,10 +233,10 @@ namespace BotTest.Game.Field
         }
 
         /// <summary>
-        /// Verifica se o Bot está sob ataque.
+        /// Checks if the Bot is under attack.
         /// </summary>
-        /// <param name="isOwnSide">Se true, verifica o lado do Bot; se false, verifica o lado do oponente.</param>
-        /// <returns>True se o lado especificado está sob ataque, false caso contrário.</returns>
+        /// <param name="isOwnSide">If true, checks the Bot's side; if false, checks the opponent's side.</param>
+        /// <returns>True if the specified side is under attack, false otherwise.</returns>
         public async Task<bool> IsBotUnderAttack(bool isOwnSide = true)
         {
             var field = await GetBotField();
@@ -274,10 +245,10 @@ namespace BotTest.Game.Field
         }
 
         /// <summary>
-        /// Verifica se o Player está sob ataque.
+        /// Checks if the Player is under attack.
         /// </summary>
-        /// <param name="isOwnSide">Se true, verifica o lado do Player; se false, verifica o lado do oponente.</param>
-        /// <returns>True se o lado especificado está sob ataque, false caso contrário.</returns>
+        /// <param name="isOwnSide">If true, checks the Player's side; if false, checks the opponent's side.</param>
+        /// <returns>True if the specified side is under attack, false otherwise.</returns>
         public async Task<bool> IsPlayerUnderAttack(bool isOwnSide = true)
         {
             var field = await GetPlayerField();
@@ -286,10 +257,10 @@ namespace BotTest.Game.Field
         }
 
         /// <summary>
-        /// Obtém o monstro em batalha no campo do Bot, se houver.
+        /// Gets the monster in battle on the Bot's field, if any.
         /// </summary>
-        /// <param name="isOwnSide">Se true, verifica o lado do Bot; se false, verifica o lado do oponente.</param>
-        /// <returns>DynamicCard do monstro em batalha ou default se não houver.</returns>
+        /// <param name="isOwnSide">If true, checks the Bot's side; if false, checks the opponent's side.</param>
+        /// <returns>DynamicCard of the monster in battle, or default if none.</returns>
         public async Task<DynamicCard> GetBotBattlingMonster(bool isOwnSide = true)
         {
             var field = await GetBotField();
@@ -327,8 +298,6 @@ namespace BotTest.Game.Field
 
                     for (int sequence = 0; sequence < cardIds.Length; sequence++)
                     {
-                        //Console.WriteLine("cardIds[sequence] => " + cardIds[sequence]);
-
                         if (cardIds[sequence] > 0) // Checks for a potentially valid card
                         {
                             try
@@ -366,7 +335,6 @@ namespace BotTest.Game.Field
                         {
                             var zone = zones[zoneIndex];
                             var cardZone = zone.Cards.FirstOrDefault();
-                            //Console.WriteLine($"cardZone {cardZone}");
 
                             if (cardZone > 0)
                             {
@@ -394,8 +362,6 @@ namespace BotTest.Game.Field
 
             return cards;
         }
-
-        
 
         /// <summary>
         /// Gets all cards in a specific location with a specific type
@@ -427,15 +393,6 @@ namespace BotTest.Game.Field
         }
 
         /// <summary>
-        /// Counts the total number of cards in a zone array
-        /// </summary>
-        //private int CountCardsInZones(CardArray[] zones)
-        //{
-        //    if (zones == null) return 0;
-        //    return zones.Sum(zone => zone.Cards?.Length ?? 0);
-        //}
-
-        /// <summary>
         /// Checks if the strongest face-up monster on the field belongs to the opponent
         /// </summary>
         /// <param name="location">Location to check (default is CardLocation.MonsterZone)</param>
@@ -448,14 +405,8 @@ namespace BotTest.Game.Field
             int botMonsterCount = botMonster.Count();
             int playerMonsterCount = playerMonster.Count();
 
-            Console.WriteLine($"botMonsterCount => {botMonsterCount}");
-            Console.WriteLine($"playerMonsterCount => {playerMonsterCount}");
-
             if (playerMonsterCount > 0 && botMonsterCount == 0)
-            {
-                Console.WriteLine("Opponent has monsters and bot has none. Activating spell.");
                 return true;
-            }
 
             // Step 2: Get lists of face-up + attack face-up monsters
             var botMonsters = await GetCardsWithTypeInLocation(location, CardType.Monster, controller: 0);
@@ -469,7 +420,6 @@ namespace BotTest.Game.Field
             int botMaxAttack = botFaceUpMonsters.Any() ? botFaceUpMonsters.Max(card => card.Attack) : 0;
 
             // Step 4: Compare max attack values
-            Console.WriteLine($"Bot Max Attack: {botMaxAttack}, Opponent Max Attack: {opponentMaxAttack}");
             return opponentMaxAttack >= botMaxAttack;
         }
 
