@@ -108,7 +108,7 @@ namespace BotTest.Game.AI.Bots.MasterDuel.BlueEyes
         public override async Task<bool> OnSelectEffectYn(SelectEffectYnData state)
         {
             //Check if the card is Dragon Spirit Of White
-            if (state.EffectCard.ID == BlueEyesCardId.DragonSpiritOfWhite)
+            if (state.EffectCard.IsCode(BlueEyesCardId.DragonSpiritOfWhite))
             {
                 Console.WriteLine("Activating effect for Dragon Spirit of White");
                 return true;

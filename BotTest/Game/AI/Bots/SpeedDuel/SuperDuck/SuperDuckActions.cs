@@ -217,11 +217,11 @@ namespace BotTest.Game.AI.Bots.SpeedDuel.SuperDuck
         public override async Task<bool> OnSelectEffectYn(SelectEffectYnData state)
         {
             Console.WriteLine($"[override] [OnSelectEffectYn]");
-            if (state.EffectCard.ID.Equals(SuperDuckCardId.SphereKuriboh) &&
+            if (state.EffectCard.IsCode(SuperDuckCardId.SphereKuriboh) &&
                 !_selectChainMap.ContainsKey(SuperDuckCardId.Waboku))
                 return true;
 
-            if (state.EffectCard.ID.Equals(SuperDuckCardId.WakingTheDragon))
+            if (state.EffectCard.IsCode(SuperDuckCardId.WakingTheDragon))
                 return true;
 
             return await base.OnSelectEffectYn(state);

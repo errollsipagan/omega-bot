@@ -2,6 +2,7 @@
 using OmegaBotWrapper.Struct;
 using OmegaBotWrapper;
 using BotTest.Utils;
+using OmegaBotWrapper.States;
 
 namespace BotTest.Game.Field
 {
@@ -174,11 +175,11 @@ namespace BotTest.Game.Field
         }
 
         /// <summary>
-        /// Checks if a specific card (by ID) is present in a zone in the Player's field.
+        /// Checks if a specific card (by ID) is present in a zone in the Bot's field.
         /// </summary>
         /// <param name="cardId">ID of the card to check.</param>
         /// <param name="location">Location to check (e.g. MonsterZone, SpellZone).</param>
-        /// <param name="isOwnSide">If true, checks the Player's side; if false, checks the opponent's side.</param>
+        /// <param name="isOwnSide">If true, checks the Bot's side; if false, checks the opponent's side.</param>
         /// <returns>True if the card is present, false otherwise.</returns>
         public async Task<bool> IsCardInPlayerZone(int cardId, CardLocation location, bool isOwnSide = true)
         {
@@ -222,9 +223,9 @@ namespace BotTest.Game.Field
         }
 
         /// <summary>
-        /// Gets the Player's LifePoints.
+        /// Gets the Bot's LifePoints.
         /// </summary>
-        /// <param name="isOwnSide">If true, returns the Player's lifepoints; if false, the opponent's.</param>
+        /// <param name="isOwnSide">If true, returns the Bot's lifepoints; if false, the opponent's.</param>
         /// <returns>Lifepoints of the specified side.</returns>
         public async Task<int> GetPlayerLifePoints(bool isOwnSide = true)
         {
@@ -248,7 +249,7 @@ namespace BotTest.Game.Field
         /// <summary>
         /// Checks if the Player is under attack.
         /// </summary>
-        /// <param name="isOwnSide">If true, checks the Player's side; if false, checks the opponent's side.</param>
+        /// <param name="isOwnSide">If true, checks the Bot's side; if false, checks the opponent's side.</param>
         /// <returns>True if the specified side is under attack, false otherwise.</returns>
         public async Task<bool> IsPlayerUnderAttack(bool isOwnSide = true)
         {
@@ -270,7 +271,7 @@ namespace BotTest.Game.Field
         }
 
         /// <summary>
-        /// Gets all cards in a specific location on the player's or opponent's side
+        /// Gets all cards in a specific location on the bot's or opponent's side
         /// </summary>
         /// <param name="location">Location to check (e.g., CardLocation.Hand, CardLocation.MonsterZone)</param>
         /// <param name="controller">Controller of the cards (0 for player, 1 for opponent [BOT])</param>
@@ -425,10 +426,10 @@ namespace BotTest.Game.Field
         }
 
         /// <summary>
-        /// Checks if there is a card with the specified attribute in the player's hand
+        /// Checks if there is a card with the specified attribute in the bot's hand
         /// </summary>
         /// <param name="attribute">Attribute to check (e.g., CardAttribute.Dark)</param>
-        /// <returns>True if a card with the specified attribute is found in the player's hand</returns>
+        /// <returns>True if a card with the specified attribute is found in the bot's hand</returns>
         public async Task<bool> HasCardWithAttributeInHand(CardAttribute attribute)
         {
             var handCards = await GetCardsInLocation(CardLocation.Hand);
@@ -436,10 +437,10 @@ namespace BotTest.Game.Field
         }
 
         /// <summary>
-        /// Gets all cards in the player's hand with a specific attribute
+        /// Gets all cards in the bot's hand with a specific attribute
         /// </summary>
         /// <param name="attribute">Attribute to filter by (e.g., CardAttribute.Dark)</param>
-        /// <returns>List of DynamicCard with the specified attribute in the player's hand</returns>
+        /// <returns>List of DynamicCard with the specified attribute in the bot's hand</returns>
         public async Task<List<DynamicCard>> GetCardsWithAttributeInHand(CardAttribute attribute)
         {
             var handCards = await GetCardsInLocation(CardLocation.Hand);
@@ -463,6 +464,45 @@ namespace BotTest.Game.Field
         {
             var monstersCards = await GetCardsInLocation(CardLocation.MonsterZone);
             return monstersCards.Where(card => (card.ID != 0)).Count();
+        }
+
+        /// <summary>
+        /// Checks if there is a card with the specified id in the bot's hand
+        /// </summary>
+        /// <param name="attribute">Card ID to check (e.g., card.ID.IsCode(id))</param>
+        /// <returns>True if a card with the specified card id is found in the bot's hand</returns>
+        public async Task<bool> HasCardInHand(int cardId)
+        {
+            var handCards = await GetCardsInLocation(CardLocation.Hand);
+            return handCards.Any(card => card.ID == cardId);
+        }
+
+        /// <summary>
+        /// Checks if there is a card with the specified id in the bot's monster zone
+        /// </summary>
+        /// <param name="attribute">Card ID to check (e.g., card.ID.IsCode(id))</param>
+        /// <returns>True if a card with the specified card id is found in the bot's monster zone</returns>
+        public async Task<bool> HasCardInBotMonsterZone(int cardId)
+        {
+            var handCards = await GetCardsInLocation(CardLocation.MonsterZone);
+            return handCards.Any(card => card.ID == cardId);
+        }
+
+        public static byte[] FilterSelectableCardsById(SelectCardData selectCardData, int cardId)
+        {
+            var botCards = selectCardData.SelectableCards
+                .Select((card, index) => new { Card = card, Index = index })
+                .Where(x => x.Card.ID == cardId) // Filter by cardId
+                .Take(selectCardData.Minimum) // Respect state.Minimum
+                .Select(x => (byte)x.Index)
+                .ToArray();
+
+            if (botCards.Any())
+            {
+                Console.WriteLine($"Selected {botCards.Length} cards with ID {cardId}.");
+            }
+
+            return botCards;
         }
     }
 
