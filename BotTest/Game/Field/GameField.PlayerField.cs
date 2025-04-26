@@ -302,5 +302,12 @@ namespace BotTest.Game.Field
             var spellsCards = await GetPlayerCardsInLocation(CardLocation.SpellZone);
             return spellsCards.Where(card => ((card.ID != 0) && (card.Cover == 0))).Count();
         }
+
+        public async Task<int> GetPlayerMonstersCount()
+        {
+            await GetPlayerField();
+            var monstersCards = await GetCardsInLocation(CardLocation.MonsterZone);
+            return monstersCards.Where(card => (card.ID != 0) && (CardPosition)card.Position == CardPosition.FaceUp).Count();
+        }
     }
 }

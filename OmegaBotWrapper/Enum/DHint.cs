@@ -59,6 +59,8 @@
         ZONE = 569,
         DISABLEZONE = 570,
         TOZONE = 571,
-        COUNTER = 572
+        COUNTER = 572,
+        DISABLE = 573,
+        OPERATECARD = 574,
     }
 }

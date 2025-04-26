@@ -65,6 +65,8 @@ namespace BotTest.Game.AI.Bots.MasterDuel.SwordSoul
 
         public override async Task<int> OnSelectChain(SelectChainData state)
         {
+            GetCurrentDuelPhase();
+
             if (state.SelectableCards.TryGetByID(SwordSoulCardId.SwordsoulOfTaia, out var card, out var index))
                 return index;
 
@@ -109,24 +111,6 @@ namespace BotTest.Game.AI.Bots.MasterDuel.SwordSoul
                 var card = Field.GameField.FilterSelectableCardsById(state, SwordSoulCardId.SwordsoulOfMoYe);
                 return card;
             }
-
-            //if (state.SelectionHint.Equals((int)DHint.SPSUMMON))
-            //{
-            //    Console.WriteLine("[override][OnSelectCard] - Selecting Card to SPSUMMON");
-
-            //    var botCards = state.SelectableCards
-            //                        .Select((card, index) => new { Card = card, Index = index })
-            //                        .OrderByDescending(x => x.Card.Attack) // Ordena pelo maior Attack
-            //                        .Take(state.Minimum)
-            //                        .Select(x => (byte)x.Index)
-            //                        .ToArray();
-            //    // Respect Minimum (or Maximum if needed)
-            //    if (botCards.Any())
-            //    {
-            //        Console.WriteLine($"Selected {botCards.Length} bot-owned cards for SPSUMMON.");
-            //        return botCards;
-            //    }
-            //}
 
             return await base.OnSelectCard(state);
         }
