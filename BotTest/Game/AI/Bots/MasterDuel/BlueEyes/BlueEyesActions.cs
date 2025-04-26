@@ -19,87 +19,87 @@ namespace BotTest.Game.AI.Bots.MasterDuel.BlueEyes
 
             //Normal Summons
             //Add DragonSpiritOfWhite summon rule with custom condition
-            AddBotAction(new ActionRule(
-            action: MainAction.Summon,
-            cardId: BlueEyesCardId.DragonSpiritOfWhite,
-            condition: DragonSpiritOfWhiteSummon
-            ));
+            BotAction(
+                action: MainAction.Summon,
+                cardId: BlueEyesCardId.DragonSpiritOfWhite,
+                condition: DragonSpiritOfWhiteSummon
+            );
 
-            AddBotAction(new ActionRule(
+            BotAction(
                 action: MainAction.Summon,
                 cardId: BlueEyesCardId.MaidenOfEyesOfBlue,
                 condition: (s, c) => s.SummonableCards.Any()
-            ));
+            );
 
-            AddBotAction(new ActionRule(
+            BotAction(
                 action: MainAction.Summon,
                 cardId: BlueEyesCardId.MaidenOfWhite,
                 condition: (s, c) => s.SummonableCards.Any()
-            ));
+            );
 
-            AddBotAction(new ActionRule(
+            BotAction(
                 action: MainAction.Summon,
                 cardId: BlueEyesCardId.BlueEyesWhiteDragon,
                 condition: (s, c) => s.SummonableCards.Any()
-            ));
+            );
 
             //Set Monsters
-            AddBotAction(new ActionRule(
+            BotAction(
                 action: MainAction.SetMonster,
                 cardId: BlueEyesCardId.TheWhiteStoneOfAncients
-            ));
+            );
 
             //Reposable Monsters
-            AddBotAction(new ActionRule(
+            BotAction(
                 action: MainAction.Repos,
                 cardId: BlueEyesCardId.TheWhiteStoneOfAncients
-            ));
+            );
 
             //Special Summons
-            AddBotAction(new ActionRule(
+            BotAction(
                 action: MainAction.SpSummon,
                 cardId: BlueEyesCardId.BlueEyesAlternativeWhiteDragon
-            ));
+            );
 
-            AddBotAction(new ActionRule(
+            BotAction(
                 action: MainAction.SpSummon,
                 cardId: BlueEyesCardId.BlueEyesSpiritDragon,
                 condition: (s, c) => s.SpecialSummonableCards.Any()
-            ));
+            );
 
-            AddBotAction(new ActionRule(
+            BotAction(
                 action: MainAction.SpSummon,
                 cardId: BlueEyesCardId.HieraticSunDragonOverlordOfHeliopolis
-            ));
+            );
 
-            AddBotAction(new ActionRule(
+            BotAction(
                 action: MainAction.SpSummon,
                 cardId: BlueEyesCardId.Number46Dragluon
-            ));
+            );
 
             //Activable cards
-            AddBotAction(new ActionRule(
+            BotAction(
                 action: MainAction.Activate,
                 cardId: BlueEyesCardId.TheWhiteStoneOfAncients,
                 condition: (s, c) => s.ActivableCards.Any()
-            ));
+            );
 
-            AddBotAction(new ActionRule(
+            BotAction(
                 action: MainAction.Activate,
                 cardId: BlueEyesCardId.MaidenOfWhite,
                 condition: (s, c) => s.ActivableCards.Any()
-            ));
+            );
 
-            AddBotAction(new ActionRule(
+            BotAction(
                 action: MainAction.Activate,
                 cardId: BlueEyesCardId.MaidenOfEyesOfBlue,
                 condition: (s, c) => s.ActivableCards.Any()
-            ));
+            );
 
-            AddBotAction(new ActionRule(
+            BotAction(
                 action: MainAction.Activate,
                 cardId: BlueEyesCardId.BingoMachineGo
-            ));
+            );
         }
 
         /// <summary>

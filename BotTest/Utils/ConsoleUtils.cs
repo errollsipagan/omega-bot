@@ -54,7 +54,7 @@
             Console.ForegroundColor = color;
 
             // Print the text
-            Console.WriteLine(text);
+            ConsoleUtils.PrintColored(text); //Turn ON or Turn OFF
 
             // Restore the original color
             Console.ForegroundColor = originalColor;

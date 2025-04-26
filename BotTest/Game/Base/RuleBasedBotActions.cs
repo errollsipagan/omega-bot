@@ -99,5 +99,10 @@ namespace BotTest.Game.Base
         {
             return string.Concat(fieldName.Select(c => char.IsUpper(c) ? " " + c : c.ToString())).Trim();
         }
+
+        public void BotAction(MainAction action, int cardId, Func<IdleCmdData, DynamicCard, bool>? condition = null)
+        {
+            AddBotAction(new ActionRule(action, cardId, condition));
+        }
     }
 }
