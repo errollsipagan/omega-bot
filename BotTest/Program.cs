@@ -23,6 +23,7 @@ Console.ReadKey(); // Waits for user input before finishing the console executio
 using BotTest.Decks;
 using BotTest.Game.AI.Bots.MasterDuel.BlueEyes;
 using BotTest.Game.AI.Bots.MasterDuel.DarkMagician;
+using BotTest.Game.AI.Bots.MasterDuel.SwordSoul;
 using BotTest.Game.AI.Bots.RushDuel.SevensRoad;
 using BotTest.Game.AI.Bots.SpeedDuel.SuperDuck;
 using BotTest.Game.Base;
@@ -69,6 +70,7 @@ namespace BotTest
                     {
                         MasterDuelDeck.BlueEyes => new BlueEyesActions((MasterDuelDeck)selectedDeck.Id),
                         MasterDuelDeck.DarkMagician => new DarkMagicianActions((MasterDuelDeck)selectedDeck.Id),
+                        MasterDuelDeck.SwordSoul => new SwordSoulActions((MasterDuelDeck)selectedDeck.Id),
                         _ => throw new InvalidOperationException($"No bot actions defined for Master Duel DeckId: {selectedDeck.Id}")
                     },
                     DuelFormat.SpeedDuel => selectedDeck.Id switch

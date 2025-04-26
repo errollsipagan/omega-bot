@@ -15,9 +15,9 @@ namespace BotTest.Decks
     /// </summary>
     public enum MasterDuelDeck
     {
-        BotTest,
         BlueEyes,
-        DarkMagician
+        DarkMagician,
+        SwordSoul
     }
 
     /// <summary>
@@ -44,13 +44,6 @@ namespace BotTest.Decks
         private static readonly Dictionary<MasterDuelDeck, (string DeckName, string DeckHash)> _decks = new()
         {
             {
-                MasterDuelDeck.BotTest,
-                (
-                    DeckName: "BotTest",
-                    DeckHash: "02ewdIhgme1uxrBGP5RRw8eeAcQuezqXkSHLjOmjWzsziM954RZTdvo9BpB85p35LCAaxF+8MpxV6OYCsBybvwgjDE/+WQ7H52ZMZIJh1wUX4BhkJgh/4WWHY5CdMHtBGGQ2CIPcBsIg+0AY5D4QBrkDAA=="
-                )
-            },
-            {
                 MasterDuelDeck.BlueEyes,
                 (
                     DeckName: "Blue-Eyes",
@@ -62,6 +55,13 @@ namespace BotTest.Decks
                 (
                     DeckName: "Dark Magician",
                     DeckHash: "M2Pg6L/AlCiRw/AwzIVp1wVGlhU/LzEKqaiygMQnWrEyXNjkyAhiz3Y/zrxhEyPDui9nmDKmngfTETNzmUD6uC48A8vnWUszsMj2MIPYvzYKsTjHpbLc3fSYESQP0vN6QiMrSD2I/eaHHgPIXpDc4ycVDLFnXzDA1IPsAcmB7Nixby5T0EtB1msT/jGtEnRkCv0SwfCQ9T7rTqA4iG95KoHlMZAPYlfNrWE6b17H8gjIB+kFAA=="
+                )
+            },
+            {
+                MasterDuelDeck.SwordSoul,
+                (
+                    DeckName: "SwordSoul",
+                    DeckHash: "M2ewnRXLrM0Tx+y54yHzEn8DVhje1JXKCMIr+iaxwjBIHQgvNjJkhOGcDG9mGF6vfI8BhivP3GQFYXteKSYYBtkFwk48M1hB9oFwTnMnIwwrecxkgGEmrUdgfLcmhSlMl481ueUQGHcsV2KszJrAcOSNDwPDUgUWEI5m+seyz2wy0/b9SSxbjD8wgrDphQlg/wAA"
                 )
             }
         };

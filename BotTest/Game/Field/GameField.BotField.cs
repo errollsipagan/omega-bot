@@ -29,7 +29,7 @@ namespace BotTest.Game.Field
         /// <returns>DynamicCard structure with the card data.</returns>
         public async Task<DynamicCard> GetBotFieldCard(int controller, int location, int sequence)
         {
-            //ConsoleUtils.PrintColored($"controller: {controller} / location: {location} / sequence: {sequence}");
+            //Console.WriteLine($"controller: {controller} / location: {location} / sequence: {sequence}");
             return await _botWrapper.GetBotFieldCardInfo(controller, location, sequence);
         }
 
@@ -75,8 +75,8 @@ namespace BotTest.Game.Field
                 {
                     foreach (var cardId in side.MonsterZones[seq].Cards)
                     {
-                        ConsoleUtils.PrintColored($"side.MonsterZones[seq] => {side.MonsterZones[seq].Cards}");                       
-                        ConsoleUtils.PrintColored($"cardId => {cardId}");
+                        Console.WriteLine($"side.MonsterZones[seq] => {side.MonsterZones[seq].Cards}");                       
+                        Console.WriteLine($"cardId => {cardId}");
                         if (cardId > 0)
                         {
                             var card = await GetBotFieldCard(controller, (int)CardLocation.MonsterZone, seq);
@@ -309,7 +309,7 @@ namespace BotTest.Game.Field
                             }
                             catch (Exception ex) when (ex.Message.Contains("404") || ex.Message.Contains("No card found"))
                             {
-                                ConsoleUtils.PrintColored("******** Ignore 404 errors (no card at coordinates) ********");
+                                Console.WriteLine("******** Ignore 404 errors (no card at coordinates) ********");
                                 // Ignore 404 errors (no card at coordinates)
                                 continue;
                             }
@@ -348,7 +348,7 @@ namespace BotTest.Game.Field
                                 }
                                 catch (Exception ex) when (ex.Message.Contains("404") || ex.Message.Contains("No card found"))
                                 {
-                                    ConsoleUtils.PrintColored("******** Ignore 404 errors (no card at coordinates) ********");
+                                    Console.WriteLine("******** Ignore 404 errors (no card at coordinates) ********");
                                     // Ignore 404 errors (no card at coordinates)
                                     continue;
                                 }

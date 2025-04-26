@@ -162,7 +162,7 @@ namespace BotTest.Game.Field
 
                     for (int sequence = 0; sequence < cardIds.Length; sequence++)
                     {
-                        ConsoleUtils.PrintColored("cardIds[sequence] => " + cardIds[sequence]);
+                        Console.WriteLine("cardIds[sequence] => " + cardIds[sequence]);
 
                         if (cardIds[sequence] > 0) // Checks for a potentially valid card
                         {
@@ -174,7 +174,7 @@ namespace BotTest.Game.Field
                             }
                             catch (Exception ex) when (ex.Message.Contains("404") || ex.Message.Contains("No card found"))
                             {
-                                ConsoleUtils.PrintColored("******** Ignore 404 errors (no card at coordinates) ********");
+                                Console.WriteLine("******** Ignore 404 errors (no card at coordinates) ********");
                                 // Ignore 404 errors (no card at coordinates)
                                 continue;
                             }
@@ -201,7 +201,7 @@ namespace BotTest.Game.Field
                         {
                             var zone = zones[zoneIndex];
                             var cardZone = zone.Cards.FirstOrDefault();
-                            ConsoleUtils.PrintColored($"cardZone {cardZone}");
+                            Console.WriteLine($"cardZone {cardZone}");
 
                             if (cardZone > 0)
                             {
@@ -214,7 +214,7 @@ namespace BotTest.Game.Field
                                 }
                                 catch (Exception ex) when (ex.Message.Contains("404") || ex.Message.Contains("No card found"))
                                 {
-                                    ConsoleUtils.PrintColored("******** Ignore 404 errors (no card at coordinates) ********");
+                                    Console.WriteLine("******** Ignore 404 errors (no card at coordinates) ********");
                                     // Ignore 404 errors (no card at coordinates)
                                     continue;
                                 }

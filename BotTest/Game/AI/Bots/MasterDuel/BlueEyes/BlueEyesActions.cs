@@ -110,7 +110,7 @@ namespace BotTest.Game.AI.Bots.MasterDuel.BlueEyes
             //Check if the card is Dragon Spirit Of White
             if (state.EffectCard.ID == BlueEyesCardId.DragonSpiritOfWhite)
             {
-                ConsoleUtils.PrintColored("Activating effect for Dragon Spirit of White");
+                Console.WriteLine("Activating effect for Dragon Spirit of White");
                 return true;
             }
 
@@ -131,7 +131,7 @@ namespace BotTest.Game.AI.Bots.MasterDuel.BlueEyes
             bool canSummon = state.SummonableCards.Any(c => c.ID == BlueEyesCardId.DragonSpiritOfWhite);
 
             if (hasSpellCards && canSummon)
-                ConsoleUtils.PrintColored($"[[[[BINGO!]]]] DragonSpiritOfWhiteSummon: Can summon (SpellZoneCount: {playerSpellZoneCount})");
+                Console.WriteLine($"[[[[BINGO!]]]] DragonSpiritOfWhiteSummon: Can summon (SpellZoneCount: {playerSpellZoneCount})");
             return hasSpellCards && canSummon;
         }
     }

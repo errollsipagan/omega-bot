@@ -4,7 +4,7 @@ using BotTest.Game.Base;
 namespace BotTest.Game.AI.Bots.MasterDuel.DarkMagician
 {
 
-    public class DarkMagicianActions : BaseBotActions
+    public class DarkMagicianActions : RuleBasedBotActions
     {
         public DarkMagicianActions(MasterDuelDeck deckId = MasterDuelDeck.DarkMagician)
         {

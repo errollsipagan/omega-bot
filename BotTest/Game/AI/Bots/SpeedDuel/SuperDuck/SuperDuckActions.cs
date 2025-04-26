@@ -144,25 +144,25 @@ namespace BotTest.Game.AI.Bots.SpeedDuel.SuperDuck
             //Activable cards, for each
             foreach (var cards in state.ActivableCards)
             {
-                ConsoleUtils.PrintColored($"[Activable cards] => {cards.ID}");
+                Console.WriteLine($"[Activable cards] => {cards.ID}");
             }
 
             //Summonable cards, for each
             foreach (var cards in state.SummonableCards)
             {
-                ConsoleUtils.PrintColored($"[Summonable cards] => {cards.ID}");
+                Console.WriteLine($"[Summonable cards] => {cards.ID}");
             }
 
             //Reposable cards, for each
             foreach (var cards in state.ReposableCards)
             {
-                ConsoleUtils.PrintColored($"[Reposable cards] => {cards.ID}");
+                Console.WriteLine($"[Reposable cards] => {cards.ID}");
             }
 
             //Special Summonable cards, for each
             foreach (var cards in state.SpecialSummonableCards)
             {
-                ConsoleUtils.PrintColored($"[SpecialSummonable cards] => {cards.ID}");
+                Console.WriteLine($"[SpecialSummonable cards] => {cards.ID}");
             }
 
             var response = ExecuteFirstValidAction(state, _actionRules);
@@ -174,13 +174,13 @@ namespace BotTest.Game.AI.Bots.SpeedDuel.SuperDuck
             //Selectable cards, for each
             foreach (var cards in state.SelectableCards)
             {
-                ConsoleUtils.PrintColored($"[OnSelectChain] [Selectable cards] => {cards.ID}");
+                Console.WriteLine($"[OnSelectChain] [Selectable cards] => {cards.ID}");
             }
 
             //Descriptions cards, for each
             foreach (var cards in state.Descriptions)
             {
-                ConsoleUtils.PrintColored($"[Descriptions cards] => {cards}");
+                Console.WriteLine($"[Descriptions cards] => {cards}");
             }
 
             //bool wabokuIsFaceUp = await _gameField.IsCardInBotZone(SuperDuckCardId.Waboku, CardLocation.SpellZone, isOwnSide: false);
@@ -216,7 +216,7 @@ namespace BotTest.Game.AI.Bots.SpeedDuel.SuperDuck
 
         public override async Task<bool> OnSelectEffectYn(SelectEffectYnData state)
         {
-            ConsoleUtils.PrintColored($"[override] [OnSelectEffectYn]");
+            Console.WriteLine($"[override] [OnSelectEffectYn]");
             if (state.EffectCard.ID.Equals(SuperDuckCardId.SphereKuriboh) &&
                 !_selectChainMap.ContainsKey(SuperDuckCardId.Waboku))
                 return true;
@@ -234,7 +234,7 @@ namespace BotTest.Game.AI.Bots.SpeedDuel.SuperDuck
 
             if (state.SelectionHint.Equals((int)DHint.SPSUMMON))
             {
-                ConsoleUtils.PrintColored("[override][OnSelectCard] - Selecting Card to SPSUMMON");
+                Console.WriteLine("[override][OnSelectCard] - Selecting Card to SPSUMMON");
 
                 /*if (monstersZonePlayer)
                 {
@@ -256,7 +256,7 @@ namespace BotTest.Game.AI.Bots.SpeedDuel.SuperDuck
                 // Respect Minimum (or Maximum if needed)
                 if (botCards.Any())
                 {
-                    ConsoleUtils.PrintColored($"Selected {botCards.Length} bot-owned cards for SPSUMMON.");
+                    Console.WriteLine($"Selected {botCards.Length} bot-owned cards for SPSUMMON.");
                     return botCards;
                 }
             }
@@ -266,7 +266,7 @@ namespace BotTest.Game.AI.Bots.SpeedDuel.SuperDuck
 
         public override async Task<CardPosition> OnSelectPosition(SelectPositionData state)
         {
-            ConsoleUtils.PrintColored("[override][OnSelectPosition]");
+            Console.WriteLine("[override][OnSelectPosition]");
             if (state.CardID.Equals(SuperDuckCardId.OjamaKing))
                 return (CardPosition)state.Positions[1]; //Face-up Defense
 
@@ -278,7 +278,7 @@ namespace BotTest.Game.AI.Bots.SpeedDuel.SuperDuck
             bool canActivate = card.IsCode(SuperDuckCardId.HammerShot);
             bool opponentHasStrongest = _gameField.IsFaceUpAttackStrongestMonsterPlayer().Result;
             if (canActivate && opponentHasStrongest)
-                ConsoleUtils.PrintColored($"HammerShotCondition: Can activate Hammer Shot (Opponent has strongest monster)");
+                Console.WriteLine($"HammerShotCondition: Can activate Hammer Shot (Opponent has strongest monster)");
             return canActivate && opponentHasStrongest;
         }
 
@@ -286,10 +286,10 @@ namespace BotTest.Game.AI.Bots.SpeedDuel.SuperDuck
         {
             bool canActivate = card.IsCode(SuperDuckCardId.EnchantingFittingRoom);
             int botMonstersCount = _gameField.GetMonstersCount().Result;
-            ConsoleUtils.PrintColored($"[EnchantingFittingRoomCondition] botMonstersCount {botMonstersCount}");
+            Console.WriteLine($"[EnchantingFittingRoomCondition] botMonstersCount {botMonstersCount}");
             bool botMonstersCondition = botMonstersCount <= 1;
             if (canActivate && botMonstersCondition)
-                ConsoleUtils.PrintColored($"EnchantingFittingRoom: Can activate Enchanting Fitting Room");
+                Console.WriteLine($"EnchantingFittingRoom: Can activate Enchanting Fitting Room");
             return canActivate && botMonstersCondition;
         }
 
@@ -298,7 +298,7 @@ namespace BotTest.Game.AI.Bots.SpeedDuel.SuperDuck
             bool canActivate = card.IsCode(SuperDuckCardId.AllureOfDarkness);
             bool botHasDarkAttribute = _gameField.HasCardWithAttributeInHand(attribute: CardAttribute.Dark).Result;
             if (canActivate && botHasDarkAttribute)
-                ConsoleUtils.PrintColored($"AllureOfDarknessCondition: Can activate Allure of Darkness");
+                Console.WriteLine($"AllureOfDarknessCondition: Can activate Allure of Darkness");
             return canActivate && botHasDarkAttribute;
         }
 
@@ -306,10 +306,10 @@ namespace BotTest.Game.AI.Bots.SpeedDuel.SuperDuck
         {
             bool canActivate = card.IsCode(SuperDuckCardId.BreakerTheMagicalWarrior);
             int playerSpellsCount = _gameField.GetPlayerSpellsCount().Result;
-            ConsoleUtils.PrintColored($"BreakerTheMagicalWarriorCondition : playerSpellsCount {playerSpellsCount}");
+            Console.WriteLine($"BreakerTheMagicalWarriorCondition : playerSpellsCount {playerSpellsCount}");
             bool playerHasSpells = playerSpellsCount > 0;
             if (canActivate && playerHasSpells)
-                ConsoleUtils.PrintColored($"BreakerTheMagicalWarrior: Can activate Breaker The Magical Warrior");
+                Console.WriteLine($"BreakerTheMagicalWarrior: Can activate Breaker The Magical Warrior");
             return canActivate && playerHasSpells;
         }
 
