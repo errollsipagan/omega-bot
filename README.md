@@ -10,9 +10,7 @@ Duel Bot Wrapper is Omega Custom Duel BOT API of [Yu-Gi-Oh!](https://www.yugioh-
 ## ✨ Features
 
 - **Create your BOT**
-  - Battle against tens of thousands of other players in MyCard Ladder, striving to become the strongest. Rankings are announced and rewards are distributed at 22:00 on the last day of each month.
-- **Soon...**
-  - Soon....
+  - DuelBotWrapper is a C# wrapper for the Omega custom duel bot API. It allows you to create and customize your own bot to interact with the game, automating actions like playing cards and responding to effects. "Create your bot" means building a personalized bot to suit your needs in the game.
 - **Soon...**
   - Soon....
 
