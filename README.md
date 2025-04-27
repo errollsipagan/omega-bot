@@ -47,9 +47,9 @@ YGO Omega is developed in [Duelist Unite](https://duelistsunite.org/) community,
 
 ## 🐛 Known Issues <a name="faq"></a>
 
-- [ ] [AttackableCards[index].DeclareAttack() -> When choosing the attacker (e.g., index = 2) [index is the monster that will attack, in this case, my field with 3 monsters], the index is reset to zero when it enters DuelBotWrapper.cs.]
+- [ ] `AttackableCards[index].DeclareAttack()`-> When choosing the attacker (e.g., index = 2) [index is the monster that will attack, in this case, my field with 3 monsters], the index is reset to zero when it enters DuelBotWrapper.cs.
 
-- [ ] [OnSelectDisfield -> It's not operating correctly, and the game crashes when it's called. When the Bot summons Ojama King, OnSelectDisfield is called, and when it reaches the line of code `pkt.Write(selectDisfieldResponse);`, the duel ends unexpectedly.]
+- [ ] OnSelectDisfield -> It's not operating correctly, and the game crashes when it's called. When the Bot summons Ojama King, OnSelectDisfield is called, and when it reaches the line of code `pkt.Write(selectDisfieldResponse);`, the duel ends unexpectedly.
 
 ## ❓ FAQ <a name="faq"></a>
 
