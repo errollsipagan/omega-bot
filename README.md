@@ -42,7 +42,7 @@ YGO Omega is developed in [Duelist Unite](https://duelistsunite.org/) community,
 
 ## 👥 Authors <a name="authors"></a>
 
-- Kunogi ([@Kunogi](https://gitlab.com/Kunogi))
+- Kunogi ([@Kunogi](https://gitlab.com/Kunogi)) - Creating Duelists Unite Omega Custom Duel Bot API.
 - BBeretta ([@BPBCoding](https://gitlab.com/BPBCoding))
 
 ## 🐛 Known Issues <a name="faq"></a>
