@@ -20,14 +20,25 @@ Duel Bot Wrapper is Omega Custom Duel BOT API of [Yu-Gi-Oh!](https://www.yugioh-
 - **Soon...**
   - Soon....
 
-## 💻 Getting Started <a name="getting-started"></a>
-Soon...
+## 💻 Getting Started
+
+  - [🎮 **YGO Omega** ]
+    - Run YGO Omega
+    - Create a Duel
+    - Select AI_CUSTOM
+
+  - [🛠 **Bot Actions** ]
+    - Run Bot (Visual Studio or Bot.exe)
+    - Select the Duel Format
+    - Select the Deck
+    - It's time to duel!!
+
 
 ## 🔭 Future Features <a name="future-features"></a>
 
-- [ ] **[new_feature_1]**
-- [ ] **[new_feature_2]**
-- [ ] **[new_feature_3]**
+- [ ] **[Insert the Deck Hash directly from the console and the bot will execute its basic actions.]**
+- [ ] **[Create default actions for the most common cards.]**
+- [ ] **[Soon...]**
 
 
 ## 🤝 Contributing <a name="contributing"></a>
@@ -43,7 +54,9 @@ YGO Omega is developed in [Duelist Unite](https://duelistsunite.org/) community,
 ## 👥 Authors <a name="authors"></a>
 
 - Kunogi ([@Kunogi](https://gitlab.com/Kunogi)) - Creating Duelists Unite Omega Custom Duel Bot API.
-- BBeretta ([@BPBCoding](https://gitlab.com/BPBCoding))
+- BBeretta ([@BPBCoding](https://gitlab.com/BPBCoding)) - Creation of templates and bot actions.
+- IceYGO/windbot ([IceYGO/windbot](https://github.com/IceYGO/windbot)) - Bots and flow ideas are extracted from this project. Credit goes to their contributions.
+
 
 ## 🐛 Known Issues <a name="faq"></a>
 
@@ -52,8 +65,6 @@ YGO Omega is developed in [Duelist Unite](https://duelistsunite.org/) community,
 - [ ] OnSelectDisfield -> It's not operating correctly, and the game crashes when it's called. When the Bot summons Ojama King, OnSelectDisfield is called, and when it reaches the line of code `pkt.Write(selectDisfieldResponse);`, the duel ends unexpectedly.
 
 ## ❓ FAQ <a name="faq"></a>
-
-> Add at least 2 questions new developers would ask when they decide to use your project.
 
 - **[Question_1]**
 
