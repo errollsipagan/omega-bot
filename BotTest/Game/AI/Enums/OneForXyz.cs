@@ -1,4 +1,4 @@
-﻿namespace DuelBot.Game.AI.Enums
+﻿namespace BotTest.Game.AI.Enums
 {
     public enum OneForXyz
     {

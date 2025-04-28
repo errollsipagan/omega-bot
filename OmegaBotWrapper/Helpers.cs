@@ -95,6 +95,16 @@ namespace OmegaBotWrapper
             return true;
         }
         /// <summary>
+        /// Extension methods for card collections.
+        /// </summary>
+        public static bool TryGetByID(this IEnumerable<DynamicCard> cards, int id, out DynamicCard card, out int index)
+        {
+            var cardList = cards.ToList();
+            index = cardList.FindIndex(c => c.ID == id);
+            card = index >= 0 ? cardList[index] : default;
+            return index >= 0;
+        }
+        /// <summary>
         /// value representing the status this card will use on the battle on its current state
         /// </summary>
         /// <param name="card">Card reference</param>
@@ -205,5 +215,8 @@ namespace OmegaBotWrapper
         /// <param name="cardid">Card ID being searched for</param>
         /// <returns>True if the card xyz material count is equal or bigger than the desired count and at least one of the desired card ID is found, false otherwise</returns>
         public static bool HasXyzMaterial(this DynamicCard card, int count, int cardid) => card.HasXyzMaterial(count) && card.Overlays.Contains(cardid);
+
+        public static bool HasAttribute(this DynamicCard card, CardAttribute attribute) => (card.Attribute & (byte)attribute) != 0;
+
     }
 }

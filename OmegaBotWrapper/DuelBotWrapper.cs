@@ -446,5 +446,13 @@ namespace OmegaBotWrapper
                 endPoint = endPoint.Remove(endPoint.Length - 1);
             return await WebHandler.DownloadObject<DBCardList>(endPoint);
         }
+        /// <summary>
+        /// While on end screen on rematchable duel it will send the rematch request as if you tapped rematch
+        /// </summary>
+        /// <returns>Rematch Duel</returns>
+        public static Task RematchDuel()
+        {
+            return WebHandler.DownloadString($"{Const.REMATCH_DUEL}");
+        }
     }
 }
