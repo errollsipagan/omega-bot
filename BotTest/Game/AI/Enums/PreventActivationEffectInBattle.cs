@@ -1,4 +1,4 @@
-﻿namespace DuelBot.Game.AI.Enums
+﻿namespace BotTest.Game.AI.Enums
 {
     public enum PreventActivationEffectInBattle
     {
@@ -11,5 +11,6 @@
         SamuraiDestroyer = 40509732,
         ArmadesKeeperOfBoundaries = 88033975,
         NumberS39UtopiaTheLightning = 56832966,
+        DualAvatarEmpoweredKonGyo = 33026283
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace DuelBot.Game.AI.Enums
+﻿namespace BotTest.Game.AI.Enums
 {
     /// <summary>
     /// Cards that are can't be selected as target, or immuned to most effect.
@@ -47,7 +47,10 @@
         DisdainfulBirdofParadise = 27240101,
         DarkestDiabolosLordOfTheLair = 50383626,
         Blackwing_FullArmoredWing = 54082269,
-        The_Arrival_CyberseIgnister = 11738489,
-        RedEyesDarkDragoon = 3788794
+        DragunofRedEyes = 37818794,
+        RedEyesBDragon = 74677422, // sometimes the name of DragunofRedEyes will be changed to RedEyesBDragon
+        TheArrivalCyberseIgnister = 11738489,
+        MajespecterPorcupineYamaarashi = 51073802,
+        RaidraptorRisingRebellionFalcon = 71222868
     }
 }

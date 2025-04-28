@@ -57,6 +57,10 @@
         /// End point to request card list with matching filters
         /// </summary>
         public const string GET_MATCHING_CARDS = BASE_API + "/card-list";
+        /// <summary>
+        /// End point to the rematch request
+        /// </summary>
+        public const string REMATCH_DUEL = BASE_API + "/rematch-duel";
     }
     public static class Zones
     {
