@@ -1,10 +1,8 @@
 ﻿using BotTest.Game.Field;
-using BotTest.Utils;
 using OmegaBotWrapper;
 using OmegaBotWrapper.Enum;
 using OmegaBotWrapper.States;
 using OmegaBotWrapper.Struct;
-
 
 #pragma warning disable 1998
 #pragma warning disable 8602
@@ -533,6 +531,26 @@ namespace BotTest.Game.Base
         {
             Console.WriteLine($"Current Duel Phase: {(DuelPhase)BotWrapper.CurrentStateHeader.CurrentPhase}");
             return (DuelPhase)BotWrapper.CurrentStateHeader.CurrentPhase;
+        }
+
+        /// <summary>
+        /// Checks the current state of the bot from the CurrentStateCode.
+        /// </summary>
+        /// <returns>Value of the BotState enum representing the current state of the bot.</returns>
+        public BotState GetCurrentBotState()
+        {
+            Console.WriteLine($"Current State: {(DuelPhase)BotWrapper.CurrentStateHeader.CurrentPhase}");
+            return (BotState)BotWrapper.CurrentStateHeader.CurrentStateCode;
+        }
+
+        /// <summary>
+        /// Gets the name of the bot's current state.
+        /// </summary>
+        /// <returns>String with the name of the bot's current state.</returns>
+        public string GetCurrentStateName()
+        {
+            Console.WriteLine($"Current State Name: {(DuelPhase)BotWrapper.CurrentStateHeader.CurrentPhase}");
+            return BotWrapper.CurrentStateHeader.CurrentStateName;
         }
 
         /// <summary>

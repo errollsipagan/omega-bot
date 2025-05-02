@@ -91,12 +91,6 @@ namespace BotTest.Game.AI.Bots.SpeedDuel.SuperDuck
 
             BotAction(
                 action: MainAction.Repos,
-                cardId: SuperDuckCardId.DragonZombie,
-                condition: ReposableCondition
-            );
-
-            BotAction(
-                action: MainAction.Repos,
                 cardId: SuperDuckCardId.CyberEndDragon,
                 condition: ReposableCondition
             );
@@ -183,7 +177,6 @@ namespace BotTest.Game.AI.Bots.SpeedDuel.SuperDuck
                 Console.WriteLine($"[Descriptions cards] => {cards}");
             }
 
-            //bool wabokuIsFaceUp = await _gameField.IsCardInBotZone(SuperDuckCardId.Waboku, CardLocation.SpellZone, isOwnSide: false);
             bool battleStartPhase = GetCurrentDuelPhase() == DuelPhase.BattleStart;
             bool currentBotPlayer = GetCurrentPlayer() == 1; //Opponent/Player/Enemy
             if (state.SelectableCards.TryGetByID(SuperDuckCardId.Waboku, out var card, out var index) &&
@@ -195,12 +188,19 @@ namespace BotTest.Game.AI.Bots.SpeedDuel.SuperDuck
                 return index;
             }
 
-            if (state.SelectableCards.TryGetByID(SuperDuckCardId.FloodgateTrapHole, out _, out index) &&
-                !_selectChainMap.ContainsKey(card.ID))
+            if (state.SelectableCards.TryGetByID(SuperDuckCardId.FloodgateTrapHole, out _, out index))
             {
-                _selectChainMap.Add(SuperDuckCardId.FloodgateTrapHole, true);
-                return index;
+                bool isUniqueTrap = _gameField.IsUniqueTrapChain(SuperDuckCardId.FloodgateTrapHole).Result;
+                if (!isUniqueTrap)
+                    return index;
             }
+
+            //if (state.SelectableCards.TryGetByID(SuperDuckCardId.FloodgateTrapHole, out card, out index) &&
+            //    !_selectChainMap.ContainsKey(card.ID))
+            //{
+            //    _selectChainMap.Add(card.ID, true); //unique trap
+            //    return index;
+            //}
 
             if (state.SelectableCards.TryGetByID(SuperDuckCardId.JustiBreak, out _, out index))
                 return index;

@@ -504,6 +504,12 @@ namespace BotTest.Game.Field
 
             return botCards;
         }
+
+        public async Task<bool> IsUniqueTrapChain(int trap)
+        {
+            var trapCards = await GetCardsInLocation(CardLocation.SpellZone);
+            return trapCards.Any(card => card.IsCode(trap) && card.IsFaceup()); ;
+        }
     }
 
 }

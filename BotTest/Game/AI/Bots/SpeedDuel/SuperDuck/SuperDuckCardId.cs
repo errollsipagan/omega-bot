@@ -34,7 +34,5 @@
         public const int ArcanaKnightJoker = 0615044;
         public const int SuperVehicroidJumboDrill = 36256625;
         public const int OjamaKing = 90140980;
-
-
     }
 }
