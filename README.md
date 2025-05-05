@@ -33,6 +33,52 @@ Duel Bot Wrapper is Omega Custom Duel BOT API of [Yu-Gi-Oh!](https://www.yugioh-
     - Select the Deck
     - It's time to duel!!
 
+## 🪄 Available Decks <a name="built-with"></a>
+
+### Master Duel <a name="master-duel"></a>
+
+<details>
+  <summary>Blue-Eyes</summary>
+  <ul>
+    <li>Test Only</li>
+  </ul>
+</details>
+
+<details>
+  <summary>Swordsoul</summary>
+  <ul>
+    <li>First Basic combination done! Need updates new logics</li>
+  </ul>
+</details>
+
+### Speed Duel <a name="speed-duel"></a>
+
+<details>
+  <summary>Super Duck</summary>
+  <ul>
+    <li>Skill: Room of Growth</li>
+    <li>Playable!</li>
+    <li>Difficulty: Normal</li>
+  </ul>
+</details>
+
+<details>
+  <summary>Machine Angel Ascension</summary>
+  <ul>
+    <li>Skill: Machine Angel Ascension</li>
+    <li>Playable!</li>
+    <li>Difficulty: Normal</li>
+  </ul>
+</details>
+
+### Rush Duel <a name="rush-duel"></a>
+
+<details>
+  <summary>Seven Road</summary>
+  <ul>
+    <li>Test Only</li>
+  </ul>
+</details>
 
 ## 🔭 Future Features <a name="future-features"></a>
 
@@ -60,16 +106,7 @@ YGO Omega is developed in [Duelist Unite](https://duelistsunite.org/) community,
 
 ## 🐛 Known Issues <a name="faq"></a>
 
-- [ ] `AttackableCards[index].DeclareAttack()`-> When choosing the attacker (e.g., index = 2) [index is the monster that will attack, in this case, my field with 3 monsters], the index is reset to zero when it enters DuelBotWrapper.cs.
+- [ ] `AttackableCards -> DeclareAttack()`-> Regardless of which monster you want to initiate the attack from, from any zone, it always starts in zone 0.
+The server does not recognize which monster I want to attack. It only attacks in order by zone (z0, z1...).
 
-- [ ] OnSelectDisfield -> It's not operating correctly, and the game crashes when it's called. When the Bot summons Ojama King, OnSelectDisfield is called, and when it reaches the line of code `pkt.Write(selectDisfieldResponse);`, the duel ends unexpectedly.
-
-## ❓ FAQ <a name="faq"></a>
-
-- **[Question_1]**
-
-  - [Answer_1]
-
-- **[Question_2]**
-
-  - [Answer_2]
+- [ ] OnSelectDisfield -> It's not operating correctly. Any effect card that involves choosing a zone to disable (Ojama King, Boompoline!!, etc.), the `OnSelectDisfield` action is not recognized on the server. The duel ends unexpectedly.
