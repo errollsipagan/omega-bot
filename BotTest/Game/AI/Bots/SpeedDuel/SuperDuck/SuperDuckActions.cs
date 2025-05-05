@@ -249,7 +249,7 @@ namespace BotTest.Game.AI.Bots.SpeedDuel.SuperDuck
 
                 var botCards = state.SelectableCards
                                     .Select((card, index) => new { Card = card, Index = index })
-                                    .OrderByDescending(x => x.Card.Attack) // Ordena pelo maior Attack
+                                    .OrderByDescending(x => x.Card.Attack) // Order by best Attack
                                     .Take(state.Minimum)
                                     .Select(x => (byte)x.Index)
                                     .ToArray();
