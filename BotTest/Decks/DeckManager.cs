@@ -25,7 +25,8 @@ namespace BotTest.Decks
     /// </summary>
     public enum SpeedDuelDeck
     {
-        SuperDuck
+        SuperDuck,
+        MachineAngelAscension
     }
 
     /// <summary>
@@ -73,6 +74,13 @@ namespace BotTest.Decks
                 (
                     DeckName: "Super Duck",
                     DeckHash: "k2UrsbZkv3n/IqNv3AGG901iDPwskxlBGCTm93YHKwyfiuEB453hP5l7NziypLn/ZgSpB6lb8F+Vpf//EgYQNtHfxgwyC4S7p4sz3NnQzQLCc67HMhRaazKZFMaDzQDpB9lzePJNMAbpA9kDAA=="
+                )
+            },
+                {
+                SpeedDuelDeck.MachineAngelAscension,
+                (
+                    DeckName: "Machine Angel Ascension",
+                    DeckHash: "k2IrsLZkLxBNZQRhKe18ZhDeuL+MFYT7mmexwLBSgjkDDM8P8QPjL7XRrDD8Xj2Q4a9XEhMIP+Sax9g9XZzhzoZulqMJcxhMCuNZD0++ySh6ZgMTDMtqJzODMMh+AA=="
                 )
             }
         };
