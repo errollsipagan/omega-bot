@@ -109,4 +109,4 @@ YGO Omega is developed in [Duelist Unite](https://duelistsunite.org/) community,
 - [ ] `AttackableCards -> DeclareAttack()`-> Regardless of which monster you want to initiate the attack from, from any zone, it always starts in zone 0.
 The server does not recognize which monster I want to attack. It only attacks in order by zone (z0, z1...).
 
-- [ ] OnSelectDisfield -> It's not operating correctly. Any effect card that involves choosing a zone to disable (Ojama King, Boompoline!!, etc.), the `OnSelectDisfield` action is not recognized on the server. The duel ends unexpectedly.
+- [ ] `OnSelectDisfield` -> It's not operating correctly. Any effect card that involves choosing a zone to disable (Ojama King, Boompoline!!, etc.), the `OnSelectDisfield` action is not recognized on the server. The duel ends unexpectedly.
