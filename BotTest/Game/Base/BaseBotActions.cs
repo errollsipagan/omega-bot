@@ -206,8 +206,22 @@ namespace BotTest.Game.Base
         /// </summary>
         public virtual async Task<IList<byte>?> OnSelectCard(SelectCardData state)
         {
-            Console.WriteLine($"OnSelectCard");
-            Console.WriteLine($"[OnSelectCard] => {(DHint)state.SelectionHint}");
+            Console.WriteLine($"[NORMAL ACTIONS!] [OnSelectCard] => {(DHint)state.SelectionHint}");
+
+            if (state.SelectionHint.Equals((int)DHint.TARGET))
+            {
+                var botCards = state.SelectableCards
+                                    .Select((card, index) => new { Card = card, Index = index })
+                                    .OrderByDescending(x => x.Card.Attack) // Order by best Attack
+                                    .Take(state.Minimum)
+                                    .Select(x => (byte)x.Index)
+                                    .ToArray();
+                if (botCards.Any())
+                {
+                    Console.WriteLine($"Selected {botCards.Length} cards for TARGET.");
+                    return botCards;
+                }
+            }
 
             if (state.SelectionHint.Equals((int)DHint.ATTACKTARGET))
             {
@@ -236,7 +250,24 @@ namespace BotTest.Game.Base
                 // Respect Minimum (or Maximum if needed)
                 if (botCards.Any())
                 {
-                    Console.WriteLine($"Selected {botCards.Length} bot-owned cards for destruction.");
+                    Console.WriteLine($"Selected {botCards.Length} cards for DESTROY.");
+                    return botCards;
+                }
+            }
+
+            if (state.SelectionHint.Equals((int)DHint.REMOVE))
+            {
+                Console.WriteLine("OnSelectCard - Selecting Card to REMOVE");
+
+                // Filter cards where Owner = 1 (Player) because using Player Vision
+                var botCards = state.SelectableCards.Select((card, index) => new { Card = card, Index = index })
+                                                    .Where(x => x.Card.Owner == 1)
+                                                    .Take(state.Minimum)
+                                                    .Select(x => (byte)x.Index).ToArray();
+                // Respect Minimum (or Maximum if needed)
+                if (botCards.Any())
+                {
+                    Console.WriteLine($"Selected {botCards.Length} cards for REMOVE.");
                     return botCards;
                 }
             }
@@ -366,7 +397,6 @@ namespace BotTest.Game.Base
         public virtual async Task<int> OnAnnounceCard(AnnounceCardData state)
         {
             Console.WriteLine("OnAnnounceCard");
-
             var filters = state.AppliableFilters;
             var cards = await DuelBotWrapper.GetMatchingCards(filters);
             Random rng = new();

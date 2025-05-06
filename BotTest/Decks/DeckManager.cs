@@ -26,7 +26,8 @@ namespace BotTest.Decks
     public enum SpeedDuelDeck
     {
         SuperDuck,
-        MachineAngelAscension
+        MachineAngelAscension,
+        Amazoness
     }
 
     /// <summary>
@@ -76,11 +77,20 @@ namespace BotTest.Decks
                     DeckHash: "k2UrsbZkv3n/IqNv3AGG901iDPwskxlBGCTm93YHKwyfiuEB453hP5l7NziypLn/ZgSpB6lb8F+Vpf//EgYQNtHfxgwyC4S7p4sz3NnQzQLCc67HMhRaazKZFMaDzQDpB9lzePJNMAbpA9kDAA=="
                 )
             },
-                {
+            {
                 SpeedDuelDeck.MachineAngelAscension,
                 (
                     DeckName: "Machine Angel Ascension",
                     DeckHash: "k2IrsLZkLxBNZQRhKe18ZhDeuL+MFYT7mmexwLBSgjkDDM8P8QPjL7XRrDD8Xj2Q4a9XEhMIP+Sax9g9XZzhzoZulqMJcxhMCuNZD0++ySh6ZgMTDMtqJzODMMh+AA=="
+                )
+            }
+            ,
+            {
+                SpeedDuelDeck.Amazoness,
+                (
+                    DeckName: "Amazoness",
+                    //DeckHash: "k2F7rx7IsGz2F0YQblGtY1iT9hmOG35wssKwb0sWMwzv2/CDBYbbeG6wgjCb1EcGEP5SG8162tqSvXu6OMOdDd0sc67HMjx/+4PJpDCe1dvmJDPIDhD2+17KCMIbpH4z+8YdANsFAA=="
+                    DeckHash: "k2E7bW3Jzib1kQGE23husILwstlfGBt+cLLCMIi/Ju0zAwx/qY1m9W3JYobhFtU6hvfqgQz7NvxggeHu6eIMdzZ0s8y5Hsvw/O0PJpPCeFZvm5PMft9LGUF4g9RvsD4Q9o07wAByBwA="
                 )
             }
         };

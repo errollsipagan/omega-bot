@@ -14,7 +14,7 @@ namespace BotTest.Game.AI.Bots.SpeedDuel.MachineAngelAscension
         {
             DeckName = DeckManager.GetDeckName(deck);
             DeckHash = DeckManager.GetDeckHash(deck);
-            InitializeCardInfo<SuperDuckCardId>();
+            InitializeCardInfo<MachineAngelAscensionCardId>();
 
             BotAction(
                 action: MainAction.Activate,

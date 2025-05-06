@@ -387,11 +387,20 @@ namespace BotTest.Game.Field
         /// <returns>DynamicCard with the highest attack or defense in the specified location</returns>
         public async Task<IEnumerable<DynamicCard>> GetMonsterInLocation(CardLocation location, int controller = 0)
         {
+            await GetBotField();
             var monsters = await GetCardsWithTypeInLocation(location, CardType.Monster, controller);
             return monsters
                 .Where(card => card.IsFaceup())
                 .OrderByDescending(card => card.ID)
                 .ToList();
+        }
+
+        public async Task<IEnumerable<DynamicCard>> GetCardsInSpellTrapZone()
+        {
+            await GetBotField();
+            var spellTrapsCards = await GetCardsInLocation(CardLocation.SpellZone);
+            var filteredCards = spellTrapsCards.Where(card => card.HasType(CardType.Spell) && card.HasType(CardType.Trap) && card.Cover == 0); //remove skill
+            return filteredCards;
         }
 
         /// <summary>
@@ -445,6 +454,13 @@ namespace BotTest.Game.Field
         {
             var handCards = await GetCardsInLocation(CardLocation.Hand);
             return handCards.Where(card => (card.Attribute & (byte)attribute) != 0).ToList();
+        }
+
+        public async Task<List<DynamicCard>> GetCardsInHand()
+        {
+            await GetBotField();
+            var handCards = await GetCardsInLocation(CardLocation.Hand);
+            return handCards;
         }
 
         /// <summary>

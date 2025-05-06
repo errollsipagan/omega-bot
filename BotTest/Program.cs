@@ -21,6 +21,7 @@ using BotTest.Game.AI.Bots.MasterDuel.BlueEyes;
 using BotTest.Game.AI.Bots.MasterDuel.DarkMagician;
 using BotTest.Game.AI.Bots.MasterDuel.SwordSoul;
 using BotTest.Game.AI.Bots.RushDuel.SevensRoad;
+using BotTest.Game.AI.Bots.SpeedDuel.Amazoness;
 using BotTest.Game.AI.Bots.SpeedDuel.MachineAngelAscension;
 using BotTest.Game.AI.Bots.SpeedDuel.SuperDuck;
 using BotTest.Game.Base;
@@ -74,6 +75,7 @@ namespace BotTest
                     {
                         SpeedDuelDeck.SuperDuck => new SuperDuckActions((SpeedDuelDeck)selectedDeck.Id),
                         SpeedDuelDeck.MachineAngelAscension => new MachineAngelAscensionActions((SpeedDuelDeck)selectedDeck.Id),
+                        SpeedDuelDeck.Amazoness => new AmazonessActions((SpeedDuelDeck)selectedDeck.Id),
                         _ => throw new InvalidOperationException($"No bot actions defined for Speed Duel DeckId: {selectedDeck.Id}")
                     },
                     DuelFormat.RushDuel => selectedDeck.Id switch
@@ -141,7 +143,7 @@ namespace BotTest
 
             do
             {
-                Console.Clear();
+                //Console.Clear();
                 Console.WriteLine(prompt);
                 Console.WriteLine();
 
@@ -176,7 +178,7 @@ namespace BotTest
                 }
             } while (key != ConsoleKey.Enter);
 
-            Console.Clear();
+            //Console.Clear();
             return selectedIndex;
         }
     }
