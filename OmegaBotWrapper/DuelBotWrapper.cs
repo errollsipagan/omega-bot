@@ -440,10 +440,12 @@ namespace OmegaBotWrapper
         public static async Task<DBCardList> GetMatchingCards(params int[] filters)
         {
             var endPoint = $"{Const.GET_MATCHING_CARDS}/";
-            foreach (var filter in filters)
-                endPoint = $"filter,";
-            if (endPoint.EndsWith(','))
-                endPoint = endPoint.Remove(endPoint.Length - 1);
+
+            if (filters != null && filters.Length > 0)
+            {
+                var filter = string.Join(",", filters);
+                endPoint += $"{filter}";
+            }
             return await WebHandler.DownloadObject<DBCardList>(endPoint);
         }
         /// <summary>

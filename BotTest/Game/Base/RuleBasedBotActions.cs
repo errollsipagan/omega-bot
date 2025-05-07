@@ -52,7 +52,7 @@ namespace BotTest.Game.Base
                     string cardDisplay = _cardInfoMap.TryGetValue(rule.CardId, out var cardInfo)
                         ? cardInfo.CardName
                         : rule.CardId.ToString();
-                    Console.WriteLine($"Bot Actions => ExecuteAction. Card: {cardDisplay}");
+                    ConsoleUtils.PrintColored($"Bot Actions => ExecuteAction. Card: {cardDisplay}");
                     return ExecuteAction(rule.Action, (ushort)index);
                 }
             }

@@ -30,7 +30,7 @@ namespace BotTest.Game.Field
         /// <returns>DynamicCard structure with the card data.</returns>
         public async Task<DynamicCard> GetBotFieldCard(int controller, int location, int sequence)
         {
-            //Console.WriteLine($"controller: {controller} / location: {location} / sequence: {sequence}");
+            //ConsoleUtils.PrintColored($"controller: {controller} / location: {location} / sequence: {sequence}");
             return await _botWrapper.GetBotFieldCardInfo(controller, location, sequence);
         }
 
@@ -76,8 +76,8 @@ namespace BotTest.Game.Field
                 {
                     foreach (var cardId in side.MonsterZones[seq].Cards)
                     {
-                        Console.WriteLine($"side.MonsterZones[seq] => {side.MonsterZones[seq].Cards}");                       
-                        Console.WriteLine($"cardId => {cardId}");
+                        ConsoleUtils.PrintColored($"side.MonsterZones[seq] => {side.MonsterZones[seq].Cards}");                       
+                        ConsoleUtils.PrintColored($"cardId => {cardId}");
                         if (cardId > 0)
                         {
                             var card = await GetBotFieldCard(controller, (int)CardLocation.MonsterZone, seq);
@@ -310,7 +310,7 @@ namespace BotTest.Game.Field
                             }
                             catch (Exception ex) when (ex.Message.Contains("404") || ex.Message.Contains("No card found"))
                             {
-                                Console.WriteLine("******** Ignore 404 errors (no card at coordinates) ********");
+                                ConsoleUtils.PrintColored("******** Ignore 404 errors (no card at coordinates) ********");
                                 // Ignore 404 errors (no card at coordinates)
                                 continue;
                             }
@@ -349,7 +349,7 @@ namespace BotTest.Game.Field
                                 }
                                 catch (Exception ex) when (ex.Message.Contains("404") || ex.Message.Contains("No card found"))
                                 {
-                                    Console.WriteLine("******** Ignore 404 errors (no card at coordinates) ********");
+                                    ConsoleUtils.PrintColored("******** Ignore 404 errors (no card at coordinates) ********");
                                     // Ignore 404 errors (no card at coordinates)
                                     continue;
                                 }
@@ -387,11 +387,20 @@ namespace BotTest.Game.Field
         /// <returns>DynamicCard with the highest attack or defense in the specified location</returns>
         public async Task<IEnumerable<DynamicCard>> GetMonsterInLocation(CardLocation location, int controller = 0)
         {
+            await GetBotField();
             var monsters = await GetCardsWithTypeInLocation(location, CardType.Monster, controller);
             return monsters
                 .Where(card => card.IsFaceup())
                 .OrderByDescending(card => card.ID)
                 .ToList();
+        }
+
+        public async Task<IEnumerable<DynamicCard>> GetCardsInSpellTrapZone()
+        {
+            await GetBotField();
+            var spellTrapsCards = await GetCardsInLocation(CardLocation.SpellZone);
+            var filteredCards = spellTrapsCards.Where(card => card.HasType(CardType.Spell) && card.HasType(CardType.Trap) && card.Cover == 0); //remove skill
+            return filteredCards;
         }
 
         /// <summary>
@@ -447,6 +456,13 @@ namespace BotTest.Game.Field
             return handCards.Where(card => (card.Attribute & (byte)attribute) != 0).ToList();
         }
 
+        public async Task<List<DynamicCard>> GetCardsInHand()
+        {
+            await GetBotField();
+            var handCards = await GetCardsInLocation(CardLocation.Hand);
+            return handCards;
+        }
+
         /// <summary>
         /// Checks if there is a card with the specified type in a given location
         /// </summary>
@@ -499,7 +515,7 @@ namespace BotTest.Game.Field
 
             if (botCards.Any())
             {
-                Console.WriteLine($"Selected {botCards.Length} cards with ID {cardId}.");
+                ConsoleUtils.PrintColored($"Selected {botCards.Length} cards with ID {cardId}.");
             }
 
             return botCards;

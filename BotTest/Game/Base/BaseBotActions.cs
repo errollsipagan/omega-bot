@@ -1,4 +1,5 @@
 ﻿using BotTest.Game.Field;
+using BotTest.Utils;
 using OmegaBotWrapper;
 using OmegaBotWrapper.Enum;
 using OmegaBotWrapper.States;
@@ -79,7 +80,7 @@ namespace BotTest.Game.Base
         /// </summary>
         public virtual async Task<BattleCmdResponse> OnBattleCmd(BattleCmdData state)
         {
-            Console.WriteLine("OnBattleCmd - Optimized Smart Attack Logic with Defender Index Tracking");
+            ConsoleUtils.PrintColored("OnBattleCmd - Optimized Smart Attack Logic with Defender Index Tracking");
 
             //Gets the BOT (Enemy) monsters that can attack, sorted by attack (highest first)
             var attackableCards = state.AttackableCards
@@ -89,7 +90,7 @@ namespace BotTest.Game.Base
 
             if (!attackableCards.Any())
             {
-                Console.WriteLine("No attackable cards available.");
+                ConsoleUtils.PrintColored("No attackable cards available.");
                 _selectedDefenderIndex = null; // Resets the selected defender
                 if (state.CanMainPhaseTwo)
                     return BattleAction.ToMainPhaseTwo;
@@ -108,12 +109,12 @@ namespace BotTest.Game.Base
                 var directAttacker = attackableCards.FirstOrDefault(card => card.CanDirectAttack);
                 if (directAttacker.ID > 0 && directAttacker.ID > 0 && state.AttackableCards.TryGetByID(directAttacker.ID, out DynamicCard _, out int index))
                 {
-                    Console.WriteLine($"Direct Attack with Card ID: {directAttacker.ID}, Attack: {directAttacker.Attack}, Index: {index}");
+                    ConsoleUtils.PrintColored($"Direct Attack with Card ID: {directAttacker.ID}, Attack: {directAttacker.Attack}, Index: {index}");
                     _selectedDefenderIndex = null; // No defender for direct attack
                     return state.AttackableCards[index].DeclareAttack();
                     //return new BattleCmdResponse(BattleAction.Attack, (ushort)index);
                 }
-                Console.WriteLine("No direct attack possible.");
+                ConsoleUtils.PrintColored("No direct attack possible.");
                 _selectedDefenderIndex = null;
                 if (state.CanMainPhaseTwo)
                     return BattleAction.ToMainPhaseTwo;
@@ -123,7 +124,7 @@ namespace BotTest.Game.Base
             // Select the attacker with the highest attack
             var bestAttacker = attackableCards.First(); // First in the ordered list (highest attack)
             int attackerPower = bestAttacker.GetRealPower();
-            Console.WriteLine($"Selected best attacker: ID {bestAttacker.ID}, Power {attackerPower}");
+            ConsoleUtils.PrintColored($"Selected best attacker: ID {bestAttacker.ID}, Power {attackerPower}");
 
             // Try to attack the defender with the highest defense (or face-down)
             foreach (var target in opponentMonsters)
@@ -142,7 +143,7 @@ namespace BotTest.Game.Base
                 {
                     if (state.AttackableCards.TryGetByID(bestAttacker.ID, out DynamicCard _, out int index))
                     {
-                        Console.WriteLine($"Attacking face-up monster (ID: {defender.ID}, Power: {defenderPower}, Field Index: {defenderIndex}) with Card ID: {bestAttacker.ID}, Power: {attackerPower}, Attacker Index: {index}");
+                        ConsoleUtils.PrintColored($"Attacking face-up monster (ID: {defender.ID}, Power: {defenderPower}, Field Index: {defenderIndex}) with Card ID: {bestAttacker.ID}, Power: {attackerPower}, Attacker Index: {index}");
                         _selectedDefenderIndex = (byte)defenderIndex; // store index defender
                         return state.AttackableCards[index].DeclareAttack();
                         //return new BattleCmdResponse(BattleAction.Attack, (ushort)index);
@@ -152,7 +153,7 @@ namespace BotTest.Game.Base
                 {
                     if (state.AttackableCards.TryGetByID(bestAttacker.ID, out DynamicCard _, out int index))
                     {
-                        Console.WriteLine($"Attacking face-down monster (ID: {defender.ID}, Field Index: {defenderIndex}) with Card ID: {bestAttacker.ID}, Power: {attackerPower}, Attacker Index: {index}");
+                        ConsoleUtils.PrintColored($"Attacking face-down monster (ID: {defender.ID}, Field Index: {defenderIndex}) with Card ID: {bestAttacker.ID}, Power: {attackerPower}, Attacker Index: {index}");
                         _selectedDefenderIndex = (byte)defenderIndex; // store index defender
                         return state.AttackableCards[index].DeclareAttack();
                         //return new BattleCmdResponse(BattleAction.Attack, (ushort)index);
@@ -161,7 +162,7 @@ namespace BotTest.Game.Base
             }
 
             // If there are no advantageous targets, move to Main Phase 2 or end the turn.
-            Console.WriteLine("No advantageous attack targets found.");
+            ConsoleUtils.PrintColored("No advantageous attack targets found.");
             _selectedDefenderIndex = null; // Resets the selected defender
             if (state.CanMainPhaseTwo)
                 return BattleAction.ToMainPhaseTwo;
@@ -180,7 +181,7 @@ namespace BotTest.Game.Base
         /// </summary>
         public virtual async Task<IdleCmdResponse> OnIdleCmd(IdleCmdData state)
         {
-            Console.WriteLine("OnIdleCmd");
+            ConsoleUtils.PrintColored("OnIdleCmd");
 
             if (state.SummonableCards.Any())
                 return state.SummonableCards.First().NormalSummon();
@@ -194,7 +195,7 @@ namespace BotTest.Game.Base
         /// </summary>
         public virtual async Task<int> OnSelectChain(SelectChainData state)
         {
-            Console.WriteLine("OnSelectChain");
+            ConsoleUtils.PrintColored("OnSelectChain");
 
             if (!state.Forced)
                 return -1;
@@ -206,19 +207,33 @@ namespace BotTest.Game.Base
         /// </summary>
         public virtual async Task<IList<byte>?> OnSelectCard(SelectCardData state)
         {
-            Console.WriteLine($"OnSelectCard");
-            Console.WriteLine($"[OnSelectCard] => {(DHint)state.SelectionHint}");
+            ConsoleUtils.PrintColored($"[NORMAL ACTIONS!] [OnSelectCard] => {(DHint)state.SelectionHint}");
+
+            if (state.SelectionHint.Equals((int)DHint.TARGET))
+            {
+                var botCards = state.SelectableCards
+                                    .Select((card, index) => new { Card = card, Index = index })
+                                    .OrderByDescending(x => x.Card.Attack) // Order by best Attack
+                                    .Take(state.Minimum)
+                                    .Select(x => (byte)x.Index)
+                                    .ToArray();
+                if (botCards.Any())
+                {
+                    ConsoleUtils.PrintColored($"Selected {botCards.Length} cards for TARGET.");
+                    return botCards;
+                }
+            }
 
             if (state.SelectionHint.Equals((int)DHint.ATTACKTARGET))
             {
-                Console.WriteLine("OnSelectCard - Selecting Defender");
+                ConsoleUtils.PrintColored("OnSelectCard - Selecting Defender");
 
                 if (_selectedDefenderIndex.HasValue)
                 {
                     // Checks whether defenderIndex is valid and meets selection requirements
                     if (state.Minimum <= 1 && state.Maximum >= 1)
                     {
-                        Console.WriteLine($"Selecting defender with index: {_selectedDefenderIndex.Value}");
+                        ConsoleUtils.PrintColored($"Selecting defender with index: {_selectedDefenderIndex.Value}");
                         return new List<byte> { _selectedDefenderIndex.Value };
                     }
                 }
@@ -226,7 +241,7 @@ namespace BotTest.Game.Base
 
             if (state.SelectionHint.Equals((int)DHint.DESTROY))
             {
-                Console.WriteLine("OnSelectCard - Selecting Card to DESTROY");
+                ConsoleUtils.PrintColored("OnSelectCard - Selecting Card to DESTROY");
 
                 // Filter cards where Owner = 1 (Player) because using Player Vision
                 var botCards = state.SelectableCards.Select((card, index) => new { Card = card, Index = index })
@@ -236,13 +251,30 @@ namespace BotTest.Game.Base
                 // Respect Minimum (or Maximum if needed)
                 if (botCards.Any())
                 {
-                    Console.WriteLine($"Selected {botCards.Length} bot-owned cards for destruction.");
+                    ConsoleUtils.PrintColored($"Selected {botCards.Length} cards for DESTROY.");
+                    return botCards;
+                }
+            }
+
+            if (state.SelectionHint.Equals((int)DHint.REMOVE))
+            {
+                ConsoleUtils.PrintColored("OnSelectCard - Selecting Card to REMOVE");
+
+                // Filter cards where Owner = 1 (Player) because using Player Vision
+                var botCards = state.SelectableCards.Select((card, index) => new { Card = card, Index = index })
+                                                    .Where(x => x.Card.Owner == 1)
+                                                    .Take(state.Minimum)
+                                                    .Select(x => (byte)x.Index).ToArray();
+                // Respect Minimum (or Maximum if needed)
+                if (botCards.Any())
+                {
+                    ConsoleUtils.PrintColored($"Selected {botCards.Length} cards for REMOVE.");
                     return botCards;
                 }
             }
 
             // Default logic if defenderIndex is not valid or not available
-            Console.WriteLine("No specific defender index available, using default selection.");
+            ConsoleUtils.PrintColored("No specific defender index available, using default selection.");
             byte[] selection = new byte[state.Minimum];
             for (int i = 0; i < selection.Length; i++)
                 selection[i] = (byte)i;
@@ -254,7 +286,7 @@ namespace BotTest.Game.Base
         /// </summary>
         public virtual async Task<IList<byte>?> OnSelectTribute(SelectTributeData state)
         {
-            Console.WriteLine("OnSelectTribute");
+            ConsoleUtils.PrintColored("OnSelectTribute");
 
             List<byte> resp = new();
             for (byte i = 0; i < state.Minimum; i++)
@@ -267,7 +299,7 @@ namespace BotTest.Game.Base
         /// </summary>
         public virtual async Task<IList<byte>?> OnSelectSum(SelectSumData state)
         {
-            Console.WriteLine("OnSelectSum");
+            ConsoleUtils.PrintColored("OnSelectSum");
 
             int sum = state.Sum;
             int min = state.Minimum;
@@ -325,7 +357,7 @@ namespace BotTest.Game.Base
         /// </summary>
         public virtual async Task<IList<CardAttribute>> OnAnnounceAttribute(AnnounceAttributeData state)
         {
-            Console.WriteLine("OnAnnounceAttribute");
+            ConsoleUtils.PrintColored("OnAnnounceAttribute");
 
             List<CardAttribute> cas = new();
             foreach (CardAttribute ca in System.Enum.GetValues(typeof(CardAttribute)))
@@ -340,7 +372,7 @@ namespace BotTest.Game.Base
         /// </summary>
         public virtual async Task<IList<CardRace>> OnAnnounceRace(AnnounceRaceData state)
         {
-            Console.WriteLine("OnAnnounceRace");
+            ConsoleUtils.PrintColored("OnAnnounceRace");
 
             List<CardRace> cas = new();
             foreach (CardRace ca in System.Enum.GetValues(typeof(CardRace)))
@@ -355,7 +387,7 @@ namespace BotTest.Game.Base
         /// </summary>
         public virtual async Task<int> OnAnnounceNumber(AnnounceNumberData state)
         {
-            Console.WriteLine("OnAnnounceNumber");
+            ConsoleUtils.PrintColored("OnAnnounceNumber");
 
             return state.SelectableOptions[0];
         }
@@ -365,8 +397,7 @@ namespace BotTest.Game.Base
         /// </summary>
         public virtual async Task<int> OnAnnounceCard(AnnounceCardData state)
         {
-            Console.WriteLine("OnAnnounceCard");
-
+            ConsoleUtils.PrintColored("OnAnnounceCard");
             var filters = state.AppliableFilters;
             var cards = await DuelBotWrapper.GetMatchingCards(filters);
             Random rng = new();
@@ -378,7 +409,7 @@ namespace BotTest.Game.Base
         /// </summary>
         public virtual async Task<int> OnAnnounceCardFilter(AnnounceCardFilterData state)
         {
-            Console.WriteLine("OnAnnounceCardFilter");
+            ConsoleUtils.PrintColored("OnAnnounceCardFilter");
 
             var filters = state.AppliableFilters;
             var cards = await DuelBotWrapper.GetMatchingCards(filters);
@@ -391,7 +422,7 @@ namespace BotTest.Game.Base
         /// </summary>
         public virtual async Task<IList<byte>?> OnSelectUnselectCard(SelectUnselectCardData state)
         {
-            Console.WriteLine("OnSelectUnselectCard");
+            ConsoleUtils.PrintColored("OnSelectUnselectCard");
 
             byte[] selection = new byte[state.Minimum];
 
@@ -410,7 +441,7 @@ namespace BotTest.Game.Base
         /// </summary>
         public virtual async Task<IList<short>> OnSelectCounter(SelectCounterData state)
         {
-            Console.WriteLine("OnSelectCounter");
+            ConsoleUtils.PrintColored("OnSelectCounter");
 
             List<short> resp = new();
             short need = state.RequiredQuantity;
@@ -435,7 +466,7 @@ namespace BotTest.Game.Base
         /// </summary>
         public virtual async Task<int> OnSelectDisfield(SelectDisfieldData state)
         {
-            Console.WriteLine("OnSelectDisfield");
+            ConsoleUtils.PrintColored("OnSelectDisfield");
 
             int[] zones = new int[] { Zones.z0, Zones.z1, Zones.z2, Zones.z3, Zones.z4, Zones.z5, Zones.z6 };
             byte seq;
@@ -450,7 +481,7 @@ namespace BotTest.Game.Base
         /// </summary>
         public virtual async Task<int> OnSelectPlace(SelectPlaceData state)
         {
-            Console.WriteLine("OnSelectPlace");
+            ConsoleUtils.PrintColored("OnSelectPlace");
 
             int[] zones = new int[] { Zones.z0, Zones.z1, Zones.z2, Zones.z3, Zones.z4, Zones.z5, Zones.z6 };
             byte seq;
@@ -465,7 +496,7 @@ namespace BotTest.Game.Base
         /// </summary>
         public virtual async Task<bool> OnSelectEffectYn(SelectEffectYnData state)
         {
-            Console.WriteLine("OnSelectEffectYn");
+            ConsoleUtils.PrintColored("OnSelectEffectYn");
 
             return false;
         }
@@ -475,7 +506,7 @@ namespace BotTest.Game.Base
         /// </summary>
         public virtual async Task<bool> OnSelectYesNo(SelectYesNoData state)
         {
-            Console.WriteLine("OnSelectYesNo");
+            ConsoleUtils.PrintColored("OnSelectYesNo");
 
             return false;
         }
@@ -485,7 +516,7 @@ namespace BotTest.Game.Base
         /// </summary>
         public virtual async Task<int> OnSelectOption(SelectOptionData state)
         {
-            Console.WriteLine("OnSelectOption");
+            ConsoleUtils.PrintColored("OnSelectOption");
 
             return 0;
         }
@@ -495,7 +526,7 @@ namespace BotTest.Game.Base
         /// </summary>
         public virtual async Task<byte> OnSelectRockPaperScissors()
         {
-            Console.WriteLine("OnSelectRockPaperScissors");
+            ConsoleUtils.PrintColored("OnSelectRockPaperScissors");
 
             return (byte)new Random().Next(1, 4);
         }
@@ -505,7 +536,7 @@ namespace BotTest.Game.Base
         /// </summary>
         public virtual async Task<CardPosition> OnSelectPosition(SelectPositionData state)
         {
-            Console.WriteLine("OnSelectPosition");
+            ConsoleUtils.PrintColored("OnSelectPosition");
 
             return (CardPosition)state.Positions[0];
         }
@@ -515,7 +546,7 @@ namespace BotTest.Game.Base
         /// </summary>
         public virtual async Task<IList<byte>> OnSortCard(SortCardData state)
         {
-            Console.WriteLine("OnSortCard");
+            ConsoleUtils.PrintColored("OnSortCard");
 
             List<byte> resp = new();
             for (byte i = 0; i < state.SelectableCards.Length; ++i)
@@ -529,7 +560,7 @@ namespace BotTest.Game.Base
         /// <returns>A value from the DuelPhase enum representing the current phase.</returns>
         public DuelPhase GetCurrentDuelPhase()
         {
-            Console.WriteLine($"Current Duel Phase: {(DuelPhase)BotWrapper.CurrentStateHeader.CurrentPhase}");
+            ConsoleUtils.PrintColored($"Current Duel Phase: {(DuelPhase)BotWrapper.CurrentStateHeader.CurrentPhase}");
             return (DuelPhase)BotWrapper.CurrentStateHeader.CurrentPhase;
         }
 
@@ -539,7 +570,7 @@ namespace BotTest.Game.Base
         /// <returns>Value of the BotState enum representing the current state of the bot.</returns>
         public BotState GetCurrentBotState()
         {
-            Console.WriteLine($"Current State: {(DuelPhase)BotWrapper.CurrentStateHeader.CurrentPhase}");
+            ConsoleUtils.PrintColored($"Current State: {(DuelPhase)BotWrapper.CurrentStateHeader.CurrentPhase}");
             return (BotState)BotWrapper.CurrentStateHeader.CurrentStateCode;
         }
 
@@ -549,7 +580,7 @@ namespace BotTest.Game.Base
         /// <returns>String with the name of the bot's current state.</returns>
         public string GetCurrentStateName()
         {
-            Console.WriteLine($"Current State Name: {(DuelPhase)BotWrapper.CurrentStateHeader.CurrentPhase}");
+            ConsoleUtils.PrintColored($"Current State Name: {(DuelPhase)BotWrapper.CurrentStateHeader.CurrentPhase}");
             return BotWrapper.CurrentStateHeader.CurrentStateName;
         }
 
@@ -559,7 +590,7 @@ namespace BotTest.Game.Base
         /// <returns>A value from the DuelPhase enum representing the current phase.</returns>
         public int GetCurrentPlayer()
         {
-            Console.WriteLine($"Current Player: {BotWrapper.CurrentStateHeader.CurrentPlayer}");
+            ConsoleUtils.PrintColored($"Current Player: {BotWrapper.CurrentStateHeader.CurrentPlayer}");
             return BotWrapper.CurrentStateHeader.CurrentPlayer;
         }
     }

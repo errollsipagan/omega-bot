@@ -32,11 +32,11 @@
         /// <summary>
         /// Pendulum Left Scale
         /// </summary>
-        public byte LScale;
+        public sbyte LScale;
         /// <summary>
         /// Pendulum Right Scale
         /// </summary>
-        public byte RScale;
+        public sbyte RScale;
         /// <summary>
         /// Link markers bitmask of this card
         /// </summary>

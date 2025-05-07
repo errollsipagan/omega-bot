@@ -2,6 +2,7 @@
 using BotTest.Game.AI.Bots.MasterDuel.SwordSoul;
 using BotTest.Game.AI.Bots.SpeedDuel.SuperDuck;
 using BotTest.Game.Base;
+using BotTest.Utils;
 using OmegaBotWrapper;
 using OmegaBotWrapper.Enum;
 using OmegaBotWrapper.States;
@@ -14,7 +15,7 @@ namespace BotTest.Game.AI.Bots.SpeedDuel.MachineAngelAscension
         {
             DeckName = DeckManager.GetDeckName(deck);
             DeckHash = DeckManager.GetDeckHash(deck);
-            InitializeCardInfo<SuperDuckCardId>();
+            InitializeCardInfo<MachineAngelAscensionCardId>();
 
             BotAction(
                 action: MainAction.Activate,
@@ -61,12 +62,12 @@ namespace BotTest.Game.AI.Bots.SpeedDuel.MachineAngelAscension
         {
             foreach (var cards in state.SelectableCards)
             {
-                Console.WriteLine($"[OnSelectChain] [Selectable cards] => {cards.ID}");
+                ConsoleUtils.PrintColored($"[OnSelectChain] [Selectable cards] => {cards.ID}");
             }
 
             foreach (var cards in state.Descriptions)
             {
-                Console.WriteLine($"[Descriptions cards] => {cards}");
+                ConsoleUtils.PrintColored($"[Descriptions cards] => {cards}");
             }
 
             if (state.SelectableCards.TryGetByID(MachineAngelAscensionCardId.CyberAngelIdaten, out _, out var index))
@@ -84,7 +85,7 @@ namespace BotTest.Game.AI.Bots.SpeedDuel.MachineAngelAscension
 
         public override async Task<IList<byte>?> OnSelectCard(SelectCardData state)
         {
-            Console.WriteLine("[override][OnSelectCard]" + (DHint)state.SelectionHint);
+            ConsoleUtils.PrintColored("[override][OnSelectCard]" + (DHint)state.SelectionHint);
 
             if (state.SelectionHint.Equals((int)DHint.SPSUMMON))
             {
