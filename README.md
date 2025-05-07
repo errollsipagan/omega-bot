@@ -71,6 +71,15 @@ Duel Bot Wrapper is Omega Custom Duel BOT API of [Yu-Gi-Oh!](https://www.yugioh-
   </ul>
 </details>
 
+<details>
+  <summary>Amazoness</summary>
+  <ul>
+    <li>Skill: Battle City Bestie</li>
+    <li>Playable!</li>
+    <li>Difficulty: Normal/Hard</li>
+  </ul>
+</details>
+
 ### Rush Duel <a name="rush-duel"></a>
 
 <details>
