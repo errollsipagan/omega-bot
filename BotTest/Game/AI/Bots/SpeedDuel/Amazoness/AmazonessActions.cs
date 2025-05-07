@@ -216,19 +216,18 @@ namespace BotTest.Game.AI.Bots.SpeedDuel.Amazoness
 
         public override async Task<int> OnAnnounceCard(AnnounceCardData state)
         {
-            //mindCrushCards.Add(new DBCardInfo
-            //{
-            //    ID = 89631139
-            //});
+            ConsoleUtils.PrintColored($"OnAnnounceCard called!");
 
-            //if (mindCrushCards.Any())
-            //{
-            //    return mindCrushCards.FirstOrDefault().ID;
-            //}
+            //cheater
+            IEnumerable<DynamicCard> playerCards = await _gameField.GetPlayerCardsInHand();
 
-            return 89631139;
+            if (playerCards.Any())
+            {
+                Random rng = new();
+                return playerCards.ElementAt(rng.Next(0, playerCards.Count())).ID;
+            }
 
-            //return await base.OnAnnounceCard(state);
+            return await base.OnAnnounceCard(state);
         }
     }
 }

@@ -309,5 +309,12 @@ namespace BotTest.Game.Field
             var monstersCards = await GetCardsInLocation(CardLocation.MonsterZone);
             return monstersCards.Where(card => (card.ID != 0) && (CardPosition)card.Position == CardPosition.FaceUp).Count();
         }
+
+        public async Task<IEnumerable<DynamicCard>> GetPlayerCardsInHand()
+        {
+            await GetPlayerField();
+            var handCards = await GetPlayerCardsInLocation(CardLocation.Hand);
+            return handCards;
+        }
     }
 }
