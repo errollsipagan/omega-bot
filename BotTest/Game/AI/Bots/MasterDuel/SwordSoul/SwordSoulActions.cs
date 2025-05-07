@@ -1,6 +1,7 @@
 ﻿using BotTest.Decks;
 using BotTest.Game.AI.Bots.SpeedDuel.SuperDuck;
 using BotTest.Game.Base;
+using BotTest.Utils;
 using OmegaBotWrapper;
 using OmegaBotWrapper.Enum;
 using OmegaBotWrapper.States;
@@ -98,7 +99,7 @@ namespace BotTest.Game.AI.Bots.MasterDuel.SwordSoul
 
         public override async Task<IList<byte>?> OnSelectCard(SelectCardData state)
         {
-            Console.WriteLine("[override][OnSelectCard] " + (DHint)state.SelectionHint);
+            ConsoleUtils.PrintColored("[override][OnSelectCard] " + (DHint)state.SelectionHint);
 
             if (state.SelectionHint.Equals((int)DHint.ATOHAND))
             {

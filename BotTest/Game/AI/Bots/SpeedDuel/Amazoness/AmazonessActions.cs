@@ -1,6 +1,7 @@
 ﻿using BotTest.Decks;
 using BotTest.Game.AI.Bots.SpeedDuel.SuperDuck;
 using BotTest.Game.Base;
+using BotTest.Utils;
 using OmegaBotWrapper;
 using OmegaBotWrapper.Enum;
 using OmegaBotWrapper.States;
@@ -115,13 +116,13 @@ namespace BotTest.Game.AI.Bots.SpeedDuel.Amazoness
             botSpellTrap = botSpellTrap.Where(card => card.ID != AmazonessCardId.AmazonessOnslaught).ToArray();
             bool hasSpellTrap = botSpellTrap?.Count() > 0;
 
-            Console.WriteLine($">>>>> [OnSelectEffectYn][override] => {state.EffectCard.ID}");
-            Console.WriteLine($">>>>> hasAmazonessPrincess => {hasAmazonessPrincess}");
-            Console.WriteLine($">>>>> hasOneAmazonessQueen => {hasOneAmazonessQueen}");
-            Console.WriteLine($">>>>> hasTwoAmazonessQueen => {hasTwoAmazonessQueen}");
-            Console.WriteLine($">>>>> hasCardInHand => {hasCardInHand}");
-            Console.WriteLine($">>>>> hasSpellTrap => {hasSpellTrap}");
-            Console.WriteLine($">>>>> OnSelectEffectYn Amazoness Princess Condition => {hasAmazonessPrincess || hasCardInHand || hasSpellTrap}");
+            ConsoleUtils.PrintColored($">>>>> [OnSelectEffectYn][override] => {state.EffectCard.ID}");
+            ConsoleUtils.PrintColored($">>>>> hasAmazonessPrincess => {hasAmazonessPrincess}");
+            ConsoleUtils.PrintColored($">>>>> hasOneAmazonessQueen => {hasOneAmazonessQueen}");
+            ConsoleUtils.PrintColored($">>>>> hasTwoAmazonessQueen => {hasTwoAmazonessQueen}");
+            ConsoleUtils.PrintColored($">>>>> hasCardInHand => {hasCardInHand}");
+            ConsoleUtils.PrintColored($">>>>> hasSpellTrap => {hasSpellTrap}");
+            ConsoleUtils.PrintColored($">>>>> OnSelectEffectYn Amazoness Princess Condition => {hasAmazonessPrincess || hasCardInHand || hasSpellTrap}");
 
             if (state.EffectCard.IsCode(AmazonessCardId.AmazonessPrincess) && (hasAmazonessPrincess || (hasCardInHand && hasOneAmazonessQueen) || hasSpellTrap || !hasTwoAmazonessQueen))
                 return true;
@@ -133,12 +134,12 @@ namespace BotTest.Game.AI.Bots.SpeedDuel.Amazoness
         {
             foreach (var cards in state.SelectableCards)
             {
-                Console.WriteLine($"[OnSelectChain] [override] [Selectable cards] => {cards.ID}");
+                ConsoleUtils.PrintColored($"[OnSelectChain] [override] [Selectable cards] => {cards.ID}");
             }
 
             foreach (var cards in state.Descriptions)
             {
-                Console.WriteLine($"[Descriptions cards] => {cards}");
+                ConsoleUtils.PrintColored($"[Descriptions cards] => {cards}");
             }
 
             if (state.SelectableCards.TryGetByID(AmazonessCardId.AmazonessOnslaught, out _, out var index))
@@ -175,17 +176,17 @@ namespace BotTest.Game.AI.Bots.SpeedDuel.Amazoness
 
             foreach (var cards in state.SelectableCards)
             {
-                Console.WriteLine($"[OnSelectCard] [override] [SelectableCards cards] => {cards.ID}");
+                ConsoleUtils.PrintColored($"[OnSelectCard] [override] [SelectableCards cards] => {cards.ID}");
             }
-            Console.WriteLine($"[OnSelectCard] [override] [Minimum] => {state.Minimum}");
-            Console.WriteLine($"[OnSelectCard] [override] [Maximum] => {state.Maximum}");
-            Console.WriteLine($"[OnSelectCard] [override] [SelectionHint] => {(DHint)state.SelectionHint}");
-            Console.WriteLine($"[OnSelectCard] [override] [Cancelable] => {state.Cancelable}");
-            Console.WriteLine($"[OnSelectCard] [override] [SelectableCount] => {state.SelectableCount}");
+            ConsoleUtils.PrintColored($"[OnSelectCard] [override] [Minimum] => {state.Minimum}");
+            ConsoleUtils.PrintColored($"[OnSelectCard] [override] [Maximum] => {state.Maximum}");
+            ConsoleUtils.PrintColored($"[OnSelectCard] [override] [SelectionHint] => {(DHint)state.SelectionHint}");
+            ConsoleUtils.PrintColored($"[OnSelectCard] [override] [Cancelable] => {state.Cancelable}");
+            ConsoleUtils.PrintColored($"[OnSelectCard] [override] [SelectableCount] => {state.SelectableCount}");
 
             if (state.SelectionHint.Equals((int)DHint.TOGRAVE))
             {
-                Console.WriteLine("[override][OnSelectCard] - Selecting Card to TOGRAVE");
+                ConsoleUtils.PrintColored("[override][OnSelectCard] - Selecting Card to TOGRAVE");
 
                 // Create a list of cards with their original indices
                 var cardsWithIndices = state.SelectableCards

@@ -90,6 +90,7 @@ namespace BotTest
                 DuelBotWrapper bot = new(botActions);
                 if (await bot.Connect())
                 {
+                    Console.WriteLine("Bot is dueling!");
                     await bot.Start();
                     Console.WriteLine("Bot finished dueling!");
                 }
