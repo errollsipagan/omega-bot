@@ -224,7 +224,7 @@ namespace BotTest.Game.AI.Bots.SpeedDuel.Amazoness
             if (playerCards.Any())
             {
                 Random rng = new();
-                return playerCards.ElementAt(rng.Next(0, playerCards.Count())).ID;
+                return playerCards.ElementAt(rng.Next(0, playerCards.Count())).Alias;
             }
 
             return await base.OnAnnounceCard(state);
