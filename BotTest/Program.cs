@@ -144,7 +144,7 @@ namespace BotTest
 
             do
             {
-                Console.Clear();
+                //Console.Clear();
                 Console.WriteLine(prompt);
                 Console.WriteLine();
 
@@ -179,7 +179,7 @@ namespace BotTest
                 }
             } while (key != ConsoleKey.Enter);
 
-            Console.Clear();
+            //Console.Clear();
             return selectedIndex;
         }
     }

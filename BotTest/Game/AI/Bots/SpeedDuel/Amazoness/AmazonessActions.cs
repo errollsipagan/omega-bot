@@ -1,19 +1,15 @@
 ﻿using BotTest.Decks;
-using BotTest.Game.AI.Bots.SpeedDuel.SuperDuck;
 using BotTest.Game.Base;
 using BotTest.Utils;
 using OmegaBotWrapper;
 using OmegaBotWrapper.Enum;
 using OmegaBotWrapper.States;
 using OmegaBotWrapper.Struct;
-using System.Diagnostics;
 
 namespace BotTest.Game.AI.Bots.SpeedDuel.Amazoness
 {
     public class AmazonessActions : RuleBasedBotActions
     {
-        List<DBCardInfo> mindCrushCards = new();
-
         public AmazonessActions(SpeedDuelDeck deck = SpeedDuelDeck.Amazoness)
         {
             DeckName = DeckManager.GetDeckName(deck);
@@ -28,28 +24,23 @@ namespace BotTest.Game.AI.Bots.SpeedDuel.Amazoness
             BotAction(
                 action: MainAction.Activate,
                 cardId: AmazonessCardId.CosmicCyclone,
-                condition: destroyOrRemoveSpellTrapCondition
+                condition: DestroyOrRemoveSpellTrapCondition
             );
 
             BotAction(
                 action: MainAction.Activate,
                 cardId: AmazonessCardId.NightBeam,
-                condition: destroyOrRemoveSpellTrapCondition
+                condition: DestroyOrRemoveSpellTrapCondition
             );
 
             BotAction(
                 action: MainAction.Activate,
                 cardId: AmazonessCardId.MysticalSpaceTyphoon,
-                condition: destroyOrRemoveSpellTrapCondition
+                condition: DestroyOrRemoveSpellTrapCondition
             );
 
             BotAction(
                 action: MainAction.SetSpell,
-                cardId: AmazonessCardId.AmazonessOnslaught
-            );
-
-            BotAction(
-                action: MainAction.Activate,
                 cardId: AmazonessCardId.AmazonessOnslaught
             );
 
@@ -74,7 +65,7 @@ namespace BotTest.Game.AI.Bots.SpeedDuel.Amazoness
             );
 
             BotAction(
-                action: MainAction.Activate,
+                action: MainAction.SetSpell,
                 cardId: AmazonessCardId.AmazonessCall
             );
 
@@ -142,7 +133,44 @@ namespace BotTest.Game.AI.Bots.SpeedDuel.Amazoness
                 ConsoleUtils.PrintColored($"[Descriptions cards] => {cards}");
             }
 
-            if (state.SelectableCards.TryGetByID(AmazonessCardId.AmazonessOnslaught, out _, out var index))
+            //get zone (sequence) targeted for destroy/removal Test
+            IEnumerable<DynamicCard> spellsTrapsCards = _gameField.GetPlayerSpellsCardsInSpellZone().Result;
+            var cardsActivated = spellsTrapsCards.Where(card => card.IsFaceup());
+
+            if (cardsActivated.Any())
+            {
+                foreach (var card in cardsActivated)
+                {
+                    if (card.CurrentChainTargets.Length > 0)
+                    {
+                        int sequenceTarget = card.CurrentChainTargets[0].Sequence;
+
+                        if (state.SelectableCards.TryGetByIDWithZone(AmazonessCardId.AmazonessCall, sequenceTarget, out _, out var indexx) && AmazonessCallCondition())
+                            return indexx;
+                    }
+                }
+            }
+
+            if (cardsActivated.Any())
+            {
+                foreach (var card in cardsActivated)
+                {
+                    if (card.CurrentChainTargets.Length > 0)
+                    {
+                        int sequenceTarget = card.CurrentChainTargets[0].Sequence;
+
+                        if (state.SelectableCards.TryGetByIDWithZone(AmazonessCardId.AmazonessOnslaught, sequenceTarget, out _, out var indexx) && AmazonessOnslaughtCondition())
+                            return indexx;
+                    }
+                }
+            }
+
+            if (state.SelectableCards.TryGetByID(AmazonessCardId.AmazonessCall, out _, out var index) &&
+                AmazonessCallCondition())
+                return index;
+
+            if (state.SelectableCards.TryGetByID(AmazonessCardId.AmazonessOnslaught, out _, out index) &&
+                AmazonessOnslaughtCondition())
                 return index;
 
             return await base.OnSelectChain(state);
@@ -156,19 +184,6 @@ namespace BotTest.Game.AI.Bots.SpeedDuel.Amazoness
                 return BattleAction.ToMainPhaseTwo;
 
             return await base.OnBattleCmd(state);
-        }
-
-        private bool ReposableCondition(IdleCmdData state, DynamicCard card)
-        {
-            bool isFaceUpDefense = card.IsFaceup() && card.IsDefense();
-            return isFaceUpDefense;
-        }
-
-        private bool destroyOrRemoveSpellTrapCondition(IdleCmdData state, DynamicCard card)
-        {
-            int playerSpellsCount = _gameField.GetPlayerSpellsCount().Result;
-            bool playerHasSpells = playerSpellsCount > 0;
-            return playerHasSpells;
         }
 
         public override async Task<IList<byte>?> OnSelectCard(SelectCardData state)
@@ -228,6 +243,79 @@ namespace BotTest.Game.AI.Bots.SpeedDuel.Amazoness
             }
 
             return await base.OnAnnounceCard(state);
+        }
+
+        private bool ReposableCondition(IdleCmdData state, DynamicCard card)
+        {
+            bool isFaceUpDefense = card.IsFaceup() && card.IsDefense();
+            return isFaceUpDefense;
+        }
+
+        private bool DestroyOrRemoveSpellTrapCondition(IdleCmdData state, DynamicCard card)
+        {
+            int playerSpellsCount = _gameField.GetPlayerSpellsCount().Result;
+            bool playerHasSpells = playerSpellsCount > 0;
+            return playerHasSpells;
+        }
+
+        private bool AmazonessOnslaughtCondition()
+        {
+            //targeted for destroy/removal Test
+            IEnumerable<DynamicCard> spellsTrapsCards = _gameField.GetPlayerSpellsCardsInSpellZone().Result;
+            var cardsActivated = spellsTrapsCards.Where(card => card.IsFaceup());
+
+            if (cardsActivated.Any())
+            {
+                foreach (var card in cardsActivated)
+                {
+                    if (card.CurrentChainTargets.Length > 0)
+                    {
+                        var getBotCardTargets = _gameField.GetBotFieldCard(
+                            controller: 0,
+                            location: card.CurrentChainTargets[0].Location,
+                            sequence: card.CurrentChainTargets[0].Sequence
+                            ).Result;
+
+                        bool amazonessOnslaughtTargets = getBotCardTargets.IsCode(AmazonessCardId.AmazonessOnslaught) && getBotCardTargets.IsFacedown();
+
+                        if (amazonessOnslaughtTargets)
+                            return true;
+                    }
+                }
+            }
+
+            bool battleStartPhase = GetCurrentDuelPhase() == DuelPhase.BattleStart;
+            return battleStartPhase;
+        }
+
+        private bool AmazonessCallCondition()
+        {
+            //targeted for destroy/removal Test
+            IEnumerable<DynamicCard> spellsTrapsCards = _gameField.GetPlayerSpellsCardsInSpellZone().Result;
+            var cardsActivated = spellsTrapsCards.Where(card => card.IsFaceup());
+
+            if (cardsActivated.Any())
+            {
+                foreach (var card in cardsActivated)
+                {
+                    if (card.CurrentChainTargets.Length > 0)
+                    {
+                        var getBotCardTargets = _gameField.GetBotFieldCard(
+                            controller: 0,
+                            location: card.CurrentChainTargets[0].Location,
+                            sequence: card.CurrentChainTargets[0].Sequence
+                            ).Result;
+
+                        bool amazonessCallTargets = getBotCardTargets.IsCode(AmazonessCardId.AmazonessCall) && getBotCardTargets.IsFacedown();
+
+                        if (amazonessCallTargets)
+                            return true;
+                    }
+                }
+            }
+
+            bool battleStartPhase = GetCurrentDuelPhase() == DuelPhase.BattleStart;
+            return battleStartPhase;
         }
     }
 }
