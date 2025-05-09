@@ -185,15 +185,15 @@ namespace BotTest.Game.AI.Bots.SpeedDuel.Amazoness
             return await base.OnSelectChain(state);
         }
 
-        public override async Task<BattleCmdResponse> OnBattleCmd(BattleCmdData state)
-        {
-            if (state.AttackableCards.Any())
-                return state.AttackableCards.First().DeclareAttack();
-            if (state.CanMainPhaseTwo)
-                return BattleAction.ToMainPhaseTwo;
+        //public override async Task<BattleCmdResponse> OnBattleCmd(BattleCmdData state)
+        //{
+        //    if (state.AttackableCards.Any())
+        //        return state.AttackableCards.First().DeclareAttack();
+        //    if (state.CanMainPhaseTwo)
+        //        return BattleAction.ToMainPhaseTwo;
 
-            return await base.OnBattleCmd(state);
-        }
+        //    return await base.OnBattleCmd(state);
+        //}
 
         public override async Task<IList<byte>?> OnSelectCard(SelectCardData state)
         {
