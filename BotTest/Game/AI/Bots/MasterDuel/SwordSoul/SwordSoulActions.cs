@@ -103,13 +103,13 @@ namespace BotTest.Game.AI.Bots.MasterDuel.SwordSoul
 
             if (state.SelectionHint.Equals((int)DHint.ATOHAND))
             {
-                var card = Field.GameField.FilterSelectableCardsById(state, SwordSoulCardId.SwordsoulStrategistLongYuan);
+                var card = _gameField.FilterSelectableCardsById(state, SwordSoulCardId.SwordsoulStrategistLongYuan);
                 return card;
             }
 
             if (state.SelectionHint.Equals((int)DHint.TOGRAVE))
             {
-                var card = Field.GameField.FilterSelectableCardsById(state, SwordSoulCardId.SwordsoulOfMoYe);
+                var card = _gameField.FilterSelectableCardsById(state, SwordSoulCardId.SwordsoulOfMoYe);
                 return card;
             }
 

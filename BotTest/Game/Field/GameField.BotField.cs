@@ -76,7 +76,7 @@ namespace BotTest.Game.Field
                 {
                     foreach (var cardId in side.MonsterZones[seq].Cards)
                     {
-                        ConsoleUtils.PrintColored($"side.MonsterZones[seq] => {side.MonsterZones[seq].Cards}");                       
+                        ConsoleUtils.PrintColored($"side.MonsterZones[seq] => {side.MonsterZones[seq].Cards}");
                         ConsoleUtils.PrintColored($"cardId => {cardId}");
                         if (cardId > 0)
                         {
@@ -456,11 +456,25 @@ namespace BotTest.Game.Field
             return handCards.Where(card => (card.Attribute & (byte)attribute) != 0).ToList();
         }
 
-        public async Task<List<DynamicCard>> GetCardsInHand()
+        public async Task<IEnumerable<DynamicCard>> GetCardsInHand()
         {
             await GetBotField();
             var handCards = await GetCardsInLocation(CardLocation.Hand);
             return handCards;
+        }
+
+        public async Task<IEnumerable<DynamicCard>> GetCardsInGrave()
+        {
+            await GetBotField();
+            var graveCards = await GetCardsInLocation(CardLocation.Grave);
+            return graveCards;
+        }
+
+        public async Task<IEnumerable<DynamicCard>> GetCardsInMonsterZone()
+        {
+            await GetBotField();
+            var monstersCards = await GetCardsInLocation(CardLocation.MonsterZone);
+            return monstersCards;
         }
 
         /// <summary>
@@ -501,24 +515,37 @@ namespace BotTest.Game.Field
         public async Task<bool> HasCardInBotMonsterZone(int cardId)
         {
             var handCards = await GetCardsInLocation(CardLocation.MonsterZone);
-            return handCards.Any(card => card.ID == cardId);
+            return handCards.Any(card => card.IsCode(cardId));
         }
 
-        public static byte[] FilterSelectableCardsById(SelectCardData selectCardData, int cardId)
+        public byte[] FilterSelectableCardsById(SelectCardData selectCardData, int cardId)
         {
-            var botCards = selectCardData.SelectableCards
-                .Select((card, index) => new { Card = card, Index = index })
-                .Where(x => x.Card.ID == cardId) // Filter by cardId
-                .Take(selectCardData.Minimum) // Respect state.Minimum
-                .Select(x => (byte)x.Index)
+            ConsoleUtils.PrintColored("[override][OnSelectCard] - FilterSelectableCardsById");
+
+            // Create a list of cards with their original indices
+            var cardsWithIndices = selectCardData.SelectableCards
+                .Select((card, index) => new { Card = card, OriginalIndex = index })
                 .ToArray();
 
-            if (botCards.Any())
-            {
-                ConsoleUtils.PrintColored($"Selected {botCards.Length} cards with ID {cardId}.");
-            }
+            // Apply filters while preserving original indices
+            var filteredCards = cardsWithIndices
+                .Where(x => x.Card.IsCode(cardId))
+                .ToArray();
 
-            return botCards;
+            // Select the first 'state.Minimum' cards, using original indices
+            var botCards = filteredCards
+                .Take(selectCardData.Minimum)
+                .Select(x => (byte)x.OriginalIndex)
+                .ToArray();
+
+            // Respect Minimum (or Maximum if needed)
+            if(botCards.Any())
+                return botCards;
+
+            byte[] selection = new byte[selectCardData.Minimum];
+            for (int i = 0; i < selection.Length; i++)
+                selection[i] = (byte)i;
+            return selection;
         }
 
         public async Task<bool> IsUniqueTrapChain(int trap)
