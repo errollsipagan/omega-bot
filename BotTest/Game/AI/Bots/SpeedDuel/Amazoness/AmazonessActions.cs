@@ -1,4 +1,6 @@
 ﻿using BotTest.Decks;
+using BotTest.Game.AI.Bots.MasterDuel.SwordSoul;
+using BotTest.Game.AI.Bots.TestOnly;
 using BotTest.Game.Base;
 using BotTest.Utils;
 using OmegaBotWrapper;
@@ -120,6 +122,9 @@ namespace BotTest.Game.AI.Bots.SpeedDuel.Amazoness
             if (state.EffectCard.IsCode(AmazonessCardId.AmazonessPrincess) && (hasAmazonessPrincess || (hasCardInHand && hasOneAmazonessQueen) || hasSpellTrap || !hasTwoAmazonessQueen))
                 return true;
 
+            if (state.EffectCard.IsCode(AmazonessCardId.AmazonessOnslaught))
+                return true;
+
             return await base.OnSelectEffectYn(state);
         }
 
@@ -134,6 +139,16 @@ namespace BotTest.Game.AI.Bots.SpeedDuel.Amazoness
             {
                 ConsoleUtils.PrintColored($"[Descriptions cards] => {cards}");
             }
+
+            //Player will be destroy all Spells and Traps cards
+            bool playerWillBeDestroyAllSpellsAndTraps = _gameField.PlayerDestroyAllSpellAndTraps();
+            if (playerWillBeDestroyAllSpellsAndTraps)
+                return 0;
+
+            //Player will be destroy all cards
+            bool playerWillBeDestroyAllCards = _gameField.PlayerDestroyAllSpellAndTraps();
+            if (playerWillBeDestroyAllCards)
+                return 0;
 
             //get zone (sequence) targeted for destroy/removal Test
             IEnumerable<DynamicCard> spellsTrapsCards = _gameField.GetPlayerSpellsCardsInSpellZone().Result;
@@ -164,7 +179,7 @@ namespace BotTest.Game.AI.Bots.SpeedDuel.Amazoness
                     {
                         int controllerTarget = card.CurrentChainTargets[0].Controller;
                         if (controllerTarget != 0) //IS BOT
-                        { 
+                        {
                             int sequenceTarget = card.CurrentChainTargets[0].Sequence;
 
                             if (state.SelectableCards.TryGetByIDWithZone(AmazonessCardId.AmazonessOnslaught, sequenceTarget, out _, out var indexx) && AmazonessOnslaughtCondition())
@@ -182,18 +197,25 @@ namespace BotTest.Game.AI.Bots.SpeedDuel.Amazoness
                 AmazonessOnslaughtCondition())
                 return index;
 
+            if (state.SelectableCards.TryGetByID(AmazonessCardId.MindCrush, out _, out index))
+                return index;
+
             return await base.OnSelectChain(state);
         }
 
-        //public override async Task<BattleCmdResponse> OnBattleCmd(BattleCmdData state)
-        //{
-        //    if (state.AttackableCards.Any())
-        //        return state.AttackableCards.First().DeclareAttack();
-        //    if (state.CanMainPhaseTwo)
-        //        return BattleAction.ToMainPhaseTwo;
+        public override async Task<BattleCmdResponse> OnBattleCmd(BattleCmdData state)
+        {
+            if (state.AttackableCards.Any())
+            {
+                bool hasAmazonessOnslaught = _gameField.HasCardInBotSpellZone(AmazonessCardId.AmazonessOnslaught).Result;
+                if (hasAmazonessOnslaught)
+                {
+                    return state.AttackableCards.First().DeclareAttack();
+                }
+            }
 
-        //    return await base.OnBattleCmd(state);
-        //}
+            return await base.OnBattleCmd(state);
+        }
 
         public override async Task<IList<byte>?> OnSelectCard(SelectCardData state)
         {
@@ -226,7 +248,7 @@ namespace BotTest.Game.AI.Bots.SpeedDuel.Amazoness
                 if (!amazonessPrincessInHand.Any() && !amazonessPrincessInMonsterZone && !amazonessPrincessInGrave.Any())
                     return _gameField.FilterSelectableCardsById(state, AmazonessCardId.AmazonessPrincess);
 
-                var amazonessCards = cardHand.Where(card => card.IsCode(AmazonessCardId.AmazonessCall) || 
+                var amazonessCards = cardHand.Where(card => card.IsCode(AmazonessCardId.AmazonessCall) ||
                                                     card.IsCode(AmazonessCardId.AmazonessOnslaught) ||
                                                     card.IsCode(AmazonessCardId.AmazonessPrincess) ||
                                                     card.IsCode(AmazonessCardId.AmazonessQueen));
@@ -365,7 +387,6 @@ namespace BotTest.Game.AI.Bots.SpeedDuel.Amazoness
 
         private bool AmazonessCallCondition()
         {
-            //targeted for destroy/removal Test
             IEnumerable<DynamicCard> spellsTrapsCards = _gameField.GetPlayerSpellsCardsInSpellZone().Result;
             var cardsActivated = spellsTrapsCards.Where(card => card.IsFaceup());
 
@@ -396,17 +417,5 @@ namespace BotTest.Game.AI.Bots.SpeedDuel.Amazoness
             bool battleStartPhase = GetCurrentDuelPhase() == DuelPhase.BattleStart;
             return battleStartPhase;
         }
-
-        //private IList<byte>? SelectCardsByFilter(SelectCardData state, Func<DynamicCard, bool> filter, int minimum)
-        //{
-        //    var cardsWithIndices = state.SelectableCards
-        //        .Select((card, index) => new { Card = card, OriginalIndex = index })
-        //        .Where(x => filter(x.Card))
-        //        .Take(minimum)
-        //        .Select(x => (byte)x.OriginalIndex)
-        //        .ToArray();
-
-        //    return cardsWithIndices;
-        //}
     }
 }

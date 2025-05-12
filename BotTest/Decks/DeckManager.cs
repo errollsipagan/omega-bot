@@ -90,7 +90,6 @@ namespace BotTest.Decks
                 (
                     DeckName: "Amazoness",
                     DeckHash: "k2F7rx7IsGz2F0YQblGtY1iT9hmOG35wssKwb0sWMwzv2/CDBYbbeG6wgjCb1EcGEP5SG8162tqSvXu6OMOdDd0sc67HMjx/+4PJpDCe1dvmJDPIDhD2+17KCMIbpH4z+8YdANsFAA=="
-                    //DeckHash: "k2E7bW3J7tuSxQzD+zb8YAHh9+qBDGvSPsNxww9OVhj+UhvNumz2F0YQblGtY2jjucEKwmxSHxlAGKS/e7o4w50N3SxzrscyPH/7g8mkMJ7V2+Yks9/3UkYQ3iD1mxmkF4R94w4wgNwBAA=="
                 )
             }
         };

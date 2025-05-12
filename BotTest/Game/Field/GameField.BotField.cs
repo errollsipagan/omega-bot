@@ -3,6 +3,8 @@ using OmegaBotWrapper.Struct;
 using OmegaBotWrapper;
 using BotTest.Utils;
 using OmegaBotWrapper.States;
+using BotTest.Game.AI.Bots.SpeedDuel.Amazoness;
+using BotTest.Game.AI.Enums;
 
 namespace BotTest.Game.Field
 {
@@ -514,8 +516,14 @@ namespace BotTest.Game.Field
         /// <returns>True if a card with the specified card id is found in the bot's monster zone</returns>
         public async Task<bool> HasCardInBotMonsterZone(int cardId)
         {
-            var handCards = await GetCardsInLocation(CardLocation.MonsterZone);
-            return handCards.Any(card => card.IsCode(cardId));
+            var monsterCards = await GetCardsInLocation(CardLocation.MonsterZone);
+            return monsterCards.Any(card => card.IsCode(cardId));
+        }
+
+        public async Task<bool> HasCardInBotSpellZone(int cardId)
+        {
+            var spellTrapCards = await GetCardsInLocation(CardLocation.SpellZone);
+            return spellTrapCards.Any(card => card.IsCode(cardId));
         }
 
         public byte[] FilterSelectableCardsById(SelectCardData selectCardData, int cardId)
@@ -552,6 +560,20 @@ namespace BotTest.Game.Field
         {
             var trapCards = await GetCardsInLocation(CardLocation.SpellZone);
             return trapCards.Any(card => card.IsCode(trap) && card.IsFaceup()); ;
+        }
+
+        public bool PlayerDestroyAllSpellAndTraps()
+        {
+            IEnumerable<DynamicCard> spellsTrapsCards = GetPlayerSpellsCardsInSpellZone().Result;
+            var cardsActivated = spellsTrapsCards.Where(card => card.IsFaceup());
+            return cardsActivated.Any(card => Enum.IsDefined(typeof(DestroyAllSpellsTraps), card.ID));
+        }
+
+        public bool PlayerDestroyAllCards()
+        {
+            IEnumerable<DynamicCard> spellsTrapsCards = GetPlayerSpellsCardsInSpellZone().Result;
+            var cardsActivated = spellsTrapsCards.Where(card => card.IsFaceup());
+            return cardsActivated.Any(card => Enum.IsDefined(typeof(DestroyAllCards), card.ID));
         }
     }
 
