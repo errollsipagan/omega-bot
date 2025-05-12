@@ -1,14 +1,14 @@
 ﻿/*using OmegaBotWrapper;
-using BotTest.Game.AI.Bots.SpeedDuel.MachineAngelAscension;
-using BotTest.Decks;
+using BotTest.Game.AI.Bots.TestOnly;
+using BotTest.Game.AI.Bots.SpeedDuel.Amazoness;
 string blueEyeDeckTest = "M2cwO76VaXuDL/PiPRNZl2tYM77c7c00/7c1S1KpEyuIXrwynHUpEC8DYpAcCN/svcRYwWvLzJgoAFFbs4MJhpsfHGSBYcM7gozue2oZYHgH1J6EDF7GrWV8jGsrtRiuSR9kTO+zZemaxcCclLWZGaQHhEH2g/CzOgWGs07hrKYXJjDDcLBZARMMM8U0wfHk3mCmvCJdhuMLrzJnRSsygtwOAA==";
 string superDuckDeckTest = "k2M4PPEmHAdvq2WB4a5pMxhg+AISnoKEUwy6GBuANAyHV7UywrDeyfdwnL56N8v0Yi2WS8p5jN3TxRn2H/rMCDILAA==";
 string sevensRoadDeckTest = "s2KY+0STHYZ1V2jAcaaLJhwbAfkgvJVbC46fbNeA44uPEFj3uBYcb9ytwa65AoEtz0Ow8TJNOL4ENAuGw45D8FluBDYF6oPhjUD+eiS8CQm/0EPgpVYI7H0cgkHqAQ==";
 var playerDeck = await DuelBotWrapper.GetPlayerDeck(); // Gets the deck being used by the player
-MachineAngelAscensionActions botActions = new() // This class has a copy of the interface implementation, the default behaviour occurs even without proper implementation of each case
+AmazonessActions botActions = new() // This class has a copy of the interface implementation, the default behaviour occurs even without proper implementation of each case
 {
     DeckName = playerDeck.Name,
-    DeckHash = DeckManager.GetDeckHash(SpeedDuelDeck.MachineAngelAscension)//playerDeck.Hash
+    DeckHash = "k2E7bW3Jvm/DD5Y1aZ8ZGn5wsvq2ZDHDMEj8vXogA0gOJg/CX2qjWZfN/sIIwi2qdQxtPDdYQZhN6iMDCIP0dU8XZ7izoZtlzvVYhudvfzCZFMazetucZPb7XsoIwhukfjOD9IKwb9wBBpA7AA=="//DeckManager.GetDeckHash(SpeedDuelDeck.Amazoness)//playerDeck.Hash
 }; // Instantiates the bot instruction set with the same deck as the player
 DuelBotWrapper bot = new(botActions); // Creates a new bot wrapper instance with the given set of instructions
 if (await bot.Connect()) // Connects the bot to the bot instance on the game

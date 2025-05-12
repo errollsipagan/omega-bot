@@ -46,12 +46,43 @@ namespace BotTest.Game.AI.Bots.TestOnly
                 action: MainAction.Activate,
                 cardId: ActionsCardId.NegateAttack
             );
+
+            BotAction(
+                action: MainAction.SetSpell,
+                cardId: ActionsCardId.MalevolentCatastrophe
+            );
+
+            BotAction(
+                action: MainAction.Activate,
+                cardId: ActionsCardId.DarkMagicianCurtain
+            );
+
+            BotAction(
+                action: MainAction.Activate,
+                cardId: ActionsCardId.DarkMagicianAttack
+            );
+
+            BotAction(
+                action: MainAction.SetSpell,
+                cardId: ActionsCardId.Waboku
+            );
         }
 
         public override async Task<int> OnSelectChain(SelectChainData state)
         {
             if (state.SelectableCards.TryGetByID(ActionsCardId.NegateAttack, out _, out var index))
                 return index;
+
+            if (state.SelectableCards.TryGetByID(ActionsCardId.MalevolentCatastrophe, out _, out index))
+                return index;
+
+            bool playerWillBeDestroyAllSpellsAndTraps = _gameField.PlayerDestroyAllSpellAndTraps();
+
+            if (playerWillBeDestroyAllSpellsAndTraps)
+            {
+                if (state.SelectableCards.TryGetByID(ActionsCardId.Waboku, out _, out index))
+                    return index;
+            }
 
             return await base.OnSelectChain(state);
         }

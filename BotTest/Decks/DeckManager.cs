@@ -89,8 +89,7 @@ namespace BotTest.Decks
                 SpeedDuelDeck.Amazoness,
                 (
                     DeckName: "Amazoness",
-                    //DeckHash: "k2F7rx7IsGz2F0YQblGtY1iT9hmOG35wssKwb0sWMwzv2/CDBYbbeG6wgjCb1EcGEP5SG8162tqSvXu6OMOdDd0sc67HMjx/+4PJpDCe1dvmJDPIDhD2+17KCMIbpH4z+8YdANsFAA=="
-                    DeckHash: "k2E7bW3Jzib1kQGE23husILwstlfGBt+cLLCMIi/Ju0zAwx/qY1m9W3JYobhFtU6hvfqgQz7NvxggeHu6eIMdzZ0s8y5Hsvw/O0PJpPCeFZvm5PMft9LGUF4g9RvsD4Q9o07wAByBwA="
+                    DeckHash: "k2F7rx7IsGz2F0YQblGtY1iT9hmOG35wssKwb0sWMwzv2/CDBYbbeG6wgjCb1EcGEP5SG8162tqSvXu6OMOdDd0sc67HMjx/+4PJpDCe1dvmJDPIDhD2+17KCMIbpH4z+8YdANsFAA=="
                 )
             }
         };

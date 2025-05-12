@@ -35,10 +35,11 @@ namespace BotTest.Game.Field
         /// <param name="location">Location to check (e.g. MonsterZone, SpellZone).</param>
         /// <param name="isOwnSide">If true, checks the Player's side; if false, checks the opponent's side.</param>
         /// <returns>List of DynamicCards in the specified zone.</returns>
-        public async Task<List<DynamicCard>> GetPlayerCardsInZone(CardLocation location, bool isOwnSide = true)
+        public async Task<IEnumerable<DynamicCard>> GetPlayerCardsInZone(CardLocation location, bool isOwnSide = true)
         {
-            var field = await GetPlayerField();
-            var side = isOwnSide ? field.OwnSide : field.EnemySide;
+            await GetPlayerField();
+            //var field = await GetPlayerField();
+            var side = isOwnSide ? _fieldInfo.OwnSide : _fieldInfo.EnemySide;
             var cards = new List<DynamicCard>();
             int controller = isOwnSide ? 0 : 1; // 0 = Player, 1 = Bot
 
@@ -137,7 +138,7 @@ namespace BotTest.Game.Field
         /// <param name="location">Location to check (e.g., CardLocation.Hand, CardLocation.MonsterZone)</param>
         /// <param name="controller">Controller of the cards (0 for player, 1 for opponent [BOT])</param>
         /// <returns>List of DynamicCard in the specified location</returns>
-        public async Task<List<DynamicCard>> GetPlayerCardsInLocation(CardLocation location, int controller = 0)
+        public async Task<IEnumerable<DynamicCard>> GetPlayerCardsInLocation(CardLocation location, int controller = 0)
         {
             await GetPlayerField();
             var cards = new List<DynamicCard>();
@@ -267,7 +268,6 @@ namespace BotTest.Game.Field
         public async Task<int> GetPlayerSpellZoneCount(CardLocation location = CardLocation.SpellZone)
         {
             await GetPlayerField();
-
             IEnumerable<DynamicCard> playerSpells = await GetPlayerSpellZoneInLocation(location);
             int playerSpellCount = playerSpells.Count();
             return playerSpellCount;
@@ -315,6 +315,13 @@ namespace BotTest.Game.Field
             await GetPlayerField();
             var handCards = await GetPlayerCardsInLocation(CardLocation.Hand);
             return handCards;
+        }
+
+        public async Task<IEnumerable<DynamicCard>> GetPlayerSpellsCardsInSpellZone()
+        {
+            await GetPlayerField();
+            var spellsTrapsCards = await GetPlayerCardsInZone(CardLocation.SpellZone);
+            return spellsTrapsCards;
         }
     }
 }

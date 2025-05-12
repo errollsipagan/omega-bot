@@ -1,11 +1,5 @@
 ﻿using OmegaBotWrapper.Enum;
 using OmegaBotWrapper.Struct;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OmegaBotWrapper
 {
@@ -101,6 +95,14 @@ namespace OmegaBotWrapper
         {
             var cardList = cards.ToList();
             index = cardList.FindIndex(c => c.ID == id);
+            card = index >= 0 ? cardList[index] : default;
+            return index >= 0;
+        }
+
+        public static bool TryGetByIDWithZone(this IEnumerable<DynamicCard> cards, int id, int sequence, out DynamicCard card, out int index)
+        {
+            var cardList = cards.ToList();
+            index = cardList.FindIndex(c => c.ID == id && c.CurrentCoordinates.Sequence == sequence);
             card = index >= 0 ? cardList[index] : default;
             return index >= 0;
         }
