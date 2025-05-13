@@ -157,10 +157,11 @@ namespace BotTest.Game.AI.Bots.SpeedDuel.Amazoness
                         if (controllerTarget != 0) //IS BOT
                         {
                             int sequenceTarget = card.CurrentChainTargets[0].Sequence;
-                            if (state.SelectableCards.TryGetByIDWithZone(AmazonessCardId.AmazonessCall, sequenceTarget, out _, out var indexx) && AmazonessCallCondition())
+
+                            if (state.SelectableCards.TryGetByIDWithZone(AmazonessCardId.AmazonessCall, sequenceTarget, out _, out var indexx))// && AmazonessCallCondition())
                                 return indexx;
 
-                            if (state.SelectableCards.TryGetByIDWithZone(AmazonessCardId.AmazonessOnslaught, sequenceTarget, out _, out indexx) && AmazonessOnslaughtCondition())
+                            if (state.SelectableCards.TryGetByIDWithZone(AmazonessCardId.AmazonessOnslaught, sequenceTarget, out _, out indexx))// && AmazonessOnslaughtCondition())
                                 return indexx;
                         }
                     }
@@ -181,10 +182,10 @@ namespace BotTest.Game.AI.Bots.SpeedDuel.Amazoness
                         if (controllerTarget != 0) //IS BOT
                         {
                             int sequenceTarget = card.CurrentChainTargets[0].Sequence;
-                            if (state.SelectableCards.TryGetByIDWithZone(AmazonessCardId.AmazonessCall, sequenceTarget, out _, out var indexx) && AmazonessCallCondition())
+                            if (state.SelectableCards.TryGetByIDWithZone(AmazonessCardId.AmazonessCall, sequenceTarget, out _, out var indexx))
                                 return indexx;
 
-                            if (state.SelectableCards.TryGetByIDWithZone(AmazonessCardId.AmazonessOnslaught, sequenceTarget, out _, out indexx) && AmazonessOnslaughtCondition())
+                            if (state.SelectableCards.TryGetByIDWithZone(AmazonessCardId.AmazonessOnslaught, sequenceTarget, out _, out indexx))
                                 return indexx;
                         }
                     }
