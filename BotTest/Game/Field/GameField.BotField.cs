@@ -479,6 +479,13 @@ namespace BotTest.Game.Field
             return monstersCards;
         }
 
+        public async Task<IEnumerable<DynamicCard>> GetCardsInSpellZone()
+        {
+            await GetBotField();
+            var spellCards = await GetCardsInLocation(CardLocation.SpellZone);
+            return spellCards;
+        }
+
         /// <summary>
         /// Checks if there is a card with the specified type in a given location
         /// </summary>
