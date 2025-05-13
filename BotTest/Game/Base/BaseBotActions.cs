@@ -181,10 +181,10 @@ namespace BotTest.Game.Base
         /// </summary>
         public virtual async Task<IdleCmdResponse> OnIdleCmd(IdleCmdData state)
         {
-            ConsoleUtils.PrintColored("OnIdleCmd");
+            ConsoleUtils.PrintColored("[BASE BOT ACTIONS] OnIdleCmd");
 
-            if (state.SummonableCards.Any())
-                return state.SummonableCards.First().NormalSummon();
+            //if (state.SummonableCards.Any())
+                //return state.SummonableCards.First().NormalSummon();
             if (state.CanBattlePhase)
                 return MainAction.ToBattlePhase;
             return MainAction.ToEndPhase;
@@ -207,7 +207,7 @@ namespace BotTest.Game.Base
         /// </summary>
         public virtual async Task<IList<byte>?> OnSelectCard(SelectCardData state)
         {
-            ConsoleUtils.PrintColored($"[NORMAL ACTIONS!] [OnSelectCard] => {(DHint)state.SelectionHint}");
+            ConsoleUtils.PrintColored($"[BASE BOT ACTIONS] [OnSelectCard] => {(DHint)state.SelectionHint}");
 
             if (state.SelectionHint.Equals((int)DHint.TARGET))
             {
@@ -286,7 +286,7 @@ namespace BotTest.Game.Base
         /// </summary>
         public virtual async Task<IList<byte>?> OnSelectTribute(SelectTributeData state)
         {
-            ConsoleUtils.PrintColored("OnSelectTribute");
+            ConsoleUtils.PrintColored("[BASE BOT ACTIONS] OnSelectTribute");
 
             List<byte> resp = new();
             for (byte i = 0; i < state.Minimum; i++)
@@ -299,7 +299,7 @@ namespace BotTest.Game.Base
         /// </summary>
         public virtual async Task<IList<byte>?> OnSelectSum(SelectSumData state)
         {
-            ConsoleUtils.PrintColored("OnSelectSum");
+            ConsoleUtils.PrintColored("[BASE BOT ACTIONS] OnSelectSum");
 
             int sum = state.Sum;
             int min = state.Minimum;
@@ -357,7 +357,7 @@ namespace BotTest.Game.Base
         /// </summary>
         public virtual async Task<IList<CardAttribute>> OnAnnounceAttribute(AnnounceAttributeData state)
         {
-            ConsoleUtils.PrintColored("OnAnnounceAttribute");
+            ConsoleUtils.PrintColored("[BASE BOT ACTIONS] OnAnnounceAttribute");
 
             List<CardAttribute> cas = new();
             foreach (CardAttribute ca in System.Enum.GetValues(typeof(CardAttribute)))
@@ -372,7 +372,7 @@ namespace BotTest.Game.Base
         /// </summary>
         public virtual async Task<IList<CardRace>> OnAnnounceRace(AnnounceRaceData state)
         {
-            ConsoleUtils.PrintColored("OnAnnounceRace");
+            ConsoleUtils.PrintColored("[BASE BOT ACTIONS] OnAnnounceRace");
 
             List<CardRace> cas = new();
             foreach (CardRace ca in System.Enum.GetValues(typeof(CardRace)))
@@ -387,7 +387,7 @@ namespace BotTest.Game.Base
         /// </summary>
         public virtual async Task<int> OnAnnounceNumber(AnnounceNumberData state)
         {
-            ConsoleUtils.PrintColored("OnAnnounceNumber");
+            ConsoleUtils.PrintColored("[BASE BOT ACTIONS] OnAnnounceNumber");
 
             return state.SelectableOptions[0];
         }
@@ -397,7 +397,7 @@ namespace BotTest.Game.Base
         /// </summary>
         public virtual async Task<int> OnAnnounceCard(AnnounceCardData state)
         {
-            ConsoleUtils.PrintColored("OnAnnounceCard");
+            ConsoleUtils.PrintColored("[BASE BOT ACTIONS] OnAnnounceCard");
             var filters = state.AppliableFilters;
             var cards = await DuelBotWrapper.GetMatchingCards(filters);
             Random rng = new();
@@ -410,7 +410,7 @@ namespace BotTest.Game.Base
         /// </summary>
         public virtual async Task<int> OnAnnounceCardFilter(AnnounceCardFilterData state)
         {
-            ConsoleUtils.PrintColored("OnAnnounceCardFilter");
+            ConsoleUtils.PrintColored("[BASE BOT ACTIONS] OnAnnounceCardFilter");
 
             var filters = state.AppliableFilters;
             var cards = await DuelBotWrapper.GetMatchingCards(filters);
@@ -423,7 +423,7 @@ namespace BotTest.Game.Base
         /// </summary>
         public virtual async Task<IList<byte>?> OnSelectUnselectCard(SelectUnselectCardData state)
         {
-            ConsoleUtils.PrintColored("OnSelectUnselectCard");
+            ConsoleUtils.PrintColored("[BASE BOT ACTIONS] OnSelectUnselectCard");
 
             byte[] selection = new byte[state.Minimum];
 
@@ -442,7 +442,7 @@ namespace BotTest.Game.Base
         /// </summary>
         public virtual async Task<IList<short>> OnSelectCounter(SelectCounterData state)
         {
-            ConsoleUtils.PrintColored("OnSelectCounter");
+            ConsoleUtils.PrintColored("[BASE BOT ACTIONS] OnSelectCounter");
 
             List<short> resp = new();
             short need = state.RequiredQuantity;
@@ -467,7 +467,7 @@ namespace BotTest.Game.Base
         /// </summary>
         public virtual async Task<int> OnSelectDisfield(SelectDisfieldData state)
         {
-            ConsoleUtils.PrintColored("OnSelectDisfield");
+            ConsoleUtils.PrintColored("[BASE BOT ACTIONS] OnSelectDisfield");
 
             int[] zones = new int[] { Zones.z0, Zones.z1, Zones.z2, Zones.z3, Zones.z4, Zones.z5, Zones.z6 };
             byte seq;
@@ -482,7 +482,7 @@ namespace BotTest.Game.Base
         /// </summary>
         public virtual async Task<int> OnSelectPlace(SelectPlaceData state)
         {
-            ConsoleUtils.PrintColored("OnSelectPlace");
+            ConsoleUtils.PrintColored("[BASE BOT ACTIONS] OnSelectPlace");
 
             int[] zones = new int[] { Zones.z0, Zones.z1, Zones.z2, Zones.z3, Zones.z4, Zones.z5, Zones.z6 };
             byte seq;
@@ -497,7 +497,7 @@ namespace BotTest.Game.Base
         /// </summary>
         public virtual async Task<bool> OnSelectEffectYn(SelectEffectYnData state)
         {
-            ConsoleUtils.PrintColored("OnSelectEffectYn");
+            ConsoleUtils.PrintColored("[BASE BOT ACTIONS] OnSelectEffectYn");
 
             return false;
         }
@@ -507,7 +507,7 @@ namespace BotTest.Game.Base
         /// </summary>
         public virtual async Task<bool> OnSelectYesNo(SelectYesNoData state)
         {
-            ConsoleUtils.PrintColored("OnSelectYesNo");
+            ConsoleUtils.PrintColored("[BASE BOT ACTIONS] OnSelectYesNo");
 
             return false;
         }
@@ -517,7 +517,7 @@ namespace BotTest.Game.Base
         /// </summary>
         public virtual async Task<int> OnSelectOption(SelectOptionData state)
         {
-            ConsoleUtils.PrintColored("OnSelectOption");
+            ConsoleUtils.PrintColored("[BASE BOT ACTIONS] OnSelectOption");
 
             return 0;
         }
@@ -527,7 +527,7 @@ namespace BotTest.Game.Base
         /// </summary>
         public virtual async Task<byte> OnSelectRockPaperScissors()
         {
-            ConsoleUtils.PrintColored("OnSelectRockPaperScissors");
+            ConsoleUtils.PrintColored("[BASE BOT ACTIONS] OnSelectRockPaperScissors");
 
             return (byte)new Random().Next(1, 4);
         }
@@ -537,7 +537,7 @@ namespace BotTest.Game.Base
         /// </summary>
         public virtual async Task<CardPosition> OnSelectPosition(SelectPositionData state)
         {
-            ConsoleUtils.PrintColored("OnSelectPosition");
+            ConsoleUtils.PrintColored("[BASE BOT ACTIONS] OnSelectPosition");
 
             return (CardPosition)state.Positions[0];
         }
@@ -547,7 +547,7 @@ namespace BotTest.Game.Base
         /// </summary>
         public virtual async Task<IList<byte>> OnSortCard(SortCardData state)
         {
-            ConsoleUtils.PrintColored("OnSortCard");
+            ConsoleUtils.PrintColored("[BASE BOT ACTIONS] OnSortCard");
 
             List<byte> resp = new();
             for (byte i = 0; i < state.SelectableCards.Length; ++i)
