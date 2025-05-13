@@ -210,11 +210,11 @@ namespace BotTest.Game.AI.Bots.SpeedDuel.Amazoness
         {
             if (state.AttackableCards.Any())
             {
-                bool hasAmazonessOnslaught = _gameField.HasCardInBotSpellZone(AmazonessCardId.AmazonessOnslaught).Result;
-                if (hasAmazonessOnslaught)
-                {
+                IEnumerable<DynamicCard> spellsTrapsCards = _gameField.GetCardsInSpellZone().Result;
+                var amazonessOnslaught = spellsTrapsCards.Where(card => card.IsCode(AmazonessCardId.AmazonessOnslaught) && card.IsFaceup());
+
+                if (amazonessOnslaught.Any())
                     return state.AttackableCards.First().DeclareAttack();
-                }
             }
 
             return await base.OnBattleCmd(state);
