@@ -143,6 +143,7 @@ namespace BotTest.Game.AI.Bots.SpeedDuel.Amazoness
                 return 0;
 
             //get zone (sequence) targeted for destroy/removal Test
+            //Get Spell / Trap Zone
             IEnumerable<DynamicCard> spellsTrapsCards = _gameField.GetPlayerSpellsCardsInSpellZone().Result;
             var cardsActivated = spellsTrapsCards.Where(card => card.IsFaceup());
 
@@ -158,10 +159,17 @@ namespace BotTest.Game.AI.Bots.SpeedDuel.Amazoness
                             int sequenceTarget = card.CurrentChainTargets[0].Sequence;
                             if (state.SelectableCards.TryGetByIDWithZone(AmazonessCardId.AmazonessCall, sequenceTarget, out _, out var indexx) && AmazonessCallCondition())
                                 return indexx;
+
+                            if (state.SelectableCards.TryGetByIDWithZone(AmazonessCardId.AmazonessOnslaught, sequenceTarget, out _, out indexx) && AmazonessOnslaughtCondition())
+                                return indexx;
                         }
                     }
                 }
             }
+
+            //Get Monster Zone
+            IEnumerable<DynamicCard> monstersCards = _gameField.GetPlayerMonstersCardsInMonsterZone().Result;
+            cardsActivated = monstersCards.Where(card => card.IsFaceup() && card.HasType(CardType.Effect) && card.CurrentChainTargets.Any());
 
             if (cardsActivated.Any())
             {
@@ -173,8 +181,10 @@ namespace BotTest.Game.AI.Bots.SpeedDuel.Amazoness
                         if (controllerTarget != 0) //IS BOT
                         {
                             int sequenceTarget = card.CurrentChainTargets[0].Sequence;
+                            if (state.SelectableCards.TryGetByIDWithZone(AmazonessCardId.AmazonessCall, sequenceTarget, out _, out var indexx) && AmazonessCallCondition())
+                                return indexx;
 
-                            if (state.SelectableCards.TryGetByIDWithZone(AmazonessCardId.AmazonessOnslaught, sequenceTarget, out _, out var indexx) && AmazonessOnslaughtCondition())
+                            if (state.SelectableCards.TryGetByIDWithZone(AmazonessCardId.AmazonessOnslaught, sequenceTarget, out _, out indexx) && AmazonessOnslaughtCondition())
                                 return indexx;
                         }
                     }
@@ -302,6 +312,20 @@ namespace BotTest.Game.AI.Bots.SpeedDuel.Amazoness
                 if (botCards.Any())
                     return botCards;
 
+            }
+
+            if (state.SelectionHint.Equals((int)DHint.SPSUMMON))
+            {
+                ConsoleUtils.PrintColored("[override][OnSelectCard] - Selecting Card to SPSUMMON");
+
+                var botCards = state.SelectableCards
+                                    .Select((card, index) => new { Card = card, Index = index })
+                                    .OrderByDescending(x => x.Card.Attack) // Order by best Attack
+                                    .Take(state.Minimum)
+                                    .Select(x => (byte)x.Index)
+                                    .ToArray();
+                if (botCards.Any())
+                    return botCards;
             }
 
             return await base.OnSelectCard(state);

@@ -323,5 +323,12 @@ namespace BotTest.Game.Field
             var spellsTrapsCards = await GetPlayerCardsInZone(CardLocation.SpellZone);
             return spellsTrapsCards;
         }
+
+        public async Task<IEnumerable<DynamicCard>> GetPlayerMonstersCardsInMonsterZone()
+        {
+            await GetPlayerField();
+            var monstersCards = await GetPlayerCardsInZone(CardLocation.MonsterZone);
+            return monstersCards;
+        }
     }
 }
