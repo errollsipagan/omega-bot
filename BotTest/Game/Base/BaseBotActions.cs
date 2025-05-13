@@ -401,7 +401,8 @@ namespace BotTest.Game.Base
             var filters = state.AppliableFilters;
             var cards = await DuelBotWrapper.GetMatchingCards(filters);
             Random rng = new();
-            return cards.Cards.ElementAt(rng.Next(0, cards.Cards.Length)).Alias;
+            var announcedCard = cards.Cards.ElementAt(rng.Next(0, cards.Cards.Length));
+            return announcedCard.Alias != 0 ? announcedCard.Alias : announcedCard.ID;
         }
 
         /// <summary>

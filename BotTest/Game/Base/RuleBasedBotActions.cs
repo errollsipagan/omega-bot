@@ -47,14 +47,27 @@ namespace BotTest.Game.Base
             foreach (var rule in rules)
             {
                 var cards = rule.CardSelector(state).ToList();
-                if (cards.TryGetByID(rule.CardId, out var card, out var index) && rule.Condition(state, card))
+
+                for (int i = 0; i < cards.Count; i++)
                 {
-                    string cardDisplay = _cardInfoMap.TryGetValue(rule.CardId, out var cardInfo)
+                    if (cards[i].ID == rule.CardId && rule.Condition(state, cards[i]))
+                    {
+                        string cardDisplay = _cardInfoMap.TryGetValue(rule.CardId, out var cardInfo)
                         ? cardInfo.CardName
                         : rule.CardId.ToString();
-                    ConsoleUtils.PrintColored($"Bot Actions => ExecuteAction. Card: {cardDisplay}");
-                    return ExecuteAction(rule.Action, (ushort)index);
+                        ConsoleUtils.PrintColored($"Bot Actions => ExecuteAction. Card: {cardDisplay}");
+                        return ExecuteAction(rule.Action, (ushort)i);
+                    }
                 }
+
+                //if (cards.TryGetByID(rule.CardId, out var card, out var index) && rule.Condition(state, card))
+                //{
+                //    string cardDisplay = _cardInfoMap.TryGetValue(rule.CardId, out var cardInfo)
+                //        ? cardInfo.CardName
+                //        : rule.CardId.ToString();
+                //    ConsoleUtils.PrintColored($"Bot Actions => ExecuteAction. Card: {cardDisplay}");
+                //    return ExecuteAction(rule.Action, (ushort)index);
+                //}
             }
             return null;
         }
