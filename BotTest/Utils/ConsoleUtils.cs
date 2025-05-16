@@ -51,10 +51,10 @@
             }
 
             // Set the console color
-            Console.ForegroundColor = color;
+            //Console.ForegroundColor = color;
 
             // Print the text
-            //Console.WriteLine(text); //Turn ON or Turn OFF
+            Console.WriteLine(text); //Turn ON or Turn OFF
 
             // Restore the original color
             Console.ForegroundColor = originalColor;

@@ -17,7 +17,8 @@ namespace BotTest.Decks
     {
         BlueEyes,
         DarkMagician,
-        SwordSoul
+        SwordSoul,
+        HandTraps
     }
 
     /// <summary>
@@ -64,6 +65,13 @@ namespace BotTest.Decks
                 (
                     DeckName: "SwordSoul",
                     DeckHash: "M2ewnRXLrM0Tx+y54yHzEn8DVhje1JXKCMIr+iaxwjBIHQgvNjJkhOGcDG9mGF6vfI8BhivP3GQFYXteKSYYBtkFwk48M1hB9oFwTnMnIwwrecxkgGEmrUdgfLcmhSlMl481ueUQGHcsV2KszJrAcOSNDwPDUgUWEI5m+seyz2wy0/b9SSxbjD8wgrDphQlg/wAA"
+                )
+            },
+            {
+                MasterDuelDeck.HandTraps,
+                (
+                    DeckName: "HandTraps",
+                    DeckHash: "s2Fer3yPAYaVPGbC8XWp+Yww/LdzDisMbzI6A8dyLgFMft9LGWE4v+w9AwxfPFTB+s5tAwsMGy2qZQDhtY+4mGD4gpwRKwh7f0pnguGXZ06wwrDFxmQWGNbklmKG4aDvXXC8wX0THD+MmAvHpuzNTDAcMfkok7B7KgOIvlR8jRWGQX4GAA=="
                 )
             }
         };
