@@ -23,7 +23,6 @@ namespace BotTest
         {
             if (DEBUG_MODE)
             {
-                // Código de teste fixo
                 string blueEyeDeckTest = "M2cwO76VaXuDL/PiPRNZl2tYM77c7c00/7c1S1KpEyuIXrwynHUpEC8DYpAcCN/svcRYwWvLzJgoAFFbs4MJhpsfHGSBYcM7gozue2oZYHgH1J6EDF7GrWV8jGsrtRiuSR9kTO+zZemaxcCclLWZGaQHhEH2g/CzOgWGs07hrKYXJjDDcLBZARMMM8U0wfHk3mCmvCJdhuMLrzJnRSsygtwOAA==";
                 string superDuckDeckTest = "k2M4PPEmHAdvq2WB4a5pMxhg+AISnoKEUwy6GBuANAyHV7UywrDeyfdwnL56N8v0Yi2WS8p5jN3TxRn2H/rMCDILAA==";
                 string sevensRoadDeckTest = "s2KY+0STHYZ1V2jAcaaLJhwbAfkgvJVbC46fbNeA44uPEFj3uBYcb9ytwa65AoEtz0Ow8TJNOL4ENAuGw45D8FluBDYF6oPhjUD+eiS8CQm/0EPgpVYI7H0cgkHqAQ==";
