@@ -98,9 +98,9 @@ namespace BotTest.Game.AI.Bots.SpeedDuel.Amazoness
             bool hasAmazonessPrincess = botMonster.Where(card => card.ID == AmazonessCardId.AmazonessPrincess).ToArray().Length >= 2;
             bool hasOneAmazonessQueen = botMonster.Where(card => card.ID == AmazonessCardId.AmazonessQueen).ToArray().Length == 1;
             bool hasTwoAmazonessQueen = botMonster.Where(card => card.ID == AmazonessCardId.AmazonessQueen).ToArray().Length == 2;
-            cardHand = cardHand.Where(card => card.ID != AmazonessCardId.AmazonessQueen).ToArray();
+            cardHand = cardHand.Where(card => !card.IsCode(AmazonessCardId.AmazonessQueen) && !card.IsCode(AmazonessCardId.AmazonessOnslaught)).ToArray();
             bool hasCardInHand = cardHand?.Count() > 0;
-            botSpellTrap = botSpellTrap.Where(card => card.ID != AmazonessCardId.AmazonessOnslaught).ToArray();
+            botSpellTrap = botSpellTrap.Where(card => !card.IsCode(AmazonessCardId.AmazonessOnslaught)).ToArray();
             bool hasSpellTrap = botSpellTrap?.Count() > 0;
 
             ConsoleUtils.PrintColored($">>>>> [OnSelectEffectYn][override] => {state.EffectCard.ID}");
@@ -399,7 +399,7 @@ namespace BotTest.Game.AI.Bots.SpeedDuel.Amazoness
                             sequence: card.CurrentChainTargets[0].Sequence
                             ).Result;
 
-                            bool amazonessOnslaughtTargets = getBotCardTargets.IsCode(AmazonessCardId.AmazonessOnslaught) && getBotCardTargets.IsFacedown();
+                            bool amazonessOnslaughtTargets = getBotCardTargets.IsCode(AmazonessCardId.AmazonessOnslaught);// && getBotCardTargets.IsFacedown();
 
                             if (amazonessOnslaughtTargets)
                                 return true;
