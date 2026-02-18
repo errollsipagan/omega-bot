@@ -12,7 +12,7 @@
         /// <summary>
         /// Base end point of the api
         /// </summary>
-        public const string BASE_API = "http://127.0.0.1:9999";
+        public const string BASE_API = "http://127.0.0.1:19999";
         /// <summary>
         /// End point for querying the bot current state
         /// </summary>

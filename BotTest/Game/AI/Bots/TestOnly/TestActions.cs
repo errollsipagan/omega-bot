@@ -1,86 +1,93 @@
 ﻿using BotTest.Decks;
-using BotTest.Game.AI.Bots.SpeedDuel.SuperDuck;
 using BotTest.Game.Base;
 using OmegaBotWrapper;
 using OmegaBotWrapper.Enum;
 using OmegaBotWrapper.States;
 using OmegaBotWrapper.Struct;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BotTest.Game.AI.Bots.TestOnly
 {
-    public class Actions : RuleBasedBotActions
+    public class TestActions : RuleBasedBotActions
     {
-        public Actions(SpeedDuelDeck deck = SpeedDuelDeck.SuperDuck)
+        public TestActions(SpeedDuelDeck deck = SpeedDuelDeck.SuperDuck)
         {
             DeckName = DeckManager.GetDeckName(deck);
             DeckHash = DeckManager.GetDeckHash(deck);
-            InitializeCardInfo<ActionsCardId>();
+            InitializeCardInfo<TestActionsCardId>();
 
             BotAction(
                 action: MainAction.Activate,
-                cardId: ActionsCardId.MysticalSpaceTyphoon
+                cardId: TestActionsCardId.MysticalSpaceTyphoon
             );
 
             BotAction(
                 action: MainAction.Activate,
-                cardId: ActionsCardId.CosmicCyclone
+                cardId: TestActionsCardId.CosmicCyclone
             );
 
             BotAction(
                 action: MainAction.Activate,
-                cardId: ActionsCardId.DoubleCyclone
+                cardId: TestActionsCardId.DoubleCyclone
             );
 
             BotAction(
                 action: MainAction.SetSpell,
-                cardId: ActionsCardId.NegateAttack
+                cardId: TestActionsCardId.NegateAttack
             );
 
             BotAction(
                 action: MainAction.Activate,
-                cardId: ActionsCardId.NegateAttack
+                cardId: TestActionsCardId.NegateAttack
             );
 
             BotAction(
                 action: MainAction.SetSpell,
-                cardId: ActionsCardId.MalevolentCatastrophe
+                cardId: TestActionsCardId.MalevolentCatastrophe
             );
 
             BotAction(
                 action: MainAction.Activate,
-                cardId: ActionsCardId.DarkMagicianCurtain
+                cardId: TestActionsCardId.DarkMagicianCurtain
             );
 
             BotAction(
                 action: MainAction.Activate,
-                cardId: ActionsCardId.DarkMagicianAttack
+                cardId: TestActionsCardId.DarkMagicianAttack
             );
 
             BotAction(
                 action: MainAction.SetSpell,
-                cardId: ActionsCardId.Waboku
+                cardId: TestActionsCardId.Waboku
+            );
+
+            BotAction(
+                action: MainAction.Activate,
+                cardId: TestActionsCardId.SphereKuriboh
+            );
+
+            BotAction(
+                action: MainAction.Activate,
+                cardId: TestActionsCardId.BlastSphere
             );
         }
 
         public override async Task<int> OnSelectChain(SelectChainData state)
         {
-            if (state.SelectableCards.TryGetByID(ActionsCardId.NegateAttack, out _, out var index))
+            if (state.SelectableCards.TryGetByID(TestActionsCardId.NegateAttack, out _, out var index))
                 return index;
 
-            if (state.SelectableCards.TryGetByID(ActionsCardId.MalevolentCatastrophe, out _, out index))
+            if (state.SelectableCards.TryGetByID(TestActionsCardId.MalevolentCatastrophe, out _, out index))
                 return index;
+
+            if (state.SelectableCards.TryGetByID(TestActionsCardId.SphereKuriboh, out _, out index))
+                return index;
+
 
             bool playerWillBeDestroyAllSpellsAndTraps = _gameField.PlayerDestroyAllSpellAndTraps();
 
             if (playerWillBeDestroyAllSpellsAndTraps)
             {
-                if (state.SelectableCards.TryGetByID(ActionsCardId.Waboku, out _, out index))
+                if (state.SelectableCards.TryGetByID(TestActionsCardId.Waboku, out _, out index))
                     return index;
             }
 
