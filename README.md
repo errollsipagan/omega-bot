@@ -100,9 +100,6 @@ Duel Bot Wrapper is Omega Custom Duel BOT API of [Yu-Gi-Oh!](https://www.yugioh-
 
 Contributions, issues, and feature requests are welcome!
 
-Feel free to check the [issues page](../../issues/).
-
-
 ## 🔗Community
 YGO Omega is developed in [Duelist Unite](https://duelistsunite.org/) community, join the [https://discord.gg/duelistsunite](https://gitlab.com/uploads/-/system/group/avatar/5775229/53418547.png?width=48), where you can ask questions and make discussions.
 
