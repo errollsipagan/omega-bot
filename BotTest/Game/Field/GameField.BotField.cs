@@ -19,8 +19,7 @@ namespace BotTest.Game.Field
         /// <returns>FieldInfo structure with the Bot field data.</returns>
         public async Task<FieldInfo> GetBotField()
         {
-            _fieldInfo = await _botWrapper.GetBotFieldInfo();
-            return _fieldInfo;
+            return await RefreshFieldAsync(FieldPerspective.Bot);
         }
 
         /// <summary>
@@ -32,8 +31,7 @@ namespace BotTest.Game.Field
         /// <returns>DynamicCard structure with the card data.</returns>
         public async Task<DynamicCard> GetBotFieldCard(int controller, int location, int sequence)
         {
-            //ConsoleUtils.PrintColored($"controller: {controller} / location: {location} / sequence: {sequence}");
-            return await _botWrapper.GetBotFieldCardInfo(controller, location, sequence);
+            return await GetFieldCardAsync(FieldPerspective.Bot, controller, (CardLocation)location, sequence);
         }
 
         /// <summary>
@@ -67,79 +65,7 @@ namespace BotTest.Game.Field
         /// <returns>List of DynamicCards in the specified zone.</returns>
         public async Task<List<DynamicCard>> GetBotCardsInZone(CardLocation location, bool isOwnSide = true)
         {
-            var field = await GetBotField();
-            var side = isOwnSide ? field.OwnSide : field.EnemySide;
-            var cards = new List<DynamicCard>();
-            int controller = isOwnSide ? 0 : 1; // 0 = Bot, 1 = Player
-
-            if (location == CardLocation.MonsterZone)
-            {
-                for (int seq = 0; seq < side.MonsterZones.Length; seq++)
-                {
-                    foreach (var cardId in side.MonsterZones[seq].Cards)
-                    {
-                        ConsoleUtils.PrintColored($"side.MonsterZones[seq] => {side.MonsterZones[seq].Cards}");
-                        ConsoleUtils.PrintColored($"cardId => {cardId}");
-                        if (cardId > 0)
-                        {
-                            var card = await GetBotFieldCard(controller, (int)CardLocation.MonsterZone, seq);
-                            if (card.ID != 0) cards.Add(card);
-                        }
-                    }
-                }
-            }
-            else if (location == CardLocation.SpellZone)
-            {
-                for (int seq = 0; seq < side.SpellZones.Length; seq++)
-                {
-                    foreach (var cardId in side.SpellZones[seq].Cards)
-                    {
-                        if (cardId > 0)
-                        {
-                            var card = await GetBotFieldCard(controller, (int)CardLocation.SpellZone, seq);
-                            if (card.ID != 0) cards.Add(card);
-                        }
-                    }
-                }
-            }
-            else if (location == CardLocation.Hand)
-            {
-                for (int seq = 0; seq < side.Hand.Length; seq++)
-                {
-                    var cardId = side.Hand[seq];
-                    if (cardId > 0)
-                    {
-                        var card = await GetBotFieldCard(controller, (int)CardLocation.Hand, seq);
-                        if (card.ID != 0) cards.Add(card);
-                    }
-                }
-            }
-            else if (location == CardLocation.Grave)
-            {
-                for (int seq = 0; seq < side.Grave.Length; seq++)
-                {
-                    var cardId = side.Grave[seq];
-                    if (cardId > 0)
-                    {
-                        var card = await GetBotFieldCard(controller, (int)CardLocation.Grave, seq);
-                        if (card.ID != 0) cards.Add(card);
-                    }
-                }
-            }
-            else if (location == CardLocation.Removed)
-            {
-                for (int seq = 0; seq < side.Banish.Length; seq++)
-                {
-                    var cardId = side.Banish[seq];
-                    if (cardId > 0)
-                    {
-                        var card = await GetBotFieldCard(controller, (int)CardLocation.Removed, seq);
-                        if (card.ID != 0) cards.Add(card);
-                    }
-                }
-            }
-
-            return cards;
+            return await GetCardsInZoneAsync(FieldPerspective.Bot, location, isOwnSide);
         }
 
         /// <summary>
@@ -175,7 +101,7 @@ namespace BotTest.Game.Field
         /// <returns>True if the card is present, false otherwise.</returns>
         public async Task<bool> IsCardInBotZone(int cardId, CardLocation location, bool isOwnSide = true)
         {
-            var cards = await GetPlayerCardsInZone(location, isOwnSide);
+            var cards = await GetBotCardsInZone(location, isOwnSide);
             return cards.Any(card => card.IsCode(cardId));
         }
 
@@ -201,18 +127,7 @@ namespace BotTest.Game.Field
         public async Task<int> GetBotZoneCardCount(CardLocation location, bool isOwnSide = true)
         {
             var field = await GetBotField();
-            var side = isOwnSide ? field.OwnSide : field.EnemySide;
-            return location switch
-            {
-                CardLocation.MonsterZone => side.MonsterZones.Sum(zone => zone.Cards.Length),
-                CardLocation.SpellZone => side.SpellZones.Sum(zone => zone.Cards.Length),
-                CardLocation.Hand => side.Hand.Length,
-                CardLocation.Grave => side.Grave.Length,
-                CardLocation.Removed => side.Banish.Length,
-                CardLocation.Deck => side.Main.Length,
-                CardLocation.Extra => side.Extra.Length,
-                _ => 0
-            };
+            return GetZoneCardCount(GetSide(field, isOwnSide), location);
         }
 
         /// <summary>
@@ -222,9 +137,7 @@ namespace BotTest.Game.Field
         /// <returns>Lifepoints of the specified side.</returns>
         public async Task<int> GetBotLifePoints(bool isOwnSide = true)
         {
-            var field = await GetBotField();
-            var side = isOwnSide ? field.OwnSide : field.EnemySide;
-            return side.LifePoints;
+            return await GetLifePointsAsync(FieldPerspective.Bot, isOwnSide);
         }
 
         /// <summary>
@@ -234,9 +147,7 @@ namespace BotTest.Game.Field
         /// <returns>Lifepoints of the specified side.</returns>
         public async Task<int> GetPlayerLifePoints(bool isOwnSide = true)
         {
-            var field = await GetPlayerField();
-            var side = isOwnSide ? field.OwnSide : field.EnemySide;
-            return side.LifePoints;
+            return await GetLifePointsAsync(FieldPerspective.Player, isOwnSide);
         }
 
         /// <summary>
@@ -246,9 +157,7 @@ namespace BotTest.Game.Field
         /// <returns>True if the specified side is under attack, false otherwise.</returns>
         public async Task<bool> IsBotUnderAttack(bool isOwnSide = true)
         {
-            var field = await GetBotField();
-            var side = isOwnSide ? field.OwnSide : field.EnemySide;
-            return side.UnderAttack;
+            return await IsUnderAttackAsync(FieldPerspective.Bot, isOwnSide);
         }
 
         /// <summary>
@@ -258,9 +167,7 @@ namespace BotTest.Game.Field
         /// <returns>True if the specified side is under attack, false otherwise.</returns>
         public async Task<bool> IsPlayerUnderAttack(bool isOwnSide = true)
         {
-            var field = await GetPlayerField();
-            var side = isOwnSide ? field.OwnSide : field.EnemySide;
-            return side.UnderAttack;
+            return await IsUnderAttackAsync(FieldPerspective.Player, isOwnSide);
         }
 
         /// <summary>
@@ -270,9 +177,7 @@ namespace BotTest.Game.Field
         /// <returns>DynamicCard of the monster in battle, or default if none.</returns>
         public async Task<DynamicCard> GetBotBattlingMonster(bool isOwnSide = true)
         {
-            var field = await GetBotField();
-            var side = isOwnSide ? field.OwnSide : field.EnemySide;
-            return side.HasBattlingMonster ? side.BattlingMonster : default;
+            return await GetBattlingMonsterAsync(FieldPerspective.Bot, isOwnSide);
         }
 
         /// <summary>
@@ -283,91 +188,7 @@ namespace BotTest.Game.Field
         /// <returns>List of DynamicCard in the specified location</returns>
         public async Task<List<DynamicCard>> GetCardsInLocation(CardLocation location, int controller = 0)
         {
-            var cards = new List<DynamicCard>();
-            var side = controller == 0 ? OwnSide : EnemySide;
-
-            switch (location)
-            {
-                case CardLocation.Hand:
-                case CardLocation.Grave:
-                case CardLocation.Removed:
-                case CardLocation.Deck:
-                case CardLocation.Extra:
-                    int[] cardIds = location switch
-                    {
-                        CardLocation.Hand => side.Hand,
-                        CardLocation.Grave => side.Grave,
-                        CardLocation.Removed => side.Banish,
-                        CardLocation.Deck => side.Main,
-                        CardLocation.Extra => side.Extra,
-                        _ => Array.Empty<int>()
-                    };
-
-                    for (int sequence = 0; sequence < cardIds.Length; sequence++)
-                    {
-                        if (cardIds[sequence] > 0) // Checks for a potentially valid card
-                        {
-                            try
-                            {
-                                var card = await GetBotFieldCard(controller, (int)location, sequence);
-                                if (card.ID > 0) // Ensures that the letter is valid
-                                    cards.Add(card);
-                            }
-                            catch (Exception ex) when (ex.Message.Contains("404") || ex.Message.Contains("No card found"))
-                            {
-                                ConsoleUtils.PrintColored("******** Ignore 404 errors (no card at coordinates) ********");
-                                // Ignore 404 errors (no card at coordinates)
-                                continue;
-                            }
-                        }
-                    }
-                    break;
-
-                case CardLocation.MonsterZone:
-                case CardLocation.SpellZone:
-                case CardLocation.PendulumZone:
-                case CardLocation.FieldZone:
-                    CardArray[] zones = location switch
-                    {
-                        CardLocation.MonsterZone => side.MonsterZones,
-                        CardLocation.SpellZone => side.SpellZones,
-                        CardLocation.PendulumZone => side.SpellZones, // Pendulum zones are typically part of SpellZones
-                        CardLocation.FieldZone => side.SpellZones,   // Field zone is typically part of SpellZones
-                        _ => Array.Empty<CardArray>()
-                    };
-
-                    if (zones != null)
-                    {
-                        for (int zoneIndex = 0; zoneIndex < zones.Length; zoneIndex++)
-                        {
-                            var zone = zones[zoneIndex];
-                            var cardZone = zone.Cards.FirstOrDefault();
-
-                            if (cardZone > 0)
-                            {
-                                int sequence = zoneIndex;
-                                try
-                                {
-                                    var card = await GetBotFieldCard(controller, (int)location, sequence);
-                                    if (card.ID > 0)
-                                        cards.Add(card);
-                                }
-                                catch (Exception ex) when (ex.Message.Contains("404") || ex.Message.Contains("No card found"))
-                                {
-                                    ConsoleUtils.PrintColored("******** Ignore 404 errors (no card at coordinates) ********");
-                                    // Ignore 404 errors (no card at coordinates)
-                                    continue;
-                                }
-                            }
-                        }
-                    }
-                    break;
-
-                default:
-                    throw new ArgumentException($"Unsupported location: {location}");
-            }
-
-            return cards;
+            return await GetCardsInLocationAsync(FieldPerspective.Bot, location, controller);
         }
 
         /// <summary>

@@ -189,7 +189,7 @@ namespace BotTest.Game.Base
             }
 
             var repositionToAttack = state.ReposableCards
-                .Where(card => card.IsFaceup() && card.IsDefense() && ShouldRepositionToAttack(card, opponentMonsters))
+                .Where(card => card.IsDefense() && ShouldRepositionToAttack(card, opponentMonsters))
                 .OrderByDescending(card => card.Attack)
                 .FirstOrDefault();
 
