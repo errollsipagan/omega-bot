@@ -65,11 +65,6 @@ namespace BotTest.Game.AI.Bots.SpeedDuel.MachineAngelAscension
                 ConsoleUtils.PrintColored($"[OnSelectChain] [Selectable cards] => {cards.ID}");
             }
 
-            foreach (var cards in state.Descriptions)
-            {
-                ConsoleUtils.PrintColored($"[Descriptions cards] => {cards}");
-            }
-
             if (state.SelectableCards.TryGetByID(MachineAngelAscensionCardId.CyberAngelIdaten, out _, out var index))
             {
                 return index;

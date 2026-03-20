@@ -23,11 +23,6 @@ namespace BotTest.Game.AI.Bots.MasterDuel.HandTraps
                 ConsoleUtils.PrintColored($"[OnSelectChain] [override] [Selectable cards] => {cards.ID}");
             }
 
-            foreach (var cards in state.Descriptions)
-            {
-                ConsoleUtils.PrintColored($"[Descriptions cards] => {cards}");
-            }
-
             if (!state.Forced)
                 return 0;
 

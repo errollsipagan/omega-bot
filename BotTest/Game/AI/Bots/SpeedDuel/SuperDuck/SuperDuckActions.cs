@@ -171,12 +171,6 @@ namespace BotTest.Game.AI.Bots.SpeedDuel.SuperDuck
                 ConsoleUtils.PrintColored($"[OnSelectChain] [Selectable cards] => {cards.ID}");
             }
 
-            //Descriptions cards, for each
-            foreach (var cards in state.Descriptions)
-            {
-                ConsoleUtils.PrintColored($"[Descriptions cards] => {cards}");
-            }
-
             bool battleStartPhase = GetCurrentDuelPhase() == DuelPhase.BattleStart;
             bool currentBotPlayer = GetCurrentPlayer() == 1; //Opponent/Player/Enemy
             if (state.SelectableCards.TryGetByID(SuperDuckCardId.Waboku, out var card, out var index) &&

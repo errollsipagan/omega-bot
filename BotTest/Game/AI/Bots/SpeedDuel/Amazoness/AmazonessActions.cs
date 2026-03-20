@@ -127,11 +127,6 @@ namespace BotTest.Game.AI.Bots.SpeedDuel.Amazoness
                 ConsoleUtils.PrintColored($"[OnSelectChain] [override] [Selectable cards] => {cards.ID}");
             }
 
-            foreach (var cards in state.Descriptions)
-            {
-                ConsoleUtils.PrintColored($"[Descriptions cards] => {cards}");
-            }
-
             //Player will be destroy all Spells and Traps cards
             bool playerWillBeDestroyAllSpellsAndTraps = await _gameField.PlayerDestroyAllSpellAndTraps();
             if (playerWillBeDestroyAllSpellsAndTraps)
