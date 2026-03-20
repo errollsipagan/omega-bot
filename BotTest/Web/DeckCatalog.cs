@@ -22,7 +22,8 @@ public static class DeckCatalog
         new("SpeedDuel", "Speed Duel", SpeedDuelDeck.SuperDuck.ToString(), DeckManager.GetDeckName(SpeedDuelDeck.SuperDuck), () => new SuperDuckActions(SpeedDuelDeck.SuperDuck)),
         new("SpeedDuel", "Speed Duel", SpeedDuelDeck.MachineAngelAscension.ToString(), DeckManager.GetDeckName(SpeedDuelDeck.MachineAngelAscension), () => new MachineAngelAscensionActions(SpeedDuelDeck.MachineAngelAscension)),
         new("SpeedDuel", "Speed Duel", SpeedDuelDeck.Amazoness.ToString(), DeckManager.GetDeckName(SpeedDuelDeck.Amazoness), () => new AmazonessActions(SpeedDuelDeck.Amazoness)),
-        new("RushDuel", "Rush Duel", RushDuelDeck.SevensRoad.ToString(), DeckManager.GetDeckName(RushDuelDeck.SevensRoad), () => new SevensRoadActions(RushDuelDeck.SevensRoad))
+        new("RushDuel", "Rush Duel", RushDuelDeck.SevensRoad.ToString(), DeckManager.GetDeckName(RushDuelDeck.SevensRoad), () => new SevensRoadActions(RushDuelDeck.SevensRoad)),
+        new("RushDuel", "Rush Duel", RushDuelDeck.CustomRushDeck.ToString(), DeckManager.GetDeckName(RushDuelDeck.CustomRushDeck), () => new SevensRoadActions(RushDuelDeck.CustomRushDeck))
     ];
 
     public static IReadOnlyList<FormatOption> GetFormatOptions()

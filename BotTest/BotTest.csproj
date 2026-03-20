@@ -10,4 +10,8 @@
     <ProjectReference Include="..\OmegaBotWrapper\OmegaBotWrapper.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\assets\" />
+  </ItemGroup>
+
 </Project>
