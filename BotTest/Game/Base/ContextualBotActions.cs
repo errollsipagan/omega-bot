@@ -8,18 +8,16 @@ namespace BotTest.Game.Base
 {
     public abstract class ContextualBotActions : RuleBasedBotActions
     {
-        protected enum PendingSelectionReason
+        protected enum PendingActionKind
         {
             None,
-            SearchStarter,
-            SearchFollowUp,
-            RevealForMoYe,
-            DiscardForLongyuan,
-            SendToGraveForTaia,
-            SummonLevel8,
-            SummonLevel10,
-            BaxiaTarget,
-            BlackoutTarget
+            Search,
+            Reveal,
+            Discard,
+            SendToGrave,
+            Revive,
+            MaterialSelection,
+            TargetSelection
         }
 
         protected struct PendingActionContext
@@ -27,7 +25,8 @@ namespace BotTest.Game.Base
             public MainAction? Action;
             public int CardId;
             public int Description;
-            public PendingSelectionReason Reason;
+            public PendingActionKind Kind;
+            public int ContextCode;
         }
 
         private int _trackedTurn = -1;
@@ -55,14 +54,15 @@ namespace BotTest.Game.Base
             await _gameField.GetBotField();
         }
 
-        protected void SetPendingAction(PendingSelectionReason reason, int cardId = 0, MainAction? action = null, int description = 0)
+        protected void SetPendingAction(PendingActionKind kind, int cardId = 0, MainAction? action = null, int description = 0, int contextCode = 0)
         {
             PendingAction = new PendingActionContext
             {
-                Reason = reason,
+                Kind = kind,
                 CardId = cardId,
                 Action = action,
-                Description = description
+                Description = description,
+                ContextCode = contextCode
             };
         }
 
@@ -106,6 +106,8 @@ namespace BotTest.Game.Base
             var selectable = cards.FirstOrDefault(card => card.IsCode(ids));
             return selectable.ID > 0 ? selectable : null;
         }
+
+        protected bool PendingContextIs(int contextCode) => PendingAction.ContextCode == contextCode;
 
         protected IList<byte>? PreferCardSelection(SelectCardData state, params int[] preferredIds)
         {

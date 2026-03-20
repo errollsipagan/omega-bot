@@ -1,6 +1,4 @@
 ﻿using BotTest.Decks;
-using BotTest.Game.AI.Bots.MasterDuel.SwordSoul;
-using BotTest.Game.AI.Bots.SpeedDuel.SuperDuck;
 using BotTest.Game.Base;
 using BotTest.Utils;
 using OmegaBotWrapper;
@@ -53,9 +51,9 @@ namespace BotTest.Game.AI.Bots.SpeedDuel.MachineAngelAscension
             );
         }
 
-        public override async Task<bool> OnSelectEffectYn(SelectEffectYnData state)
+        public override Task<bool> OnSelectEffectYn(SelectEffectYnData state)
         {
-            return true;
+            return Task.FromResult(true);
         }
 
         public override async Task<int> OnSelectChain(SelectChainData state)

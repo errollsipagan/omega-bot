@@ -350,14 +350,14 @@ namespace BotTest.Game.AI.Bots.SpeedDuel.Amazoness
             return await base.OnAnnounceCard(state);
         }
 
-        public override async Task<int> OnSelectOption(SelectOptionData state)
+        public override Task<int> OnSelectOption(SelectOptionData state)
         {
             ConsoleUtils.PrintColored("[OnSelectOption][override]");
 
             if (sendToGrave)
-                return 1;
+                return Task.FromResult(1);
 
-            return 0;
+            return Task.FromResult(0);
         }
 
         private bool ReposableCondition(IdleCmdData state, DynamicCard card)
