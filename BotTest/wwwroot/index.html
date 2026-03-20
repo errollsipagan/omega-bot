@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Omega Bot Control Room</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="scene scene-left"></div>
+  <div class="scene scene-right"></div>
+
+  <main class="shell">
+    <section class="hero">
+      <p class="eyebrow">YGO Omega Bot API</p>
+      <h1>Control Room</h1>
+      <p class="lede">
+        A smoother interface for preparing decks, starting duels, and tracking bot activity without relying on the console menu.
+      </p>
+    </section>
+
+    <section class="grid">
+      <article class="panel panel-selection">
+        <div class="panel-head">
+          <span class="panel-kicker">Setup</span>
+          <h2>Choose Your Duel</h2>
+        </div>
+
+        <div class="field-group">
+          <label for="formatSelect">Format</label>
+          <select id="formatSelect"></select>
+        </div>
+
+        <div class="field-group">
+          <label for="deckSelect">Deck</label>
+          <select id="deckSelect"></select>
+        </div>
+
+        <div class="actions">
+          <button id="saveSelectionButton" class="button button-secondary">Save Selection</button>
+          <button id="startButton" class="button button-primary">Start Duel</button>
+        </div>
+      </article>
+
+      <article class="panel panel-status">
+        <div class="panel-head">
+          <span class="panel-kicker">Monitoring</span>
+          <h2>Current Status</h2>
+        </div>
+
+        <div class="status-card">
+          <div class="status-line">
+            <span class="status-label">State</span>
+            <span id="statusBadge" class="status-badge">Ready</span>
+          </div>
+          <h3 id="selectedDeckName">Loading deck...</h3>
+          <p id="statusDetail" class="status-detail">Fetching the current panel state.</p>
+          <p id="lastUpdated" class="status-meta"></p>
+        </div>
+
+        <div class="actions">
+          <button id="rematchButton" class="button button-secondary">Request Rematch</button>
+          <button id="resetButton" class="button button-ghost">Clear Status</button>
+        </div>
+      </article>
+    </section>
+
+    <section class="grid grid-bottom">
+      <article class="panel panel-summary">
+        <div class="panel-head">
+          <span class="panel-kicker">Summary</span>
+          <h2>Operator Panel</h2>
+        </div>
+
+        <div class="summary-cards">
+          <div class="summary-card">
+            <span>Format</span>
+            <strong id="summaryFormat">-</strong>
+          </div>
+          <div class="summary-card">
+            <span>Deck</span>
+            <strong id="summaryDeck">-</strong>
+          </div>
+          <div class="summary-card">
+            <span>Execution</span>
+            <strong id="summaryBusy">-</strong>
+          </div>
+        </div>
+      </article>
+
+      <article class="panel panel-log">
+        <div class="panel-head">
+          <span class="panel-kicker">Timeline</span>
+          <h2>Recent Events</h2>
+        </div>
+
+        <ul id="logList" class="log-list"></ul>
+      </article>
+    </section>
+  </main>
+
+  <template id="logItemTemplate">
+    <li class="log-item">
+      <span class="log-kind"></span>
+      <span class="log-time"></span>
+      <p class="log-message"></p>
+    </li>
+  </template>
+
+  <script src="/app.js" defer></script>
+</body>
+</html>
