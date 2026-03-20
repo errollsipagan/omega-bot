@@ -121,10 +121,10 @@ namespace BotTest.Game.AI.Bots.MasterDuel.BlueEyes
         /// <summary>
         /// Condition to summon DragonSpiritOfWhite: checks if there are cards in the SpellZone and if the card is summonable.
         /// </summary>
-        private bool DragonSpiritOfWhiteSummon(IdleCmdData state, DynamicCard card)
+        private async Task<bool> DragonSpiritOfWhiteSummon(IdleCmdData state, DynamicCard card)
         {
             //Checks for cards in player's SpellZones
-            int playerSpellZoneCount = _gameField.GetPlayerSpellZoneCount().Result;
+            int playerSpellZoneCount = await _gameField.GetPlayerSpellZoneCount();
             bool hasSpellCards = playerSpellZoneCount > 0;
 
             //Checks for summonable cards

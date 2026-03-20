@@ -43,6 +43,12 @@ app.MapPost("/api/duel/reset", (BotControlService controlService) =>
     return result.Success ? Results.Ok(result) : Results.BadRequest(result);
 });
 
+app.MapPost("/api/logs/clear", (BotControlService controlService) =>
+{
+    var result = controlService.ClearRecentEvents();
+    return result.Success ? Results.Ok(result) : Results.BadRequest(result);
+});
+
 app.MapFallbackToFile("index.html");
 
 app.Run();

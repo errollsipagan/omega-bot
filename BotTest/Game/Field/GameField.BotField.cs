@@ -104,33 +104,36 @@ namespace BotTest.Game.Field
             }
             else if (location == CardLocation.Hand)
             {
-                foreach (var cardId in side.Hand)
+                for (int seq = 0; seq < side.Hand.Length; seq++)
                 {
+                    var cardId = side.Hand[seq];
                     if (cardId > 0)
                     {
-                        var card = await GetBotFieldCard(controller, (int)CardLocation.Hand, 0);
+                        var card = await GetBotFieldCard(controller, (int)CardLocation.Hand, seq);
                         if (card.ID != 0) cards.Add(card);
                     }
                 }
             }
             else if (location == CardLocation.Grave)
             {
-                foreach (var cardId in side.Grave)
+                for (int seq = 0; seq < side.Grave.Length; seq++)
                 {
+                    var cardId = side.Grave[seq];
                     if (cardId > 0)
                     {
-                        var card = await GetBotFieldCard(controller, (int)CardLocation.Grave, 0);
+                        var card = await GetBotFieldCard(controller, (int)CardLocation.Grave, seq);
                         if (card.ID != 0) cards.Add(card);
                     }
                 }
             }
             else if (location == CardLocation.Removed)
             {
-                foreach (var cardId in side.Banish)
+                for (int seq = 0; seq < side.Banish.Length; seq++)
                 {
+                    var cardId = side.Banish[seq];
                     if (cardId > 0)
                     {
-                        var card = await GetBotFieldCard(controller, (int)CardLocation.Removed, 0);
+                        var card = await GetBotFieldCard(controller, (int)CardLocation.Removed, seq);
                         if (card.ID != 0) cards.Add(card);
                     }
                 }
@@ -401,7 +404,7 @@ namespace BotTest.Game.Field
         {
             await GetBotField();
             var spellTrapsCards = await GetCardsInLocation(CardLocation.SpellZone);
-            var filteredCards = spellTrapsCards.Where(card => card.HasType(CardType.Spell) && card.HasType(CardType.Trap) && card.Cover == 0); //remove skill
+            var filteredCards = spellTrapsCards.Where(card => (card.HasType(CardType.Spell) || card.HasType(CardType.Trap)) && card.Cover == 0);
             return filteredCards;
         }
 
@@ -569,16 +572,16 @@ namespace BotTest.Game.Field
             return trapCards.Any(card => card.IsCode(trap) && card.IsFaceup()); ;
         }
 
-        public bool PlayerDestroyAllSpellAndTraps()
+        public async Task<bool> PlayerDestroyAllSpellAndTraps()
         {
-            IEnumerable<DynamicCard> spellsTrapsCards = GetPlayerSpellsCardsInSpellZone().Result;
+            IEnumerable<DynamicCard> spellsTrapsCards = await GetPlayerSpellsCardsInSpellZone();
             var cardsActivated = spellsTrapsCards.Where(card => card.IsFaceup());
             return cardsActivated.Any(card => Enum.IsDefined(typeof(DestroyAllSpellsTraps), card.ID));
         }
 
-        public bool PlayerDestroyAllCards()
+        public async Task<bool> PlayerDestroyAllCards()
         {
-            IEnumerable<DynamicCard> spellsTrapsCards = GetPlayerSpellsCardsInSpellZone().Result;
+            IEnumerable<DynamicCard> spellsTrapsCards = await GetPlayerSpellsCardsInSpellZone();
             var cardsActivated = spellsTrapsCards.Where(card => card.IsFaceup());
             return cardsActivated.Any(card => Enum.IsDefined(typeof(DestroyAllCards), card.ID));
         }

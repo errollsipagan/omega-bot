@@ -159,7 +159,7 @@ namespace BotTest.Game.AI.Bots.SpeedDuel.SuperDuck
                 ConsoleUtils.PrintColored($"[SpecialSummonable cards] => {cards.ID}");
             }
 
-            var response = ExecuteFirstValidAction(state, _actionRules);
+            var response = await ExecuteFirstValidAction(state, _actionRules);
             return response ?? await base.OnIdleCmd(state); // Fallback to base implementation
         }
 
@@ -190,7 +190,7 @@ namespace BotTest.Game.AI.Bots.SpeedDuel.SuperDuck
 
             if (state.SelectableCards.TryGetByID(SuperDuckCardId.FloodgateTrapHole, out _, out index))
             {
-                bool isUniqueTrap = _gameField.IsUniqueTrapChain(SuperDuckCardId.FloodgateTrapHole).Result;
+                bool isUniqueTrap = await _gameField.IsUniqueTrapChain(SuperDuckCardId.FloodgateTrapHole);
                 if (!isUniqueTrap)
                     return index;
             }
@@ -273,19 +273,19 @@ namespace BotTest.Game.AI.Bots.SpeedDuel.SuperDuck
             return await base.OnSelectPosition(state);
         }
 
-        private bool HammerShotCondition(IdleCmdData state, DynamicCard card)
+        private async Task<bool> HammerShotCondition(IdleCmdData state, DynamicCard card)
         {
             bool canActivate = card.IsCode(SuperDuckCardId.HammerShot);
-            bool opponentHasStrongest = _gameField.IsFaceUpAttackStrongestMonsterPlayer().Result;
+            bool opponentHasStrongest = await _gameField.IsFaceUpAttackStrongestMonsterPlayer();
             if (canActivate && opponentHasStrongest)
                 ConsoleUtils.PrintColored($"HammerShotCondition: Can activate Hammer Shot (Opponent has strongest monster)");
             return canActivate && opponentHasStrongest;
         }
 
-        private bool EnchantingFittingRoomCondition(IdleCmdData state, DynamicCard card)
+        private async Task<bool> EnchantingFittingRoomCondition(IdleCmdData state, DynamicCard card)
         {
             bool canActivate = card.IsCode(SuperDuckCardId.EnchantingFittingRoom);
-            int botMonstersCount = _gameField.GetMonstersCount().Result;
+            int botMonstersCount = await _gameField.GetMonstersCount();
             ConsoleUtils.PrintColored($"[EnchantingFittingRoomCondition] botMonstersCount {botMonstersCount}");
             bool botMonstersCondition = botMonstersCount <= 1;
             if (canActivate && botMonstersCondition)
@@ -293,19 +293,19 @@ namespace BotTest.Game.AI.Bots.SpeedDuel.SuperDuck
             return canActivate && botMonstersCondition;
         }
 
-        private bool AllureOfDarknessCondition(IdleCmdData state, DynamicCard card)
+        private async Task<bool> AllureOfDarknessCondition(IdleCmdData state, DynamicCard card)
         {
             bool canActivate = card.IsCode(SuperDuckCardId.AllureOfDarkness);
-            bool botHasDarkAttribute = _gameField.HasCardWithAttributeInHand(attribute: CardAttribute.Dark).Result;
+            bool botHasDarkAttribute = await _gameField.HasCardWithAttributeInHand(attribute: CardAttribute.Dark);
             if (canActivate && botHasDarkAttribute)
                 ConsoleUtils.PrintColored($"AllureOfDarknessCondition: Can activate Allure of Darkness");
             return canActivate && botHasDarkAttribute;
         }
 
-        private bool BreakerTheMagicalWarriorCondition(IdleCmdData state, DynamicCard card)
+        private async Task<bool> BreakerTheMagicalWarriorCondition(IdleCmdData state, DynamicCard card)
         {
             bool canActivate = card.IsCode(SuperDuckCardId.BreakerTheMagicalWarrior);
-            int playerSpellsCount = _gameField.GetPlayerSpellsCount().Result;
+            int playerSpellsCount = await _gameField.GetPlayerSpellsCount();
             ConsoleUtils.PrintColored($"BreakerTheMagicalWarriorCondition : playerSpellsCount {playerSpellsCount}");
             bool playerHasSpells = playerSpellsCount > 0;
             if (canActivate && playerHasSpells)

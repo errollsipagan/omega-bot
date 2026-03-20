@@ -12,7 +12,7 @@ namespace BotTest.Game.Base
         public MainAction Action { get; }
         public int CardId { get; }
         public Func<IdleCmdData, IEnumerable<DynamicCard>> CardSelector { get; }
-        public Func<IdleCmdData, DynamicCard, bool> Condition { get; }
+        public Func<IdleCmdData, DynamicCard, Task<bool>> Condition { get; }
 
         private static readonly Dictionary<MainAction, Func<IdleCmdData, IEnumerable<DynamicCard>>> DefaultSelectors = new()
         {
@@ -33,7 +33,21 @@ namespace BotTest.Game.Base
             Action = action;
             CardId = cardId;
             CardSelector = cardSelector;
-            Condition = condition ?? ((_, _) => true); // Default condition always returns true
+            Condition = condition != null
+                ? (state, card) => Task.FromResult(condition(state, card))
+                : ((_, _) => Task.FromResult(true));
+        }
+
+        public ActionRule(
+            MainAction action,
+            int cardId,
+            Func<IdleCmdData, IEnumerable<DynamicCard>> cardSelector,
+            Func<IdleCmdData, DynamicCard, Task<bool>> condition)
+        {
+            Action = action;
+            CardId = cardId;
+            CardSelector = cardSelector;
+            Condition = condition;
         }
 
         /// <summary>
@@ -52,7 +66,24 @@ namespace BotTest.Game.Base
                 throw new ArgumentException($"No default card selector defined for action {action}.");
             }
             CardSelector = selector;
-            Condition = condition ?? ((_, _) => true); // Default condition always returns true
+            Condition = condition != null
+                ? (state, card) => Task.FromResult(condition(state, card))
+                : ((_, _) => Task.FromResult(true));
+        }
+
+        public ActionRule(
+            MainAction action,
+            int cardId,
+            Func<IdleCmdData, DynamicCard, Task<bool>> condition)
+        {
+            Action = action;
+            CardId = cardId;
+            if (!DefaultSelectors.TryGetValue(action, out var selector))
+            {
+                throw new ArgumentException($"No default card selector defined for action {action}.");
+            }
+            CardSelector = selector;
+            Condition = condition;
         }
     }
 }

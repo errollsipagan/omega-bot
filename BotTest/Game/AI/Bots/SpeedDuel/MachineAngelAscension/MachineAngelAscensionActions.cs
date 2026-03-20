@@ -90,7 +90,7 @@ namespace BotTest.Game.AI.Bots.SpeedDuel.MachineAngelAscension
             if (state.SelectionHint.Equals((int)DHint.SPSUMMON))
             {
                 //Check if Cyber Angel Izana is available in the hand
-                bool hasCyberAngelIzana = _gameField.HasCardInHand(MachineAngelAscensionCardId.CyberAngelIzana).Result;
+                bool hasCyberAngelIzana = await _gameField.HasCardInHand(MachineAngelAscensionCardId.CyberAngelIzana);
 
                 if (hasCyberAngelIzana)
                 {

@@ -1,12 +1,3 @@
-using BotTest.Decks;
-using BotTest.Game.AI.Bots.MasterDuel.BlueEyes;
-using BotTest.Game.AI.Bots.MasterDuel.DarkMagician;
-using BotTest.Game.AI.Bots.MasterDuel.HandTraps;
-using BotTest.Game.AI.Bots.MasterDuel.SwordSoul;
-using BotTest.Game.AI.Bots.RushDuel.SevensRoad;
-using BotTest.Game.AI.Bots.SpeedDuel.Amazoness;
-using BotTest.Game.AI.Bots.SpeedDuel.MachineAngelAscension;
-using BotTest.Game.AI.Bots.SpeedDuel.SuperDuck;
 using BotTest.Game.Base;
 using BotTest.Utils;
 using OmegaBotWrapper;
@@ -32,7 +23,7 @@ public sealed class BotControlService
 
     public BotControlService()
     {
-        _formatOptions = BuildFormatOptions();
+        _formatOptions = DeckCatalog.GetFormatOptions();
 
         var defaultFormat = _formatOptions.First();
         var defaultDeck = defaultFormat.Decks.First();
@@ -160,6 +151,16 @@ public sealed class BotControlService
         }
     }
 
+    public CommandResult ClearRecentEvents()
+    {
+        lock (_sync)
+        {
+            _logs.Clear();
+            _lastUpdated = DateTimeOffset.Now;
+            return CommandResult.Ok("Recent events cleared.");
+        }
+    }
+
     private async Task ExecuteDuelAsync(DeckSelection selection, bool requestRematch)
     {
         void OnMessageLogged(string message) => AddLog(message, "engine");
@@ -176,7 +177,7 @@ public sealed class BotControlService
                 await Task.Delay(500);
             }
 
-            var botActions = CreateBotActions(selection);
+            var botActions = DeckCatalog.CreateBotActions(selection.FormatId, selection.DeckId);
             var bot = new DuelBotWrapper(botActions);
 
             UpdateStatus("Connecting", $"Trying to connect the bot using {selection.DeckName}...");
@@ -235,59 +236,6 @@ public sealed class BotControlService
                 _logs.RemoveRange(MaxLogEntries, _logs.Count - MaxLogEntries);
             }
         }
-    }
-
-    private static IReadOnlyList<FormatOption> BuildFormatOptions()
-    {
-        return
-        [
-            new FormatOption(
-                "MasterDuel",
-                "Master Duel",
-                DeckManager.GetMasterDuelDeckOptions()
-                    .Select(deck => new DeckOptionDto(deck.Id.ToString()!, deck.Name))
-                    .ToArray()),
-            new FormatOption(
-                "SpeedDuel",
-                "Speed Duel",
-                DeckManager.GetSpeedDuelDeckOptions()
-                    .Select(deck => new DeckOptionDto(deck.Id.ToString()!, deck.Name))
-                    .ToArray()),
-            new FormatOption(
-                "RushDuel",
-                "Rush Duel",
-                DeckManager.GetRushDuelDeckOptions()
-                    .Select(deck => new DeckOptionDto(deck.Id.ToString()!, deck.Name))
-                    .ToArray())
-        ];
-    }
-
-    private static BaseBotActions CreateBotActions(DeckSelection selection)
-    {
-        return selection.FormatId switch
-        {
-            "MasterDuel" => Enum.Parse<MasterDuelDeck>(selection.DeckId) switch
-            {
-                MasterDuelDeck.BlueEyes => new BlueEyesActions(MasterDuelDeck.BlueEyes),
-                MasterDuelDeck.DarkMagician => new DarkMagicianActions(MasterDuelDeck.DarkMagician),
-                MasterDuelDeck.SwordSoul => new SwordSoulActions(MasterDuelDeck.SwordSoul),
-                MasterDuelDeck.HandTraps => new HandTrapsActions(MasterDuelDeck.HandTraps),
-                _ => throw new InvalidOperationException($"No Master Duel implementation found for deck: {selection.DeckId}")
-            },
-            "SpeedDuel" => Enum.Parse<SpeedDuelDeck>(selection.DeckId) switch
-            {
-                SpeedDuelDeck.SuperDuck => new SuperDuckActions(SpeedDuelDeck.SuperDuck),
-                SpeedDuelDeck.MachineAngelAscension => new MachineAngelAscensionActions(SpeedDuelDeck.MachineAngelAscension),
-                SpeedDuelDeck.Amazoness => new AmazonessActions(SpeedDuelDeck.Amazoness),
-                _ => throw new InvalidOperationException($"No Speed Duel implementation found for deck: {selection.DeckId}")
-            },
-            "RushDuel" => Enum.Parse<RushDuelDeck>(selection.DeckId) switch
-            {
-                RushDuelDeck.SevensRoad => new SevensRoadActions(RushDuelDeck.SevensRoad),
-                _ => throw new InvalidOperationException($"No Rush Duel implementation found for deck: {selection.DeckId}")
-            },
-            _ => throw new InvalidOperationException($"Unsupported format: {selection.FormatId}")
-        };
     }
 }
 

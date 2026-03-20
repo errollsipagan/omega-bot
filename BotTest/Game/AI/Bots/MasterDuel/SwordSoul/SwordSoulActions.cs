@@ -116,19 +116,19 @@ namespace BotTest.Game.AI.Bots.MasterDuel.SwordSoul
             return await base.OnSelectCard(state);
         }
 
-        private bool EmergenceAndTaiaCondition(IdleCmdData state, DynamicCard card)
+        private async Task<bool> EmergenceAndTaiaCondition(IdleCmdData state, DynamicCard card)
         {
             bool canActivate = card.IsCode(SwordSoulCardId.SwordsoulEmergence);
-            bool hasSwordsoulEmergence = _gameField.HasCardInHand(SwordSoulCardId.SwordsoulEmergence).Result;
-            bool hasSwordsoulOfTaia = _gameField.HasCardInHand(SwordSoulCardId.SwordsoulOfTaia).Result;
+            bool hasSwordsoulEmergence = await _gameField.HasCardInHand(SwordSoulCardId.SwordsoulEmergence);
+            bool hasSwordsoulOfTaia = await _gameField.HasCardInHand(SwordSoulCardId.SwordsoulOfTaia);
 
             return canActivate && hasSwordsoulEmergence && hasSwordsoulOfTaia;
         }
 
-        private bool SwordsoulStrategistLongYuanCondition(IdleCmdData state, DynamicCard card)
+        private async Task<bool> SwordsoulStrategistLongYuanCondition(IdleCmdData state, DynamicCard card)
         {
             bool canActivate = card.IsCode(SwordSoulCardId.SwordsoulStrategistLongYuan);
-            bool hasSwordsoulOfMoYe = _gameField.HasCardInBotMonsterZone(SwordSoulCardId.SwordsoulOfMoYe).Result;
+            bool hasSwordsoulOfMoYe = await _gameField.HasCardInBotMonsterZone(SwordSoulCardId.SwordsoulOfMoYe);
 
             return canActivate && hasSwordsoulOfMoYe;
         }

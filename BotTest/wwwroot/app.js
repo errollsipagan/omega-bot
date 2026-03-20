@@ -4,6 +4,7 @@ const saveSelectionButton = document.getElementById("saveSelectionButton");
 const startButton = document.getElementById("startButton");
 const rematchButton = document.getElementById("rematchButton");
 const resetButton = document.getElementById("resetButton");
+const clearLogsButton = document.getElementById("clearLogsButton");
 const selectedDeckName = document.getElementById("selectedDeckName");
 const statusBadge = document.getElementById("statusBadge");
 const statusDetail = document.getElementById("statusDetail");
@@ -13,11 +14,14 @@ const summaryDeck = document.getElementById("summaryDeck");
 const summaryBusy = document.getElementById("summaryBusy");
 const logList = document.getElementById("logList");
 const logItemTemplate = document.getElementById("logItemTemplate");
+const cardPreview = document.getElementById("cardPreview");
+const cardPreviewImage = document.getElementById("cardPreviewImage");
 
 let formats = [];
 let selectedFormat = "";
 let selectedDeckId = "";
 let isSelectionDirty = false;
+let previewHideTimeout = null;
 
 async function fetchJson(url, options) {
   const response = await fetch(url, {
@@ -87,9 +91,80 @@ function renderLogs(logs) {
     item.dataset.kind = entry.kind || "info";
     item.querySelector(".log-kind").textContent = entry.kind || "info";
     item.querySelector(".log-time").textContent = new Date(entry.timestamp).toLocaleTimeString("en-US");
-    item.querySelector(".log-message").textContent = entry.message;
+    renderLogMessage(item.querySelector(".log-message"), entry.message);
     logList.appendChild(item);
   }
+}
+
+function renderLogMessage(container, message) {
+  container.innerHTML = "";
+
+  const codePattern = /\b(\d{5,10})\b/g;
+  let cursor = 0;
+  let match = codePattern.exec(message);
+
+  while (match) {
+    const [fullMatch, code] = match;
+    const start = match.index;
+
+    if (start > cursor) {
+      container.append(document.createTextNode(message.slice(cursor, start)));
+    }
+
+    container.append(createCardCodeElement(code));
+    cursor = start + fullMatch.length;
+    match = codePattern.exec(message);
+  }
+
+  if (cursor < message.length) {
+    container.append(document.createTextNode(message.slice(cursor)));
+  }
+}
+
+function createCardCodeElement(code) {
+  const element = document.createElement("span");
+  element.className = "log-code";
+  element.textContent = code;
+  element.dataset.code = code;
+
+  element.addEventListener("mouseenter", (event) => showCardPreview(code, event));
+  element.addEventListener("mousemove", (event) => positionCardPreview(event));
+  element.addEventListener("mouseleave", hideCardPreview);
+
+  return element;
+}
+
+function showCardPreview(code, event) {
+  if (previewHideTimeout) {
+    window.clearTimeout(previewHideTimeout);
+    previewHideTimeout = null;
+  }
+
+  cardPreviewImage.src = `https://ygopro.online/assets/card-images/common/${code}.jpg`;
+  cardPreview.dataset.visible = "true";
+  cardPreview.setAttribute("aria-hidden", "false");
+  positionCardPreview(event);
+}
+
+function positionCardPreview(event) {
+  const offset = 18;
+  const previewWidth = 250;
+  const previewHeight = 360;
+  const maxLeft = window.innerWidth - previewWidth - 16;
+  const maxTop = window.innerHeight - previewHeight - 16;
+  const left = Math.min(event.clientX + offset, maxLeft);
+  const top = Math.min(event.clientY + offset, maxTop);
+
+  cardPreview.style.left = `${Math.max(16, left)}px`;
+  cardPreview.style.top = `${Math.max(16, top)}px`;
+}
+
+function hideCardPreview() {
+  previewHideTimeout = window.setTimeout(() => {
+    cardPreview.dataset.visible = "false";
+    cardPreview.setAttribute("aria-hidden", "true");
+    cardPreviewImage.removeAttribute("src");
+  }, 60);
 }
 
 function updateState(state) {
@@ -171,6 +246,7 @@ saveSelectionButton.addEventListener("click", () => saveSelection().catch(showEr
 startButton.addEventListener("click", () => postAction("/api/duel/start").catch(showError));
 rematchButton.addEventListener("click", () => postAction("/api/duel/rematch").catch(showError));
 resetButton.addEventListener("click", () => postAction("/api/duel/reset").catch(showError));
+clearLogsButton.addEventListener("click", () => postAction("/api/logs/clear").catch(showError));
 
 function showError(error) {
   isSelectionDirty = false;

@@ -83,7 +83,7 @@ namespace BotTest.Game.AI.Bots.TestOnly
                 return index;
 
 
-            bool playerWillBeDestroyAllSpellsAndTraps = _gameField.PlayerDestroyAllSpellAndTraps();
+            bool playerWillBeDestroyAllSpellsAndTraps = await _gameField.PlayerDestroyAllSpellAndTraps();
 
             if (playerWillBeDestroyAllSpellsAndTraps)
             {

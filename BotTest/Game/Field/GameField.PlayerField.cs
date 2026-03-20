@@ -73,33 +73,36 @@ namespace BotTest.Game.Field
             }
             else if (location == CardLocation.Hand)
             {
-                foreach (var cardId in side.Hand)
+                for (int seq = 0; seq < side.Hand.Length; seq++)
                 {
+                    var cardId = side.Hand[seq];
                     if (cardId > 0)
                     {
-                        var card = await GetPlayerFieldCard(controller, (int)CardLocation.Hand, 0);
+                        var card = await GetPlayerFieldCard(controller, (int)CardLocation.Hand, seq);
                         if (card.ID != 0) cards.Add(card);
                     }
                 }
             }
             else if (location == CardLocation.Grave)
             {
-                foreach (var cardId in side.Grave)
+                for (int seq = 0; seq < side.Grave.Length; seq++)
                 {
+                    var cardId = side.Grave[seq];
                     if (cardId > 0)
                     {
-                        var card = await GetPlayerFieldCard(controller, (int)CardLocation.Grave, 0);
+                        var card = await GetPlayerFieldCard(controller, (int)CardLocation.Grave, seq);
                         if (card.ID != 0) cards.Add(card);
                     }
                 }
             }
             else if (location == CardLocation.Removed)
             {
-                foreach (var cardId in side.Banish)
+                for (int seq = 0; seq < side.Banish.Length; seq++)
                 {
+                    var cardId = side.Banish[seq];
                     if (cardId > 0)
                     {
-                        var card = await GetPlayerFieldCard(controller, (int)CardLocation.Removed, 0);
+                        var card = await GetPlayerFieldCard(controller, (int)CardLocation.Removed, seq);
                         if (card.ID != 0) cards.Add(card);
                     }
                 }

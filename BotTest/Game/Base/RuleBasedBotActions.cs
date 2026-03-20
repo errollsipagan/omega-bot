@@ -42,21 +42,26 @@ namespace BotTest.Game.Base
             return new IdleCmdResponse(action, index);
         }
 
-        protected virtual IdleCmdResponse? ExecuteFirstValidAction(IdleCmdData state, IEnumerable<ActionRule> rules)
+        protected virtual async Task<IdleCmdResponse?> ExecuteFirstValidAction(IdleCmdData state, IEnumerable<ActionRule> rules)
         {
             foreach (var rule in rules)
             {
                 var cards = rule.CardSelector(state).ToList();
+                var originalCards = GetCardsForAction(state, rule.Action);
 
                 for (int i = 0; i < cards.Count; i++)
                 {
-                    if (cards[i].ID == rule.CardId && rule.Condition(state, cards[i]))
+                    if (cards[i].ID == rule.CardId && await rule.Condition(state, cards[i]))
                     {
+                        var originalIndex = Array.IndexOf(originalCards, cards[i]);
+                        if (originalIndex < 0)
+                            continue;
+
                         string cardDisplay = _cardInfoMap.TryGetValue(rule.CardId, out var cardInfo)
                         ? cardInfo.CardName
                         : rule.CardId.ToString();
                         ConsoleUtils.PrintColored($"Bot Actions => ExecuteAction. Card: {cardDisplay}");
-                        return ExecuteAction(rule.Action, (ushort)i);
+                        return ExecuteAction(rule.Action, (ushort)originalIndex);
                     }
                 }
 
@@ -85,8 +90,22 @@ namespace BotTest.Game.Base
             foreach (var cards in state.SpecialSummonableCards)
                 ConsoleUtils.PrintColored($"[SpecialSummonable cards] => {cards.ID}");
 
-            var response = ExecuteFirstValidAction(state, _actionRules);
+            var response = await ExecuteFirstValidAction(state, _actionRules);
             return response ?? await base.OnIdleCmd(state);
+        }
+
+        private static DynamicCard[] GetCardsForAction(IdleCmdData state, MainAction action)
+        {
+            return action switch
+            {
+                MainAction.Summon => state.SummonableCards,
+                MainAction.SpSummon => state.SpecialSummonableCards,
+                MainAction.Activate => state.ActivableCards,
+                MainAction.SetMonster => state.MonsterSetableCards,
+                MainAction.SetSpell => state.SpellSetableCards,
+                MainAction.Repos => state.ReposableCards,
+                _ => Array.Empty<DynamicCard>()
+            };
         }
 
         protected void InitializeCardInfo<TCardIdClass>()
@@ -114,6 +133,11 @@ namespace BotTest.Game.Base
         }
 
         public void BotAction(MainAction action, int cardId, Func<IdleCmdData, DynamicCard, bool>? condition = null)
+        {
+            AddBotAction(new ActionRule(action, cardId, condition));
+        }
+
+        public void BotAction(MainAction action, int cardId, Func<IdleCmdData, DynamicCard, Task<bool>> condition)
         {
             AddBotAction(new ActionRule(action, cardId, condition));
         }

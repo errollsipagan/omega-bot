@@ -94,6 +94,10 @@
           <h2>Recent Events</h2>
         </div>
 
+        <div class="actions">
+          <button id="clearLogsButton" class="button button-ghost">Clear Recent Events</button>
+        </div>
+
         <ul id="logList" class="log-list"></ul>
       </article>
     </section>
@@ -106,6 +110,12 @@
       <p class="log-message"></p>
     </li>
   </template>
+
+  <div id="cardPreview" class="card-preview" aria-hidden="true">
+    <div class="card-preview-frame">
+      <img id="cardPreviewImage" alt="Card preview">
+    </div>
+  </div>
 
   <script src="/app.js" defer></script>
 </body>
