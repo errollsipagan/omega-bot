@@ -220,5 +220,7 @@ namespace OmegaBotWrapper
 
         public static bool HasAttribute(this DynamicCard card, CardAttribute attribute) => (card.Attribute & (byte)attribute) != 0;
 
+        public static bool HasRace(this DynamicCard card, CardRace race) => (card.Race & (int)race) != 0;
+
     }
 }
