@@ -54,8 +54,14 @@ namespace OmegaBotWrapper
         /// </summary>
         async Task<BattleCmdResponse> OnBattleCmd(BattleCmdData state)
         {
-            if (state.AttackableCards.Any())
-                return state.AttackableCards.First().DeclareAttack();
+            // Filter cards that have not already attacked this turn, then prefer highest ATK.
+            // Using First() directly would always pick zone-0 order as returned by Omega.
+            var candidate = state.AttackableCards
+                .Where(c => !c.Attacked)
+                .OrderByDescending(c => c.Attack)
+                .FirstOrDefault();
+            if (candidate.ID > 0)
+                return candidate.DeclareAttack();
             if (state.CanMainPhaseTwo)
                 return BattleAction.ToMainPhaseTwo;
             return BattleAction.ToEndPhase;
@@ -223,25 +229,35 @@ namespace OmegaBotWrapper
         /// </summary>
         async Task<int> OnSelectDisfield(SelectDisfieldData state)
         {
-            int[] zones = new int[] { Zones.z0, Zones.z1, Zones.z2, Zones.z3, Zones.z4, Zones.z5, Zones.z6 };
-            byte seq;
-            for (seq = 0; seq < 7; ++seq)
-                if (Zones.IsAvailable(zones[seq], state.Filter))
-                    break;
-            return BitConverter.ToInt32(new byte[] { state.Player, (byte)state.Location, seq, 0 });
+            byte seq = FindFirstAvailableZone(state.Filter);
+            return BuildZoneResponse(state.Player, (byte)state.Location, seq);
         }
         /// <summary>
         /// Action to be taken when selecting field zone, should return the integer representing the zone selected (use the 'Zones' class helper for values)
         /// </summary>
         async Task<int> OnSelectPlace(SelectPlaceData state)
         {
-            int[] zones = new int[] { Zones.z0, Zones.z1, Zones.z2, Zones.z3, Zones.z4, Zones.z5, Zones.z6 };
-            byte seq;
-            for (seq = 0; seq < 7; ++seq)
-                if (Zones.IsAvailable(zones[seq], state.Filter))
-                    break;
-            return BitConverter.ToInt32(new byte[] { state.Player, (byte)state.Location, seq, 0 });
+            byte seq = FindFirstAvailableZone(state.Filter);
+            return BuildZoneResponse(state.Player, (byte)state.Location, seq);
         }
+
+        private static readonly int[] ZoneMasks = { Zones.z0, Zones.z1, Zones.z2, Zones.z3, Zones.z4, Zones.z5, Zones.z6 };
+
+        // Returns the sequence (0-6) of the first zone bit set in filter, or 0 if none found.
+        // Keeps seq within 0-6; the old implementation let seq reach 7 when no bit matched,
+        // sending an out-of-bounds zone index that caused Omega to terminate the duel.
+        private static byte FindFirstAvailableZone(int filter)
+        {
+            for (byte seq = 0; seq < ZoneMasks.Length; seq++)
+                if (Zones.IsAvailable(ZoneMasks[seq], filter))
+                    return seq;
+            Console.WriteLine($"[WARN] SelectDisfield/SelectPlace: no zone bits found in Filter=0x{filter:X8}, defaulting to seq=0");
+            return 0;
+        }
+
+        // Packs controller/location/seq into the 4-byte LE int Omega expects.
+        private static int BuildZoneResponse(byte player, byte location, byte seq) =>
+            BitConverter.ToInt32(new byte[] { player, location, seq, 0 });
         /// <summary>
         /// Action to be taken when selecting yes or no for an effect, should return true or false
         /// </summary>

@@ -10,6 +10,7 @@ namespace OmegaBotWrapper
     public class DuelBotWrapper
     {
         private readonly OmegaApiClient _api;
+        private readonly BotStateDispatcher _dispatcher;
 
         /// <summary>
         /// Which bot this instance is connected to
@@ -32,6 +33,7 @@ namespace OmegaBotWrapper
             DeckHash = deckHash;
             BotID = -1;
             _api = api ?? OmegaApiClient.Default;
+            _dispatcher = new BotStateDispatcher(this);
         }
         /// <summary>
         /// Creates a new bot wrapper with given set of actions
@@ -43,6 +45,7 @@ namespace OmegaBotWrapper
             DeckHash = botActions.DeckHash ?? string.Empty;
             BotID = -1;
             _api = api ?? OmegaApiClient.Default;
+            _dispatcher = new BotStateDispatcher(this);
             botActions.RegisterActions(this);
         }
         /// <summary>
@@ -196,246 +199,11 @@ namespace OmegaBotWrapper
         private async Task<bool> Heartbeat(CancellationToken ct = default)
         {
             CurrentStateHeader = await _api.GetBotStateHeader(BotID, ct);
-            using MemoryStream ms = new();
-            using BinaryWriter pkt = new(ms);
             var state = (BotState)CurrentStateHeader.CurrentStateCode;
-            switch (state)
-            {
-                case BotState.SelectBattleCmd:
-                    if (OnBattleCmdAction == null)
-                    {
-                        BotLogger.Warn(BotID, $"[{state}] No handler registered, skipping.");
-                        return true;
-                    }
-                    var battleState = await _api.GetBotStateAs<BattleCmdState>(BotID, ct);
-                    var battleResponse = await OnBattleCmdAction(battleState.CurrentStateData);
-                    pkt.Write((ushort)battleResponse.Action);
-                    pkt.Write(battleResponse.Index);
-                    break;
-                case BotState.SelectIdleCmd:
-                    if (OnIdleCmdAction == null)
-                    {
-                        BotLogger.Warn(BotID, $"[{state}] No handler registered, skipping.");
-                        return true;
-                    }
-                    var idleState = await _api.GetBotStateAs<IdleCmdState>(BotID, ct);
-                    var idleResponse = await OnIdleCmdAction(idleState.CurrentStateData);
-                    pkt.Write((ushort)idleResponse.Action);
-                    pkt.Write(idleResponse.Index);
-                    break;
-                case BotState.SelectCard:
-                    if (OnSelectCardAction == null)
-                    {
-                        BotLogger.Warn(BotID, $"[{state}] No handler registered, skipping.");
-                        return true;
-                    }
-                    var selectCardState = await _api.GetBotStateAs<SelectCardState>(BotID, ct);
-                    var selectCardResponse = await OnSelectCardAction(selectCardState.CurrentStateData) ?? Array.Empty<byte>();
-                    pkt.Write((byte)selectCardResponse.Count);
-                    foreach (byte optionIndex in selectCardResponse)
-                        pkt.Write(optionIndex);
-                    break;
-                case BotState.SelectUnselectCard:
-                    if (OnSelectUnselectCardAction == null)
-                    {
-                        BotLogger.Warn(BotID, $"[{state}] No handler registered, skipping.");
-                        return true;
-                    }
-                    var selectUnselectCardState = await _api.GetBotStateAs<SelectUnselectCardState>(BotID, ct);
-                    var selectUnselectCardResponse = await OnSelectUnselectCardAction(selectUnselectCardState.CurrentStateData) ?? Array.Empty<byte>();
-                    pkt.Write((byte)selectUnselectCardResponse.Count);
-                    foreach (byte optionIndex in selectUnselectCardResponse)
-                        pkt.Write(optionIndex);
-                    break;
-                case BotState.SelectChain:
-                    if (OnSelectChainAction == null)
-                    {
-                        BotLogger.Warn(BotID, $"[{state}] No handler registered, skipping.");
-                        return true;
-                    }
-                    var selectChainState = await _api.GetBotStateAs<SelectChainState>(BotID, ct);
-                    var selectChainResponse = await OnSelectChainAction(selectChainState.CurrentStateData);
-                    pkt.Write(selectChainResponse);
-                    break;
-                case BotState.SelectCounter:
-                    if (OnSelectCounterAction == null)
-                    {
-                        BotLogger.Warn(BotID, $"[{state}] No handler registered, skipping.");
-                        return true;
-                    }
-                    var selectCounterState = await _api.GetBotStateAs<SelectCounterState>(BotID, ct);
-                    var selectCounterResponse = await OnSelectCounterAction(selectCounterState.CurrentStateData);
-                    pkt.Write((byte)selectCounterResponse.Count);
-                    foreach (short counterAmount in selectCounterResponse)
-                        pkt.Write(counterAmount);
-                    break;
-                case BotState.SelectDisfield:
-                    if (OnSelectDisfieldAction == null)
-                    {
-                        BotLogger.Warn(BotID, $"[{state}] No handler registered, skipping.");
-                        return true;
-                    }
-                    var selectDisfieldState = await _api.GetBotStateAs<SelectDisfieldState>(BotID, ct);
-                    var selectDisfieldResponse = await OnSelectDisfieldAction(selectDisfieldState.CurrentStateData);
-                    pkt.Write(selectDisfieldResponse);
-                    break;
-                case BotState.SelectEffectYn:
-                    if (OnSelectEffectYnAction == null)
-                    {
-                        BotLogger.Warn(BotID, $"[{state}] No handler registered, skipping.");
-                        return true;
-                    }
-                    var selectEffectYnState = await _api.GetBotStateAs<SelectEffectYnState>(BotID, ct);
-                    var selectEffectYnResponse = await OnSelectEffectYnAction(selectEffectYnState.CurrentStateData);
-                    pkt.Write((byte)(selectEffectYnResponse ? 1 : 0));
-                    break;
-                case BotState.SelectOption:
-                    if (OnSelectOptionAction == null)
-                    {
-                        BotLogger.Warn(BotID, $"[{state}] No handler registered, skipping.");
-                        return true;
-                    }
-                    var selectOptionState = await _api.GetBotStateAs<SelectOptionState>(BotID, ct);
-                    var selectedOptionResponse = await OnSelectOptionAction(selectOptionState.CurrentStateData);
-                    pkt.Write(selectedOptionResponse);
-                    break;
-                case BotState.SelectPlace:
-                    if (OnSelectPlaceAction == null)
-                    {
-                        BotLogger.Warn(BotID, $"[{state}] No handler registered, skipping.");
-                        return true;
-                    }
-                    var selectPlaceState = await _api.GetBotStateAs<SelectPlaceState>(BotID, ct);
-                    var selectPlaceResponse = await OnSelectPlaceAction(selectPlaceState.CurrentStateData);
-                    pkt.Write(selectPlaceResponse);
-                    break;
-                case BotState.SelectPosition:
-                    if (OnSelectPositionAction == null)
-                    {
-                        BotLogger.Warn(BotID, $"[{state}] No handler registered, skipping.");
-                        return true;
-                    }
-                    var selectPositionState = await _api.GetBotStateAs<SelectPositionState>(BotID, ct);
-                    var selectPositionResponse = await OnSelectPositionAction(selectPositionState.CurrentStateData);
-                    pkt.Write((byte)selectPositionResponse);
-                    break;
-                case BotState.SelectSum:
-                    if (OnSelectSumAction == null)
-                    {
-                        BotLogger.Warn(BotID, $"[{state}] No handler registered, skipping.");
-                        return true;
-                    }
-                    var selectSumState = await _api.GetBotStateAs<SelectSumState>(BotID, ct);
-                    var selectSumResponse = await OnSelectSumAction(selectSumState.CurrentStateData) ?? Array.Empty<byte>();
-                    pkt.Write((byte)selectSumResponse.Count);
-                    foreach (byte optionIndex in selectSumResponse)
-                        pkt.Write(optionIndex);
-                    break;
-                case BotState.SelectTribute:
-                    if (OnSelectTributeAction == null)
-                    {
-                        BotLogger.Warn(BotID, $"[{state}] No handler registered, skipping.");
-                        return true;
-                    }
-                    var selectTributeState = await _api.GetBotStateAs<SelectTributeState>(BotID, ct);
-                    var selectTributeResponse = await OnSelectTributeAction(selectTributeState.CurrentStateData) ?? Array.Empty<byte>();
-                    pkt.Write((byte)selectTributeResponse.Count);
-                    foreach (byte optionIndex in selectTributeResponse)
-                        pkt.Write(optionIndex);
-                    break;
-                case BotState.AnnounceAttribute:
-                    if (OnAnnounceAttributeAction == null)
-                    {
-                        BotLogger.Warn(BotID, $"[{state}] No handler registered, skipping.");
-                        return true;
-                    }
-                    var announceAttributeState = await _api.GetBotStateAs<AnnounceAttributeState>(BotID, ct);
-                    var announceAttributeResponse = await OnAnnounceAttributeAction(announceAttributeState.CurrentStateData);
-                    int announcedAttribute = 0;
-                    foreach (var attributeSelected in announceAttributeResponse)
-                        announcedAttribute += (int)attributeSelected;
-                    pkt.Write(announcedAttribute);
-                    break;
-                case BotState.AnnounceCard:
-                    if (OnAnnounceCardAction == null)
-                    {
-                        BotLogger.Warn(BotID, $"[{state}] No handler registered, skipping.");
-                        return true;
-                    }
-                    var announceCardState = await _api.GetBotStateAs<AnnounceCardState>(BotID, ct);
-                    var announceCardResponse = await OnAnnounceCardAction(announceCardState.CurrentStateData);
-                    pkt.Write(announceCardResponse);
-                    break;
-                case BotState.AnnounceNumber:
-                    if (OnAnnounceNumberAction == null)
-                    {
-                        BotLogger.Warn(BotID, $"[{state}] No handler registered, skipping.");
-                        return true;
-                    }
-                    var announceNumberState = await _api.GetBotStateAs<AnnounceNumberState>(BotID, ct);
-                    var announceNumberResponse = await OnAnnounceNumberAction(announceNumberState.CurrentStateData);
-                    pkt.Write(announceNumberResponse);
-                    break;
-                case BotState.AnnounceRace:
-                    if (OnAnnounceRaceAction == null)
-                    {
-                        BotLogger.Warn(BotID, $"[{state}] No handler registered, skipping.");
-                        return true;
-                    }
-                    var announceRaceState = await _api.GetBotStateAs<AnnounceRaceState>(BotID, ct);
-                    var announceRaceResponse = await OnAnnounceRaceAction(announceRaceState.CurrentStateData);
-                    int announcedRace = 0;
-                    foreach (var raceSelected in announceRaceResponse)
-                        announcedRace += (int)raceSelected;
-                    pkt.Write(announcedRace);
-                    break;
-                case BotState.AnnounceCardFilter:
-                    if (OnAnnounceCardFilterAction == null)
-                    {
-                        BotLogger.Warn(BotID, $"[{state}] No handler registered, skipping.");
-                        return true;
-                    }
-                    var announceCardFilterState = await _api.GetBotStateAs<AnnounceCardFilterState>(BotID, ct);
-                    var announceCardFilterResponse = await OnAnnounceCardFilterAction(announceCardFilterState.CurrentStateData);
-                    pkt.Write(announceCardFilterResponse);
-                    break;
-                case BotState.SelectYesNo:
-                    if (OnSelectYesNoAction == null)
-                    {
-                        BotLogger.Warn(BotID, $"[{state}] No handler registered, skipping.");
-                        return true;
-                    }
-                    var selectYesNoState = await _api.GetBotStateAs<SelectYesNoState>(BotID, ct);
-                    var selectYesNoResponse = await OnSelectYesNoAction(selectYesNoState.CurrentStateData);
-                    pkt.Write((byte)(selectYesNoResponse ? 1 : 0));
-                    break;
-                case BotState.RockPaperScissors:
-                    if (OnSelectRockPaperScissors == null)
-                    {
-                        BotLogger.Warn(BotID, $"[{state}] No handler registered, skipping.");
-                        return true;
-                    }
-                    var rpsResponse = await OnSelectRockPaperScissors();
-                    pkt.Write(rpsResponse);
-                    break;
-                case BotState.SortCard:
-                    if (OnSortCardAction == null)
-                    {
-                        BotLogger.Warn(BotID, $"[{state}] No handler registered, skipping.");
-                        return true;
-                    }
-                    var sortCardState = await _api.GetBotStateAs<SortCardState>(BotID, ct);
-                    var sortCardResponse = await OnSortCardAction(sortCardState.CurrentStateData);
-                    pkt.Write((byte)sortCardResponse.Count);
-                    foreach (var sortedCardIndex in sortCardResponse)
-                        pkt.Write(sortedCardIndex);
-                    break;
-                case BotState.WaitingForDeck:
-                case BotState.None:
-                default:
-                    return true;
-            }
-            return await SendResponse(pkt);
+            var payload = await _dispatcher.DispatchAsync(state, ct);
+            if (payload == null)
+                return true;
+            return await SendResponse(payload, ct);
         }
         /// <summary>
         /// Queries information about the bot side of the field
@@ -456,11 +224,19 @@ namespace OmegaBotWrapper
         public static async Task<DeckData> GetPlayerDeck() =>
             await OmegaApiClient.Default.GetPlayerDeck();
 
+        internal Task<T> GetBotStateAs<T>(CancellationToken ct = default) =>
+            _api.GetBotStateAs<T>(BotID, ct);
+
+        internal async Task<bool> SendResponse(byte[] data, CancellationToken ct = default)
+        {
+            string encoded = data.Base64Encode().ToSafeB64();
+            return await _api.SendBotResponse(BotID, encoded, ct);
+        }
+
         public async Task<bool> SendResponse(BinaryWriter pkt)
         {
             byte[] data = ((MemoryStream)pkt.BaseStream).ToArray();
-            string encoded = data.Base64Encode().ToSafeB64();
-            return await _api.SendBotResponse(BotID, encoded);
+            return await SendResponse(data);
         }
 
         public static async Task<DBCardList> GetMatchingCards(params int[] filters) =>
@@ -471,5 +247,21 @@ namespace OmegaBotWrapper
         /// <returns>Rematch Duel</returns>
         public static async Task<string> RematchDuel() =>
             await OmegaApiClient.Default.RematchDuel();
+
+        internal void LogBattleCmdState(BattleCmdData data)
+        {
+            BotLogger.Log(BotID, "BattleCmd", $"Attackable={data.AttackableCards?.Length ?? 0} Activable={data.ActivableCards?.Length ?? 0} CanM2={data.CanMainPhaseTwo} CanEnd={data.CanEndPhase}");
+            if (data.AttackableCards != null)
+            {
+                for (int i = 0; i < data.AttackableCards.Length; i++)
+                {
+                    var c = data.AttackableCards[i];
+                    int attackIdx = (c.ActionIndex != null && c.ActionIndex.Length > (int)Enum.BattleAction.Attack)
+                        ? c.ActionIndex[(int)Enum.BattleAction.Attack]
+                        : -1;
+                    BotLogger.Log(BotID, "BattleCmd", $"  [{i}] ID={c.ID} ATK={c.Attack} Zone={c.CurrentCoordinates.Sequence} ActionIndex[Attack]={attackIdx} Attacked={c.Attacked} DirectOK={c.CanDirectAttack}");
+                }
+            }
+        }
     }
 }
