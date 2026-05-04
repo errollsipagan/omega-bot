@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\Berettas\\\\source\\\\repos\\\\new-bot-api\" -Recurse -Directory)",
+      "Bash(Select-Object -ExpandProperty FullName)",
+      "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\Berettas\\\\source\\\\repos\\\\new-bot-api\" -Recurse -File)",
+      "Bash(Select-Object FullName)",
+      "Bash(git checkout *)",
+      "Bash(dotnet build *)",
+      "Bash(dotnet new *)",
+      "Bash(dotnet sln *)",
+      "Bash(dotnet add *)",
+      "Bash(Remove-Item \"c:\\\\Users\\\\Berettas\\\\source\\\\repos\\\\new-bot-api\\\\OmegaBotWrapper.Tests\\\\UnitTest1.cs\")",
+      "Bash(dotnet test *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)"
+    ]
+  }
+}

@@ -1,14 +1,14 @@
-using BotTest.Decks;
-using BotTest.Game.Base;
+using BotTest.Game.AI.Brains;
 using BotTest.Utils;
 using OmegaBotWrapper;
 using OmegaBotWrapper.Enum;
+using OmegaBotWrapper.Heuristics;
 using OmegaBotWrapper.States;
 using OmegaBotWrapper.Struct;
 
 namespace BotTest.Game.AI.Bots.MasterDuel.SwordSoul
 {
-    public class SwordSoulActions : ContextualBotActions
+    public sealed class SwordSoulBotBrain : DeckBotBrain
     {
         private enum SwordSoulContext
         {
@@ -26,7 +26,7 @@ namespace BotTest.Game.AI.Bots.MasterDuel.SwordSoul
         }
 
         private static readonly int[] MoYeRevealPriority =
-        {
+        [
             SwordSoulCardId.SwordsoulStrategistLongYuan,
             SwordSoulCardId.SwordsoulOfTaia,
             SwordSoulCardId.TenyiAshuna,
@@ -35,10 +35,10 @@ namespace BotTest.Game.AI.Bots.MasterDuel.SwordSoul
             SwordSoulCardId.SwordsoulBlackout,
             SwordSoulCardId.SwordsoulEmergence,
             SwordSoulCardId.SwordsoulSummit
-        };
+        ];
 
         private static readonly int[] LongyuanDiscardPriority =
-        {
+        [
             SwordSoulCardId.SwordsoulBlackout,
             SwordSoulCardId.SwordsoulEmergence,
             SwordSoulCardId.SwordsoulSummit,
@@ -47,33 +47,34 @@ namespace BotTest.Game.AI.Bots.MasterDuel.SwordSoul
             SwordSoulCardId.TenyiAshuna,
             SwordSoulCardId.SwordsoulOfTaia,
             SwordSoulCardId.SwordsoulOfMoYe
-        };
+        ];
 
         private static readonly int[] TaiaSendPriority =
-        {
+        [
             SwordSoulCardId.SwordsoulOfMoYe,
             SwordSoulCardId.TenyiAdhara,
             SwordSoulCardId.TenyiVishuda,
             SwordSoulCardId.TenyiAshuna
-        };
+        ];
 
-        public SwordSoulActions(MasterDuelDeck deckId = MasterDuelDeck.SwordSoul)
+        public SwordSoulBotBrain(
+            ICardEvaluator? cardEvaluator = null,
+            IBoardEvaluator? boardEvaluator = null,
+            IActionScorer? actionScorer = null)
+            : base(cardEvaluator, boardEvaluator, actionScorer)
         {
-            DeckName = DeckManager.GetDeckName(deckId);
-            DeckHash = DeckManager.GetDeckHash(deckId);
-            InitializeCardInfo<SwordSoulCardId>();
         }
 
-        public override async Task<IdleCmdResponse> OnIdleCmd(IdleCmdData state)
+        public override async Task<IdleCmdResponse> OnIdleCmdAsync(DecisionContext<IdleCmdData> context, CancellationToken ct = default)
         {
-            await PrepareContextAsync();
+            await PrepareContextAsync(context, ct);
 
-            bool hasChixiaoOnField = await _gameField.HasCardInBotMonsterZone(SwordSoulCardId.SwordsoulGrandmasterChixiao);
+            bool hasChixiaoOnField = await HasCardInBotMonsterZoneAsync(SwordSoulCardId.SwordsoulGrandmasterChixiao);
             bool hasMoYeCombo = await HasMoYeStarter();
             bool hasTaiaCombo = await HasTaiaStarter();
             bool hasLongyuanLine = await HasLongyuanLine();
 
-            if (TryGetActivable(state, SwordSoulCardId.SwordsoulOfMoYe, out var moYe) && hasMoYeCombo)
+            if (TryGetActivable(context.StateData, SwordSoulCardId.SwordsoulOfMoYe, out var moYe) && hasMoYeCombo)
             {
                 ConsoleUtils.PrintColored("[SWORDSOUL] Activating Mo Ye.");
                 SetPendingAction(PendingActionKind.Reveal, moYe.ID, MainAction.Activate, contextCode: (int)SwordSoulContext.RevealForMoYe);
@@ -81,14 +82,14 @@ namespace BotTest.Game.AI.Bots.MasterDuel.SwordSoul
                 return moYe.MainActivateFromIndex();
             }
 
-            if (TryGetSpecialSummon(state, SwordSoulCardId.SwordsoulGrandmasterChixiao, out var chixiao) && !hasChixiaoOnField)
+            if (TryGetSpecialSummon(context.StateData, SwordSoulCardId.SwordsoulGrandmasterChixiao, out var chixiao) && !hasChixiaoOnField)
             {
                 ConsoleUtils.PrintColored("[SWORDSOUL] Summoning Chixiao.");
                 SetPendingAction(PendingActionKind.MaterialSelection, chixiao.ID, MainAction.SpSummon, contextCode: (int)SwordSoulContext.SummonLevel8);
                 return chixiao.SpecialSummon();
             }
 
-            if (TryGetActivable(state, SwordSoulCardId.SwordsoulGrandmasterChixiao, out var chixiaoEffect) &&
+            if (TryGetActivable(context.StateData, SwordSoulCardId.SwordsoulGrandmasterChixiao, out var chixiaoEffect) &&
                 !WasCardActivatedThisTurn(chixiaoEffect.ID))
             {
                 ConsoleUtils.PrintColored("[SWORDSOUL] Activating Chixiao.");
@@ -97,7 +98,7 @@ namespace BotTest.Game.AI.Bots.MasterDuel.SwordSoul
                 return chixiaoEffect.MainActivateFromIndex();
             }
 
-            if (TryGetActivable(state, SwordSoulCardId.SwordsoulStrategistLongYuan, out var longyuan) &&
+            if (TryGetActivable(context.StateData, SwordSoulCardId.SwordsoulStrategistLongYuan, out var longyuan) &&
                 hasLongyuanLine)
             {
                 ConsoleUtils.PrintColored("[SWORDSOUL] Activating Longyuan.");
@@ -106,7 +107,7 @@ namespace BotTest.Game.AI.Bots.MasterDuel.SwordSoul
                 return longyuan.MainActivateFromIndex();
             }
 
-            if (TryGetActivable(state, SwordSoulCardId.SwordsoulSummit, out var summit) &&
+            if (TryGetActivable(context.StateData, SwordSoulCardId.SwordsoulSummit, out var summit) &&
                 await ShouldUseSummit())
             {
                 ConsoleUtils.PrintColored("[SWORDSOUL] Activating Summit.");
@@ -115,33 +116,33 @@ namespace BotTest.Game.AI.Bots.MasterDuel.SwordSoul
                 return summit.MainActivateFromIndex();
             }
 
-            if (TryGetSpecialSummon(state, SwordSoulCardId.BaronneDeFluer, out var baronne) && await ShouldPreferBaronne())
+            if (TryGetSpecialSummon(context.StateData, SwordSoulCardId.BaronneDeFluer, out var baronne) && await ShouldPreferBaronne())
             {
                 ConsoleUtils.PrintColored("[SWORDSOUL] Summoning Baronne.");
                 SetPendingAction(PendingActionKind.MaterialSelection, baronne.ID, MainAction.SpSummon, contextCode: (int)SwordSoulContext.SummonLevel10);
                 return baronne.SpecialSummon();
             }
 
-            if (TryGetSpecialSummon(state, SwordSoulCardId.SwordsoulChengying, out var chengying))
+            if (TryGetSpecialSummon(context.StateData, SwordSoulCardId.SwordsoulChengying, out var chengying))
             {
                 ConsoleUtils.PrintColored("[SWORDSOUL] Summoning Chengying.");
                 SetPendingAction(PendingActionKind.MaterialSelection, chengying.ID, MainAction.SpSummon, contextCode: (int)SwordSoulContext.SummonLevel10);
                 return chengying.SpecialSummon();
             }
 
-            if (TryGetSummonable(state, SwordSoulCardId.SwordsoulOfMoYe, out var moYeSummon) && hasMoYeCombo)
+            if (TryGetSummonable(context.StateData, SwordSoulCardId.SwordsoulOfMoYe, out var moYeSummon) && hasMoYeCombo)
             {
                 ConsoleUtils.PrintColored("[SWORDSOUL] Summoning Mo Ye.");
                 return moYeSummon.NormalSummon();
             }
 
-            if (TryGetSummonable(state, SwordSoulCardId.SwordsoulOfTaia, out var taiaSummon) && hasTaiaCombo)
+            if (TryGetSummonable(context.StateData, SwordSoulCardId.SwordsoulOfTaia, out var taiaSummon) && hasTaiaCombo)
             {
                 ConsoleUtils.PrintColored("[SWORDSOUL] Summoning Taia.");
                 return taiaSummon.NormalSummon();
             }
 
-            if (TryGetActivable(state, SwordSoulCardId.SwordsoulOfTaia, out var taiaActivate) &&
+            if (TryGetActivable(context.StateData, SwordSoulCardId.SwordsoulOfTaia, out var taiaActivate) &&
                 hasTaiaCombo &&
                 !WasCardActivatedThisTurn(taiaActivate.ID))
             {
@@ -151,14 +152,14 @@ namespace BotTest.Game.AI.Bots.MasterDuel.SwordSoul
                 return taiaActivate.MainActivateFromIndex();
             }
 
-            if (TryGetSpecialSummon(state, SwordSoulCardId.YangZingBaxia, out var baxia) && await HasWorthwhileEnemyTarget())
+            if (TryGetSpecialSummon(context.StateData, SwordSoulCardId.YangZingBaxia, out var baxia) && await HasWorthwhileEnemyTarget())
             {
                 ConsoleUtils.PrintColored("[SWORDSOUL] Summoning Baxia.");
                 SetPendingAction(PendingActionKind.MaterialSelection, baxia.ID, MainAction.SpSummon, contextCode: (int)SwordSoulContext.SummonLevel8);
                 return baxia.SpecialSummon();
             }
 
-            if (TryGetActivable(state, SwordSoulCardId.YangZingBaxia, out var baxiaEffect) &&
+            if (TryGetActivable(context.StateData, SwordSoulCardId.YangZingBaxia, out var baxiaEffect) &&
                 !WasCardActivatedThisTurn(baxiaEffect.ID) &&
                 await HasWorthwhileEnemyTarget())
             {
@@ -168,7 +169,7 @@ namespace BotTest.Game.AI.Bots.MasterDuel.SwordSoul
                 return baxiaEffect.MainActivateFromIndex();
             }
 
-            if (TryGetActivable(state, SwordSoulCardId.SwordsoulEmergence, out var emergence) &&
+            if (TryGetActivable(context.StateData, SwordSoulCardId.SwordsoulEmergence, out var emergence) &&
                 await ShouldUseEmergence())
             {
                 ConsoleUtils.PrintColored("[SWORDSOUL] Activating Emergence.");
@@ -177,66 +178,62 @@ namespace BotTest.Game.AI.Bots.MasterDuel.SwordSoul
                 return emergence.MainActivateFromIndex();
             }
 
-            if (TryGetSpellSettable(state, SwordSoulCardId.SwordsoulBlackout, out var blackoutSet) && await ShouldSetBlackout())
+            if (TryGetSpellSettable(context.StateData, SwordSoulCardId.SwordsoulBlackout, out var blackoutSet) && await ShouldSetBlackout())
             {
                 ConsoleUtils.PrintColored("[SWORDSOUL] Setting Blackout.");
                 return blackoutSet.SetSpellTrap();
             }
 
-            return await base.OnIdleCmd(state);
+            return await base.OnIdleCmdAsync(context, ct);
         }
 
-        public override async Task<int> OnSelectChain(SelectChainData state)
+        public override async Task<int> OnSelectChainAsync(DecisionContext<SelectChainData> context, CancellationToken ct = default)
         {
-            await PrepareContextAsync();
-            RegisterChainDescriptions(state.Descriptions);
+            await PrepareContextAsync(context, ct);
+            RegisterChainDescriptions(context.StateData.Descriptions ?? Array.Empty<int>());
 
-            if (state.SelectableCards.TryGetByID(SwordSoulCardId.SwordsoulGrandmasterChixiao, out _, out var index))
+            if (context.StateData.SelectableCards.TryGetByID(SwordSoulCardId.SwordsoulGrandmasterChixiao, out _, out var index))
             {
                 SetPendingAction(PendingActionKind.Search, SwordSoulCardId.SwordsoulGrandmasterChixiao, MainAction.Activate, contextCode: (int)SwordSoulContext.SearchFollowUp);
                 MarkCardActivated(SwordSoulCardId.SwordsoulGrandmasterChixiao);
                 return index;
             }
 
-            if (state.SelectableCards.TryGetByID(SwordSoulCardId.SwordsoulBlackout, out _, out index) && await HasWorthwhileEnemyTarget())
+            if (context.StateData.SelectableCards.TryGetByID(SwordSoulCardId.SwordsoulBlackout, out _, out index) && await HasWorthwhileEnemyTarget())
             {
                 SetPendingAction(PendingActionKind.TargetSelection, SwordSoulCardId.SwordsoulBlackout, MainAction.Activate, contextCode: (int)SwordSoulContext.BlackoutTarget);
                 MarkCardActivated(SwordSoulCardId.SwordsoulBlackout);
                 return index;
             }
 
-            if (state.SelectableCards.TryGetByID(SwordSoulCardId.YangZingBaxia, out _, out index) && await HasWorthwhileEnemyTarget())
+            if (context.StateData.SelectableCards.TryGetByID(SwordSoulCardId.YangZingBaxia, out _, out index) && await HasWorthwhileEnemyTarget())
             {
                 SetPendingAction(PendingActionKind.TargetSelection, SwordSoulCardId.YangZingBaxia, MainAction.Activate, contextCode: (int)SwordSoulContext.BaxiaTarget);
                 MarkCardActivated(SwordSoulCardId.YangZingBaxia);
                 return index;
             }
 
-            if (state.SelectableCards.TryGetByID(SwordSoulCardId.SwordsoulOfTaia, out _, out index))
+            if (context.StateData.SelectableCards.TryGetByID(SwordSoulCardId.SwordsoulOfTaia, out _, out index))
             {
                 SetPendingAction(PendingActionKind.SendToGrave, SwordSoulCardId.SwordsoulOfTaia, MainAction.Activate, contextCode: (int)SwordSoulContext.SendToGraveForTaia);
                 MarkCardActivated(SwordSoulCardId.SwordsoulOfTaia);
                 return index;
             }
 
-            return await base.OnSelectChain(state);
+            return await base.OnSelectChainAsync(context, ct);
         }
 
-        public override async Task<bool> OnSelectEffectYn(SelectEffectYnData state)
+        public override async Task<bool> OnSelectEffectYnAsync(DecisionContext<SelectEffectYnData> context, CancellationToken ct = default)
         {
-            await PrepareContextAsync();
+            await PrepareContextAsync(context, ct);
 
-            if (state.EffectCard.IsCode(SwordSoulCardId.SwordsoulOfMoYe))
-            {
+            if (context.StateData.EffectCard.IsCode(SwordSoulCardId.SwordsoulOfMoYe))
                 return await HasRevealForMoYe();
-            }
 
-            if (state.EffectCard.IsCode(SwordSoulCardId.SwordsoulOfTaia))
-            {
+            if (context.StateData.EffectCard.IsCode(SwordSoulCardId.SwordsoulOfTaia))
                 return await HasTaiaBanishTarget();
-            }
 
-            if (state.EffectCard.IsCode(
+            if (context.StateData.EffectCard.IsCode(
                 SwordSoulCardId.SwordsoulGrandmasterChixiao,
                 SwordSoulCardId.SwordsoulStrategistLongYuan,
                 SwordSoulCardId.YangZingBaxia,
@@ -245,50 +242,46 @@ namespace BotTest.Game.AI.Bots.MasterDuel.SwordSoul
                 return true;
             }
 
-            return await base.OnSelectEffectYn(state);
+            return await base.OnSelectEffectYnAsync(context, ct);
         }
 
-        public override async Task<CardPosition> OnSelectPosition(SelectPositionData state)
+        public override async Task<CardPosition> OnSelectPositionAsync(DecisionContext<SelectPositionData> context, CancellationToken ct = default)
         {
-            await PrepareContextAsync();
+            await PrepareContextAsync(context, ct);
 
-            if (state.CardID == SwordSoulCardId.SwordsoulToken ||
-                state.CardID == SwordSoulCardId.YangZingBaxia ||
-                state.CardID == SwordSoulCardId.SwordsoulOfMoYe)
+            if (context.StateData.CardID == SwordSoulCardId.SwordsoulToken ||
+                context.StateData.CardID == SwordSoulCardId.YangZingBaxia ||
+                context.StateData.CardID == SwordSoulCardId.SwordsoulOfMoYe)
             {
-                return PickPosition(state, CardPosition.FaceUpDefence);
+                return PickPosition(context.StateData, CardPosition.FaceUpDefence);
             }
 
-            if (state.CardID == SwordSoulCardId.BaronneDeFluer ||
-                state.CardID == SwordSoulCardId.SwordsoulChengying ||
-                state.CardID == SwordSoulCardId.SwordsoulGrandmasterChixiao)
+            if (context.StateData.CardID == SwordSoulCardId.BaronneDeFluer ||
+                context.StateData.CardID == SwordSoulCardId.SwordsoulChengying ||
+                context.StateData.CardID == SwordSoulCardId.SwordsoulGrandmasterChixiao)
             {
-                if (IsFirstTurnOrMain2())
-                {
-                    return PickPosition(state, CardPosition.FaceUpDefence);
-                }
+                if (IsFirstTurnOrMain2(context.Header))
+                    return PickPosition(context.StateData, CardPosition.FaceUpDefence);
 
                 var bestEnemy = await GetBestEnemyMonster(true);
-                if (bestEnemy.ID > 0 && bestEnemy.Attack > GetExpectedAttack(state.CardID))
-                {
-                    return PickPosition(state, CardPosition.FaceUpDefence);
-                }
+                if (bestEnemy.ID > 0 && bestEnemy.Attack > GetExpectedAttack(context.StateData.CardID))
+                    return PickPosition(context.StateData, CardPosition.FaceUpDefence);
 
-                return PickPosition(state, CardPosition.FaceUpAttack);
+                return PickPosition(context.StateData, CardPosition.FaceUpAttack);
             }
 
-            return await base.OnSelectPosition(state);
+            return await base.OnSelectPositionAsync(context, ct);
         }
 
-        public override async Task<IList<byte>?> OnSelectCard(SelectCardData state)
+        public override async Task<IList<byte>?> OnSelectCardAsync(DecisionContext<SelectCardData> context, CancellationToken ct = default)
         {
-            await PrepareContextAsync();
-            ConsoleUtils.PrintColored($"[SWORDSOUL] OnSelectCard => {(DHint)state.SelectionHint} / {(SwordSoulContext)PendingAction.ContextCode}");
+            await PrepareContextAsync(context, ct);
+            ConsoleUtils.PrintColored($"[SWORDSOUL] OnSelectCard => {(DHint)context.StateData.SelectionHint} / {(SwordSoulContext)PendingAction.ContextCode}");
 
-            if (state.SelectionHint == (int)DHint.ATOHAND)
+            if (context.StateData.SelectionHint == (int)DHint.ATOHAND)
             {
                 var preferredSearch = await GetSearchPriority((SwordSoulContext)PendingAction.ContextCode);
-                var searchSelection = PreferCardSelection(state, preferredSearch);
+                var searchSelection = PreferCardSelection(context.StateData, preferredSearch);
                 if (searchSelection != null)
                 {
                     ClearPendingAction();
@@ -296,10 +289,10 @@ namespace BotTest.Game.AI.Bots.MasterDuel.SwordSoul
                 }
             }
 
-            if ((state.SelectionHint == (int)DHint.SPSUMMON || state.SelectionHint == (int)DHint.TOFIELD) &&
+            if ((context.StateData.SelectionHint == (int)DHint.SPSUMMON || context.StateData.SelectionHint == (int)DHint.TOFIELD) &&
                 PendingContextIs((int)SwordSoulContext.ReviveWithSummit))
             {
-                var reviveSelection = await GetSummitReviveSelection(state);
+                var reviveSelection = await GetSummitReviveSelection(context.StateData);
                 if (reviveSelection != null)
                 {
                     ClearPendingAction();
@@ -307,9 +300,9 @@ namespace BotTest.Game.AI.Bots.MasterDuel.SwordSoul
                 }
             }
 
-            if (state.SelectionHint == (int)DHint.CONFIRM && PendingContextIs((int)SwordSoulContext.RevealForMoYe))
+            if (context.StateData.SelectionHint == (int)DHint.CONFIRM && PendingContextIs((int)SwordSoulContext.RevealForMoYe))
             {
-                var revealSelection = PreferCardSelection(state, MoYeRevealPriority);
+                var revealSelection = PreferCardSelection(context.StateData, MoYeRevealPriority);
                 if (revealSelection != null)
                 {
                     ClearPendingAction();
@@ -317,9 +310,9 @@ namespace BotTest.Game.AI.Bots.MasterDuel.SwordSoul
                 }
             }
 
-            if (state.SelectionHint == (int)DHint.DISCARD && PendingContextIs((int)SwordSoulContext.DiscardForLongyuan))
+            if (context.StateData.SelectionHint == (int)DHint.DISCARD && PendingContextIs((int)SwordSoulContext.DiscardForLongyuan))
             {
-                var discardSelection = PreferCardSelection(state, LongyuanDiscardPriority);
+                var discardSelection = PreferCardSelection(context.StateData, LongyuanDiscardPriority);
                 if (discardSelection != null)
                 {
                     ClearPendingAction();
@@ -327,9 +320,9 @@ namespace BotTest.Game.AI.Bots.MasterDuel.SwordSoul
                 }
             }
 
-            if (state.SelectionHint == (int)DHint.TOGRAVE && PendingContextIs((int)SwordSoulContext.SendToGraveForTaia))
+            if (context.StateData.SelectionHint == (int)DHint.TOGRAVE && PendingContextIs((int)SwordSoulContext.SendToGraveForTaia))
             {
-                var graveSelection = PreferCardSelection(state, TaiaSendPriority);
+                var graveSelection = PreferCardSelection(context.StateData, TaiaSendPriority);
                 if (graveSelection != null)
                 {
                     ClearPendingAction();
@@ -337,12 +330,12 @@ namespace BotTest.Game.AI.Bots.MasterDuel.SwordSoul
                 }
             }
 
-            if ((state.SelectionHint == (int)DHint.TARGET || state.SelectionHint == (int)DHint.DESTROY) &&
+            if ((context.StateData.SelectionHint == (int)DHint.TARGET || context.StateData.SelectionHint == (int)DHint.DESTROY) &&
                 PendingAction.Kind == PendingActionKind.TargetSelection)
             {
                 IList<byte>? targetSelection = PendingContextIs((int)SwordSoulContext.BlackoutTarget)
-                    ? await SelectBlackoutTargets(state)
-                    : PreferCardSelection(state, await BuildEnemyTargetPriority());
+                    ? await SelectBlackoutTargets(context.StateData)
+                    : PreferCardSelection(context.StateData, await BuildEnemyTargetPriority());
 
                 if (targetSelection != null)
                 {
@@ -351,19 +344,19 @@ namespace BotTest.Game.AI.Bots.MasterDuel.SwordSoul
                 }
             }
 
-            return await base.OnSelectCard(state);
+            return await base.OnSelectCardAsync(context, ct);
         }
 
-        public override async Task<IList<byte>?> OnSelectSum(SelectSumData state)
+        public override async Task<IList<byte>?> OnSelectSumAsync(DecisionContext<SelectSumData> context, CancellationToken ct = default)
         {
-            await PrepareContextAsync();
+            await PrepareContextAsync(context, ct);
 
-            if (state.SelectionHint == (int)DHint.SMATERIAL)
+            if (context.StateData.SelectionHint == (int)DHint.SMATERIAL)
             {
                 if (PendingContextIs((int)SwordSoulContext.SummonLevel8))
                 {
                     var level8Selection = TrySelectExactMaterials(
-                        state,
+                        context.StateData,
                         SwordSoulCardId.SwordsoulToken,
                         SwordSoulCardId.SwordsoulOfMoYe,
                         SwordSoulCardId.SwordsoulOfTaia);
@@ -378,7 +371,7 @@ namespace BotTest.Game.AI.Bots.MasterDuel.SwordSoul
                 if (PendingContextIs((int)SwordSoulContext.SummonLevel10))
                 {
                     var level10Selection = TrySelectExactMaterials(
-                        state,
+                        context.StateData,
                         SwordSoulCardId.SwordsoulToken,
                         SwordSoulCardId.SwordsoulStrategistLongYuan);
 
@@ -390,60 +383,34 @@ namespace BotTest.Game.AI.Bots.MasterDuel.SwordSoul
                 }
             }
 
-            return await base.OnSelectSum(state);
-        }
-
-        private static bool TryGetSummonable(IdleCmdData state, int cardId, out DynamicCard card)
-        {
-            return state.SummonableCards.TryGetByID(cardId, out card);
-        }
-
-        private static bool TryGetSpecialSummon(IdleCmdData state, int cardId, out DynamicCard card)
-        {
-            return state.SpecialSummonableCards.TryGetByID(cardId, out card);
-        }
-
-        private static bool TryGetSpellSettable(IdleCmdData state, int cardId, out DynamicCard card)
-        {
-            return state.SpellSetableCards.TryGetByID(cardId, out card);
-        }
-
-        private static bool TryGetActivable(IdleCmdData state, int cardId, out DynamicCard card)
-        {
-            return state.ActivableCards.TryGetByID(cardId, out card);
+            return await base.OnSelectSumAsync(context, ct);
         }
 
         private async Task<bool> HasRevealForMoYe()
         {
-            var hand = await _gameField.GetBotHandCards();
+            var hand = await GetBotHandCardsAsync();
             return hand.Any(IsMoYeRevealCandidate);
         }
 
-        private async Task<bool> HasMoYeStarter()
-        {
-            return await HasRevealForMoYe();
-        }
+        private async Task<bool> HasMoYeStarter() => await HasRevealForMoYe();
 
         private async Task<bool> HasTaiaBanishTarget()
         {
-            var graveyard = await _gameField.GetBotGraveyardCards();
+            var graveyard = await GetBotGraveyardCardsAsync();
             return graveyard.Any(IsSwordSoulOrWyrm);
         }
 
-        private async Task<bool> HasTaiaStarter()
-        {
-            return await HasTaiaBanishTarget();
-        }
+        private async Task<bool> HasTaiaStarter() => await HasTaiaBanishTarget();
 
         private async Task<bool> HasLongyuanLine()
         {
-            var hand = await _gameField.GetBotHandCards();
+            var hand = await GetBotHandCardsAsync();
             return hand.Any(IsLongyuanDiscardCandidate);
         }
 
         private async Task<bool> ShouldUseEmergence()
         {
-            var hand = await _gameField.GetBotHandCards();
+            var hand = await GetBotHandCardsAsync();
             bool hasMoYe = hand.Any(card => card.IsCode(SwordSoulCardId.SwordsoulOfMoYe));
             bool hasTaia = hand.Any(card => card.IsCode(SwordSoulCardId.SwordsoulOfTaia));
             bool hasLongyuan = hand.Any(card => card.IsCode(SwordSoulCardId.SwordsoulStrategistLongYuan));
@@ -451,49 +418,37 @@ namespace BotTest.Game.AI.Bots.MasterDuel.SwordSoul
             bool hasMoYeStarter = hasMoYe && await HasRevealForMoYe();
             bool hasTaiaStarter = hasTaia && await HasTaiaBanishTarget();
             bool hasStarter = hasMoYeStarter || hasTaiaStarter;
-            bool hasChixiaoOnField = await _gameField.HasCardInBotMonsterZone(SwordSoulCardId.SwordsoulGrandmasterChixiao);
+            bool hasChixiaoOnField = await HasCardInBotMonsterZoneAsync(SwordSoulCardId.SwordsoulGrandmasterChixiao);
 
             if (!hasStarter)
-            {
                 return true;
-            }
 
             if (hasChixiaoOnField && (!hasLongyuan || !hasBlackout))
-            {
                 return true;
-            }
 
             if (hasMoYeStarter && !hasLongyuan)
-            {
                 return true;
-            }
 
             if (!hasTaia && await HasTaiaBanishTarget())
-            {
                 return true;
-            }
 
             return !hasBlackout;
         }
 
         private async Task<bool> ShouldUseSummit()
         {
-            var graveyard = await _gameField.GetBotGraveyardCards();
-            var monsters = await _gameField.GetBotMonsterCards();
+            var graveyard = await GetBotGraveyardCardsAsync();
+            var monsters = await GetBotMonsterCardsAsync();
 
             bool hasMoYeInGrave = graveyard.Any(card => card.IsCode(SwordSoulCardId.SwordsoulOfMoYe));
             bool hasTaiaInGrave = graveyard.Any(card => card.IsCode(SwordSoulCardId.SwordsoulOfTaia));
             bool hasFaceUpSynchro = monsters.Any(card => card.IsFaceup() && card.HasType(CardType.Synchro));
 
             if (hasMoYeInGrave && await HasRevealForMoYe())
-            {
                 return true;
-            }
 
             if (hasTaiaInGrave && await HasTaiaBanishTarget())
-            {
                 return true;
-            }
 
             return hasFaceUpSynchro && (hasMoYeInGrave || hasTaiaInGrave);
         }
@@ -507,12 +462,10 @@ namespace BotTest.Game.AI.Bots.MasterDuel.SwordSoul
 
         private async Task<bool> ShouldSetBlackout()
         {
-            if (await _gameField.HasCardInBotSpellZone(SwordSoulCardId.SwordsoulBlackout))
-            {
+            if (await HasCardInBotSpellZoneAsync(SwordSoulCardId.SwordsoulBlackout))
                 return false;
-            }
 
-            var botMonsters = await _gameField.GetBotMonsterCards();
+            var botMonsters = await GetBotMonsterCardsAsync();
             return botMonsters.Any(card => card.IsFaceup() && IsSwordSoulOrWyrm(card));
         }
 
@@ -530,7 +483,7 @@ namespace BotTest.Game.AI.Bots.MasterDuel.SwordSoul
 
         private async Task<int[]> GetSearchPriority(SwordSoulContext searchContext)
         {
-            var hand = await _gameField.GetBotHandCards();
+            var hand = await GetBotHandCardsAsync();
             bool hasMoYe = hand.Any(card => card.IsCode(SwordSoulCardId.SwordsoulOfMoYe));
             bool hasTaia = hand.Any(card => card.IsCode(SwordSoulCardId.SwordsoulOfTaia));
             bool hasLongyuan = hand.Any(card => card.IsCode(SwordSoulCardId.SwordsoulStrategistLongYuan));
@@ -542,87 +495,87 @@ namespace BotTest.Game.AI.Bots.MasterDuel.SwordSoul
             {
                 if (!hasLongyuan)
                 {
-                    return new[]
-                    {
+                    return
+                    [
                         SwordSoulCardId.SwordsoulStrategistLongYuan,
                         SwordSoulCardId.SwordsoulBlackout,
                         SwordSoulCardId.SwordsoulSummit,
                         SwordSoulCardId.SwordsoulEmergence,
                         SwordSoulCardId.SwordsoulOfTaia
-                    };
+                    ];
                 }
 
                 if (!hasBlackout)
                 {
-                    return new[]
-                    {
+                    return
+                    [
                         SwordSoulCardId.SwordsoulBlackout,
                         SwordSoulCardId.SwordsoulSummit,
                         SwordSoulCardId.SwordsoulStrategistLongYuan,
                         SwordSoulCardId.SwordsoulEmergence,
                         SwordSoulCardId.SwordsoulOfTaia
-                    };
+                    ];
                 }
 
-                return new[]
-                {
+                return
+                [
                     SwordSoulCardId.SwordsoulSummit,
                     SwordSoulCardId.SwordsoulBlackout,
                     SwordSoulCardId.SwordsoulStrategistLongYuan,
                     SwordSoulCardId.SwordsoulEmergence,
                     SwordSoulCardId.SwordsoulOfTaia
-                };
+                ];
             }
 
             if (!moYeStarterReady)
             {
-                return new[]
-                {
+                return
+                [
                     SwordSoulCardId.SwordsoulOfMoYe,
                     SwordSoulCardId.SwordsoulOfTaia,
                     SwordSoulCardId.SwordsoulStrategistLongYuan,
                     SwordSoulCardId.SwordsoulBlackout,
                     SwordSoulCardId.SwordsoulEmergence
-                };
+                ];
             }
 
             if (!taiaStarterReady)
             {
-                return new[]
-                {
+                return
+                [
                     SwordSoulCardId.SwordsoulOfTaia,
                     SwordSoulCardId.SwordsoulStrategistLongYuan,
                     SwordSoulCardId.SwordsoulBlackout,
                     SwordSoulCardId.SwordsoulEmergence
-                };
+                ];
             }
 
             if (!hasLongyuan)
             {
-                return new[]
-                {
+                return
+                [
                     SwordSoulCardId.SwordsoulStrategistLongYuan,
                     SwordSoulCardId.SwordsoulBlackout,
                     SwordSoulCardId.SwordsoulEmergence
-                };
+                ];
             }
 
             if (!hasBlackout)
             {
-                return new[]
-                {
+                return
+                [
                     SwordSoulCardId.SwordsoulBlackout,
                     SwordSoulCardId.SwordsoulEmergence,
                     SwordSoulCardId.SwordsoulSummit
-                };
+                ];
             }
 
-            return new[]
-            {
+            return
+            [
                 SwordSoulCardId.SwordsoulStrategistLongYuan,
                 SwordSoulCardId.SwordsoulBlackout,
                 SwordSoulCardId.SwordsoulEmergence
-            };
+            ];
         }
 
         private async Task<int[]> BuildEnemyTargetPriority()
@@ -631,23 +584,19 @@ namespace BotTest.Game.AI.Bots.MasterDuel.SwordSoul
 
             var bestEnemyMonster = await GetBestEnemyMonster();
             if (bestEnemyMonster.ID > 0)
-            {
                 priorities.Add(bestEnemyMonster.ID);
-            }
 
             var bestEnemySpell = await GetBestEnemySpell();
             if (bestEnemySpell.ID > 0 && !priorities.Contains(bestEnemySpell.ID))
-            {
                 priorities.Add(bestEnemySpell.ID);
-            }
 
-            var enemyMonsters = await _gameField.GetEnemyMonsterCards();
+            var enemyMonsters = await GetEnemyMonsterCardsAsync();
             priorities.AddRange(enemyMonsters
                 .OrderByDescending(card => card.GetRealPower())
                 .Select(card => card.ID)
                 .Where(id => !priorities.Contains(id)));
 
-            var enemySpells = await _gameField.GetEnemySpellCards();
+            var enemySpells = await GetEnemySpellCardsAsync();
             priorities.AddRange(enemySpells
                 .OrderByDescending(card => card.IsFaceup())
                 .Select(card => card.ID)
@@ -658,7 +607,7 @@ namespace BotTest.Game.AI.Bots.MasterDuel.SwordSoul
 
         private async Task<IList<byte>?> GetSummitReviveSelection(SelectCardData state)
         {
-            var graveyard = await _gameField.GetBotGraveyardCards();
+            var graveyard = await GetBotGraveyardCardsAsync();
             bool canUseMoYe = graveyard.Any(card => card.IsCode(SwordSoulCardId.SwordsoulOfMoYe)) && await HasRevealForMoYe();
             bool canUseTaia = graveyard.Any(card => card.IsCode(SwordSoulCardId.SwordsoulOfTaia)) && await HasTaiaBanishTarget();
 
@@ -666,18 +615,14 @@ namespace BotTest.Game.AI.Bots.MasterDuel.SwordSoul
             {
                 var selection = PreferCardSelection(state, SwordSoulCardId.SwordsoulOfMoYe);
                 if (selection != null)
-                {
                     return selection;
-                }
             }
 
             if (canUseTaia)
             {
                 var selection = PreferCardSelection(state, SwordSoulCardId.SwordsoulOfTaia);
                 if (selection != null)
-                {
                     return selection;
-                }
             }
 
             return PreferCardSelection(state, SwordSoulCardId.SwordsoulGrandmasterChixiao, SwordSoulCardId.YangZingBaxia);
@@ -696,9 +641,7 @@ namespace BotTest.Game.AI.Bots.MasterDuel.SwordSoul
                 .FirstOrDefault();
 
             if (ownTarget == null)
-            {
                 return null;
-            }
 
             var enemyTargetIds = await BuildEnemyTargetPriority();
             var enemyTargets = state.SelectableCards
@@ -714,14 +657,12 @@ namespace BotTest.Game.AI.Bots.MasterDuel.SwordSoul
             selection.AddRange(enemyTargets);
 
             if (selection.Count >= state.Minimum)
-            {
                 return selection.Take(state.Minimum).ToArray();
-            }
 
             return null;
         }
 
-        private IList<byte>? TrySelectExactMaterials(SelectSumData state, params int[] preferredIds)
+        private static IList<byte>? TrySelectExactMaterials(SelectSumData state, params int[] preferredIds)
         {
             var selectable = state.SelectableCards
                 .Select((card, index) => new { Card = card, Index = index })
@@ -736,9 +677,7 @@ namespace BotTest.Game.AI.Bots.MasterDuel.SwordSoul
                     bool includesMandatory = state.MandatoryCards.All(mandatory =>
                         materialList.Any(item => item.Card.ID == mandatory.ID));
                     if (!includesMandatory)
-                    {
                         continue;
-                    }
 
                     int sum1 = materialList.Sum(item => item.Card.OpParam1);
                     int sum2 = materialList.Sum(item => item.Card.OpParam2 != 0 ? item.Card.OpParam2 : item.Card.OpParam1);
@@ -776,12 +715,11 @@ namespace BotTest.Game.AI.Bots.MasterDuel.SwordSoul
 
         private static CardPosition PickPosition(SelectPositionData state, CardPosition preferred)
         {
-            if (state.Positions.Contains((byte)preferred))
-            {
+            var positions = state.Positions ?? Array.Empty<byte>();
+            if (positions.Contains((byte)preferred))
                 return preferred;
-            }
 
-            return (CardPosition)state.Positions[0];
+            return positions.Length > 0 ? (CardPosition)positions[0] : CardPosition.FaceUpAttack;
         }
 
         private static int GetExpectedAttack(int cardId)

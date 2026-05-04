@@ -7,7 +7,9 @@ using BotTest.Game.AI.Bots.RushDuel.SevensRoad;
 using BotTest.Game.AI.Bots.SpeedDuel.Amazoness;
 using BotTest.Game.AI.Bots.SpeedDuel.MachineAngelAscension;
 using BotTest.Game.AI.Bots.SpeedDuel.SuperDuck;
-using BotTest.Game.Base;
+using BotTest.Game.AI.Heuristics;
+using OmegaBotWrapper;
+using OmegaBotWrapper.Heuristics;
 
 namespace BotTest.Web;
 
@@ -15,15 +17,15 @@ public static class DeckCatalog
 {
     public static readonly IReadOnlyList<DeckDefinition> Definitions =
     [
-        new("MasterDuel", "Master Duel", MasterDuelDeck.BlueEyes.ToString(), DeckManager.GetDeckName(MasterDuelDeck.BlueEyes), () => new BlueEyesActions(MasterDuelDeck.BlueEyes)),
-        new("MasterDuel", "Master Duel", MasterDuelDeck.DarkMagician.ToString(), DeckManager.GetDeckName(MasterDuelDeck.DarkMagician), () => new DarkMagicianActions(MasterDuelDeck.DarkMagician)),
-        new("MasterDuel", "Master Duel", MasterDuelDeck.SwordSoul.ToString(), DeckManager.GetDeckName(MasterDuelDeck.SwordSoul), () => new SwordSoulActions(MasterDuelDeck.SwordSoul)),
-        new("MasterDuel", "Master Duel", MasterDuelDeck.HandTraps.ToString(), DeckManager.GetDeckName(MasterDuelDeck.HandTraps), () => new HandTrapsActions(MasterDuelDeck.HandTraps)),
-        new("SpeedDuel", "Speed Duel", SpeedDuelDeck.SuperDuck.ToString(), DeckManager.GetDeckName(SpeedDuelDeck.SuperDuck), () => new SuperDuckActions(SpeedDuelDeck.SuperDuck)),
-        new("SpeedDuel", "Speed Duel", SpeedDuelDeck.MachineAngelAscension.ToString(), DeckManager.GetDeckName(SpeedDuelDeck.MachineAngelAscension), () => new MachineAngelAscensionActions(SpeedDuelDeck.MachineAngelAscension)),
-        new("SpeedDuel", "Speed Duel", SpeedDuelDeck.Amazoness.ToString(), DeckManager.GetDeckName(SpeedDuelDeck.Amazoness), () => new AmazonessActions(SpeedDuelDeck.Amazoness)),
-        new("RushDuel", "Rush Duel", RushDuelDeck.SevensRoad.ToString(), DeckManager.GetDeckName(RushDuelDeck.SevensRoad), () => new SevensRoadActions(RushDuelDeck.SevensRoad)),
-        new("RushDuel", "Rush Duel", RushDuelDeck.CustomRushDeck.ToString(), DeckManager.GetDeckName(RushDuelDeck.CustomRushDeck), () => new SevensRoadActions(RushDuelDeck.CustomRushDeck))
+        CreateBrain("MasterDuel", "Master Duel", MasterDuelDeck.BlueEyes.ToString(), DeckManager.GetDeckName(MasterDuelDeck.BlueEyes), DeckManager.GetDeckHash(MasterDuelDeck.BlueEyes), () => new BlueEyesBotBrain(new WindBotInspiredCardEvaluator(), new DefaultBoardEvaluator())),
+        CreateBrain("MasterDuel", "Master Duel", MasterDuelDeck.DarkMagician.ToString(), DeckManager.GetDeckName(MasterDuelDeck.DarkMagician), DeckManager.GetDeckHash(MasterDuelDeck.DarkMagician), () => new DarkMagicianBotBrain(new WindBotInspiredCardEvaluator(), new DefaultBoardEvaluator())),
+        CreateBrain("MasterDuel", "Master Duel", MasterDuelDeck.SwordSoul.ToString(), DeckManager.GetDeckName(MasterDuelDeck.SwordSoul), DeckManager.GetDeckHash(MasterDuelDeck.SwordSoul), () => new SwordSoulBotBrain(new WindBotInspiredCardEvaluator(), new DefaultBoardEvaluator())),
+        CreateBrain("MasterDuel", "Master Duel", MasterDuelDeck.HandTraps.ToString(), DeckManager.GetDeckName(MasterDuelDeck.HandTraps), DeckManager.GetDeckHash(MasterDuelDeck.HandTraps), () => new HandTrapsBotBrain(new WindBotInspiredCardEvaluator(), new DefaultBoardEvaluator())),
+        CreateBrain("SpeedDuel", "Speed Duel", SpeedDuelDeck.SuperDuck.ToString(), DeckManager.GetDeckName(SpeedDuelDeck.SuperDuck), DeckManager.GetDeckHash(SpeedDuelDeck.SuperDuck), () => new SuperDuckBotBrain(new WindBotInspiredCardEvaluator(), new DefaultBoardEvaluator())),
+        CreateBrain("SpeedDuel", "Speed Duel", SpeedDuelDeck.MachineAngelAscension.ToString(), DeckManager.GetDeckName(SpeedDuelDeck.MachineAngelAscension), DeckManager.GetDeckHash(SpeedDuelDeck.MachineAngelAscension), () => new MachineAngelAscensionBotBrain(new WindBotInspiredCardEvaluator(), new DefaultBoardEvaluator())),
+        CreateBrain("SpeedDuel", "Speed Duel", SpeedDuelDeck.Amazoness.ToString(), DeckManager.GetDeckName(SpeedDuelDeck.Amazoness), DeckManager.GetDeckHash(SpeedDuelDeck.Amazoness), () => new AmazonessBotBrain(new WindBotInspiredCardEvaluator(), new DefaultBoardEvaluator())),
+        CreateBrain("RushDuel", "Rush Duel", RushDuelDeck.SevensRoad.ToString(), DeckManager.GetDeckName(RushDuelDeck.SevensRoad), DeckManager.GetDeckHash(RushDuelDeck.SevensRoad), () => new SevensRoadBotBrain(new WindBotInspiredCardEvaluator(), new DefaultBoardEvaluator())),
+        CreateBrain("RushDuel", "Rush Duel", RushDuelDeck.CustomRushDeck.ToString(), DeckManager.GetDeckName(RushDuelDeck.CustomRushDeck), DeckManager.GetDeckHash(RushDuelDeck.CustomRushDeck), () => new SevensRoadBotBrain(new WindBotInspiredCardEvaluator(), new DefaultBoardEvaluator())),
     ];
 
     public static IReadOnlyList<FormatOption> GetFormatOptions()
@@ -33,11 +35,11 @@ public static class DeckCatalog
             .Select(group => new FormatOption(
                 group.Key.FormatId,
                 group.Key.FormatName,
-                group.Select(definition => new DeckOptionDto(definition.DeckId, definition.DeckName)).ToArray()))
+                group.Select(definition => new DeckOptionDto(definition.DeckId, definition.DeckName, definition.AssetDeckId)).ToArray()))
             .ToArray();
     }
 
-    public static BaseBotActions CreateBotActions(string formatId, string deckId)
+    public static DuelBotWrapper CreateBot(string formatId, string deckId)
     {
         var definition = Definitions.FirstOrDefault(item =>
             item.FormatId.Equals(formatId, StringComparison.OrdinalIgnoreCase) &&
@@ -48,6 +50,15 @@ public static class DeckCatalog
 
         return definition.Factory();
     }
+
+    private static DeckDefinition CreateBrain(
+        string formatId,
+        string formatName,
+        string deckId,
+        string deckName,
+        string deckHash,
+        Func<IBotBrain> brainFactory) =>
+        new(formatId, formatName, deckId, deckName, deckId, () => new DuelBotWrapper(deckName, deckHash, brainFactory()));
 }
 
 public sealed record DeckDefinition(
@@ -55,4 +66,5 @@ public sealed record DeckDefinition(
     string FormatName,
     string DeckId,
     string DeckName,
-    Func<BaseBotActions> Factory);
+    string AssetDeckId,
+    Func<DuelBotWrapper> Factory);

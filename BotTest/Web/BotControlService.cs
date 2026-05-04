@@ -1,4 +1,3 @@
-using BotTest.Game.Base;
 using BotTest.Utils;
 using OmegaBotWrapper;
 
@@ -20,6 +19,7 @@ public sealed class BotControlService
     private DateTimeOffset _lastUpdated = DateTimeOffset.Now;
     private readonly List<LogEntry> _logs = new();
     private Task? _runningTask;
+    private CancellationTokenSource? _cts;
 
     public BotControlService()
     {
@@ -100,11 +100,13 @@ public sealed class BotControlService
 
             selection = new DeckSelection(_selectedFormat, _selectedDeckId, _selectedDeckName);
             _isBusy = true;
+            _cts = new CancellationTokenSource();
             _status = "Connecting";
             _statusDetail = $"Connecting the bot to the deck {selection.DeckName}...";
             _lastUpdated = DateTimeOffset.Now;
             AddLog($"Starting the duel with {selection.DeckName}.", "system");
-            _runningTask = Task.Run(() => ExecuteDuelAsync(selection, requestRematch: false));
+            var token = _cts.Token;
+            _runningTask = Task.Run(() => ExecuteDuelAsync(selection, requestRematch: false, token));
         }
 
         return CommandResult.Ok("Duel started.");
@@ -123,11 +125,13 @@ public sealed class BotControlService
 
             selection = new DeckSelection(_selectedFormat, _selectedDeckId, _selectedDeckName);
             _isBusy = true;
+            _cts = new CancellationTokenSource();
             _status = "Rematch";
             _statusDetail = "Requesting rematch and preparing a new connection...";
             _lastUpdated = DateTimeOffset.Now;
             AddLog("Requesting rematch.", "system");
-            _runningTask = Task.Run(() => ExecuteDuelAsync(selection, requestRematch: true));
+            var rematchToken = _cts.Token;
+            _runningTask = Task.Run(() => ExecuteDuelAsync(selection, requestRematch: true, rematchToken));
         }
 
         return CommandResult.Ok("Rematch requested.");
@@ -161,7 +165,7 @@ public sealed class BotControlService
         }
     }
 
-    private async Task ExecuteDuelAsync(DeckSelection selection, bool requestRematch)
+    private async Task ExecuteDuelAsync(DeckSelection selection, bool requestRematch, CancellationToken ct = default)
     {
         void OnMessageLogged(string message) => AddLog(message, "engine");
 
@@ -174,14 +178,13 @@ public sealed class BotControlService
                 UpdateStatus("Rematch", "Sending the rematch request to Omega...");
                 await DuelBotWrapper.RematchDuel();
                 AddLog("Rematch request sent.", "system");
-                await Task.Delay(500);
+                await Task.Delay(500, ct);
             }
 
-            var botActions = DeckCatalog.CreateBotActions(selection.FormatId, selection.DeckId);
-            var bot = new DuelBotWrapper(botActions);
+            var bot = DeckCatalog.CreateBot(selection.FormatId, selection.DeckId);
 
             UpdateStatus("Connecting", $"Trying to connect the bot using {selection.DeckName}...");
-            var connected = await bot.Connect();
+            var connected = await bot.Connect(ct: ct);
 
             if (!connected)
             {
@@ -193,7 +196,7 @@ public sealed class BotControlService
             UpdateStatus("Dueling", $"Bot is dueling with {selection.DeckName}. Follow the match in Omega.");
             AddLog("Bot connected successfully.", "system");
 
-            await bot.Start();
+            await bot.Start(ct);
 
             UpdateStatus("Finished", "The duel is over. You can request a rematch or start another deck.");
             AddLog("Duel finished.", "system");
@@ -211,8 +214,22 @@ public sealed class BotControlService
             {
                 _isBusy = false;
                 _runningTask = null;
+                _cts?.Dispose();
+                _cts = null;
                 _lastUpdated = DateTimeOffset.Now;
             }
+        }
+    }
+
+    public CommandResult StopDuel()
+    {
+        lock (_sync)
+        {
+            if (!_isBusy || _cts == null)
+                return CommandResult.Fail("No duel is currently running.");
+            _cts.Cancel();
+            AddLog("Stop requested.", "system");
+            return CommandResult.Ok("Stop signal sent to the bot.");
         }
     }
 
@@ -265,7 +282,7 @@ public sealed record BotStateResponse(
 
 public sealed record FormatOption(string Id, string Name, IReadOnlyList<DeckOptionDto> Decks);
 
-public sealed record DeckOptionDto(string Id, string Name);
+public sealed record DeckOptionDto(string Id, string Name, string? AssetDeckId = null);
 
 public sealed record LogEntry(DateTimeOffset Timestamp, string Message, string Kind);
 

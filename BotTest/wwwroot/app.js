@@ -73,6 +73,10 @@ function getCurrentDeck() {
   return getCurrentFormat()?.decks.find((deck) => deck.id === deckSelect.value) || null;
 }
 
+function getDeckAssetId(deck) {
+  return deck?.assetDeckId || deck?.id || "";
+}
+
 function getFormatAsset(formatId) {
   return FORMAT_ASSETS[formatId] || DEFAULT_DECK_ART;
 }
@@ -152,7 +156,7 @@ function renderDeckCarousel() {
     const cover = document.createElement("img");
     applyImageWithFallback(
       cover,
-      getDeckAsset(currentFormat.id, deck.id),
+      getDeckAsset(currentFormat.id, getDeckAssetId(deck)),
       DEFAULT_DECK_ART,
       `${deck.name} cover`
     );
@@ -228,7 +232,7 @@ function syncHeroDisplay() {
 
   applyImageWithFallback(
     heroDeckArt,
-    getDeckAsset(currentFormat?.id, currentDeck?.id),
+    getDeckAsset(currentFormat?.id, getDeckAssetId(currentDeck)),
     DEFAULT_DECK_ART,
     `${deckName} cover`
   );
