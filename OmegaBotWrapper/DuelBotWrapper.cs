@@ -1,6 +1,7 @@
 ﻿using OmegaBotWrapper.Struct;
 using OmegaBotWrapper.Enum;
 using OmegaBotWrapper.States;
+using OmegaBotWrapper.Heuristics;
 
 namespace OmegaBotWrapper
 {
@@ -34,6 +35,13 @@ namespace OmegaBotWrapper
             BotID = -1;
             _api = api ?? OmegaApiClient.Default;
             _dispatcher = new BotStateDispatcher(this);
+        }
+        /// <summary>
+        /// Creates a new bot wrapper backed by a heuristic brain while preserving the existing action pipeline.
+        /// </summary>
+        public DuelBotWrapper(string deckName, string deckHash, IBotBrain botBrain, OmegaApiClient? api = null)
+            : this(new BotBrainActionsAdapter(botBrain, deckName, deckHash), api)
+        {
         }
         /// <summary>
         /// Creates a new bot wrapper with given set of actions
