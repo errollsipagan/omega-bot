@@ -1,4 +1,3 @@
-using BotTest.Game.Base;
 using BotTest.Utils;
 using OmegaBotWrapper;
 

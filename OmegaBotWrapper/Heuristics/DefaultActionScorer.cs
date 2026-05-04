@@ -136,6 +136,12 @@ namespace OmegaBotWrapper.Heuristics
                     reasons.Add("prefer-summon");
                     score += GetStableOrderBias(candidate, 100);
                     reasons.Add("preserve-default-summon-order");
+                    if (candidate.SourceCard is DynamicCard summon &&
+                        _cardEvaluator.ShouldAvoidNormalSummon(summon))
+                    {
+                        score -= 5000;
+                        reasons.Add("avoid-normal-summoning-reactive-card");
+                    }
                     break;
 
                 case CandidateActionKind.ToBattlePhase:

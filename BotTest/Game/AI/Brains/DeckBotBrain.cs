@@ -41,6 +41,7 @@ namespace BotTest.Game.AI.Brains
 
         private DuelBotWrapper? _trackedBot;
         private GameField? _gameField;
+        private BotStateHeader _currentHeader;
         private int _trackedTurn = -1;
         private readonly HashSet<int> _activatedThisTurn = new();
         private readonly List<int> _chainDescriptions = new();
@@ -264,6 +265,7 @@ namespace BotTest.Game.AI.Brains
             }
 
             var header = context.Header;
+            _currentHeader = header;
             if (header.CurrentTurn != _trackedTurn)
             {
                 _trackedTurn = header.CurrentTurn;
@@ -278,6 +280,8 @@ namespace BotTest.Game.AI.Brains
 
         protected GameField CurrentField =>
             _gameField ?? throw new InvalidOperationException("The deck brain field is not initialized. Call PrepareContextAsync first.");
+
+        protected BotStateHeader CurrentHeader => _currentHeader;
 
         protected virtual Task RefreshFieldAsync() => CurrentField.GetBotField();
 

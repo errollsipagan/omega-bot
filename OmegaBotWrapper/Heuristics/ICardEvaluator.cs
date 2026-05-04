@@ -15,6 +15,8 @@ namespace OmegaBotWrapper.Heuristics
 
         bool IsLikelyHandTrap(DynamicCard card);
 
+        bool ShouldAvoidNormalSummon(DynamicCard card);
+
         bool IsFloodgate(DynamicCard card);
 
         bool IsDangerousMonster(DynamicCard card);

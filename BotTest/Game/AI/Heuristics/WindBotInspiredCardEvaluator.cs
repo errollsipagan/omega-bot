@@ -20,28 +20,17 @@ public sealed class WindBotInspiredCardEvaluator : DefaultCardEvaluator
         .Concat(Enum.GetValues<ShouldNotBeSpellTrapTarget>().Select(value => (int)value))
         .ToHashSet();
 
-    public override bool IsFloodgate(DynamicCard card) => Floodgates.Contains(GetStableId(card));
+    public override bool IsFloodgate(DynamicCard card) => base.IsFloodgate(card) || Floodgates.Contains(GetStableId(card));
 
-    public override bool IsDangerousMonster(DynamicCard card) => DangerousMonsters.Contains(GetStableId(card));
+    public override bool IsDangerousMonster(DynamicCard card) => base.IsDangerousMonster(card) || DangerousMonsters.Contains(GetStableId(card));
 
-    public override bool IsInvincibleMonster(DynamicCard card) => InvincibleMonsters.Contains(GetStableId(card));
+    public override bool IsInvincibleMonster(DynamicCard card) => base.IsInvincibleMonster(card) || InvincibleMonsters.Contains(GetStableId(card));
 
-    public override bool ShouldAvoidTargeting(DynamicCard card) => AvoidTargeting.Contains(GetStableId(card));
+    public override bool ShouldAvoidTargeting(DynamicCard card) => base.ShouldAvoidTargeting(card) || AvoidTargeting.Contains(GetStableId(card));
 
     public override IReadOnlyList<string> GetKnowledgeTags(DynamicCard card)
     {
-        List<string> tags = new();
-
-        if (IsFloodgate(card))
-            tags.Add("floodgate");
-        if (IsDangerousMonster(card))
-            tags.Add("dangerous");
-        if (IsInvincibleMonster(card))
-            tags.Add("invincible");
-        if (ShouldAvoidTargeting(card))
-            tags.Add("avoid-target");
-
-        return tags;
+        return base.GetKnowledgeTags(card);
     }
 
     private static int GetStableId(DynamicCard card) => card.Alias != 0 ? card.Alias : card.ID;

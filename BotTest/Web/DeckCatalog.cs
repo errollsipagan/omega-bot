@@ -8,10 +8,8 @@ using BotTest.Game.AI.Bots.SpeedDuel.Amazoness;
 using BotTest.Game.AI.Bots.SpeedDuel.MachineAngelAscension;
 using BotTest.Game.AI.Bots.SpeedDuel.SuperDuck;
 using BotTest.Game.AI.Heuristics;
-using BotTest.Game.Base;
 using OmegaBotWrapper;
 using OmegaBotWrapper.Heuristics;
-using OmegaBotWrapper.Heuristics.Examples;
 
 namespace BotTest.Web;
 
@@ -23,13 +21,11 @@ public static class DeckCatalog
         CreateBrain("MasterDuel", "Master Duel", MasterDuelDeck.DarkMagician.ToString(), DeckManager.GetDeckName(MasterDuelDeck.DarkMagician), DeckManager.GetDeckHash(MasterDuelDeck.DarkMagician), () => new DarkMagicianBotBrain(new WindBotInspiredCardEvaluator(), new DefaultBoardEvaluator())),
         CreateBrain("MasterDuel", "Master Duel", MasterDuelDeck.SwordSoul.ToString(), DeckManager.GetDeckName(MasterDuelDeck.SwordSoul), DeckManager.GetDeckHash(MasterDuelDeck.SwordSoul), () => new SwordSoulBotBrain(new WindBotInspiredCardEvaluator(), new DefaultBoardEvaluator())),
         CreateBrain("MasterDuel", "Master Duel", MasterDuelDeck.HandTraps.ToString(), DeckManager.GetDeckName(MasterDuelDeck.HandTraps), DeckManager.GetDeckHash(MasterDuelDeck.HandTraps), () => new HandTrapsBotBrain(new WindBotInspiredCardEvaluator(), new DefaultBoardEvaluator())),
-        CreateClassic("SpeedDuel", "Speed Duel", SpeedDuelDeck.SuperDuck.ToString(), DeckManager.GetDeckName(SpeedDuelDeck.SuperDuck), () => new SuperDuckActions(SpeedDuelDeck.SuperDuck)),
+        CreateBrain("SpeedDuel", "Speed Duel", SpeedDuelDeck.SuperDuck.ToString(), DeckManager.GetDeckName(SpeedDuelDeck.SuperDuck), DeckManager.GetDeckHash(SpeedDuelDeck.SuperDuck), () => new SuperDuckBotBrain(new WindBotInspiredCardEvaluator(), new DefaultBoardEvaluator())),
         CreateBrain("SpeedDuel", "Speed Duel", SpeedDuelDeck.MachineAngelAscension.ToString(), DeckManager.GetDeckName(SpeedDuelDeck.MachineAngelAscension), DeckManager.GetDeckHash(SpeedDuelDeck.MachineAngelAscension), () => new MachineAngelAscensionBotBrain(new WindBotInspiredCardEvaluator(), new DefaultBoardEvaluator())),
-        CreateClassic("SpeedDuel", "Speed Duel", SpeedDuelDeck.Amazoness.ToString(), DeckManager.GetDeckName(SpeedDuelDeck.Amazoness), () => new AmazonessActions(SpeedDuelDeck.Amazoness)),
+        CreateBrain("SpeedDuel", "Speed Duel", SpeedDuelDeck.Amazoness.ToString(), DeckManager.GetDeckName(SpeedDuelDeck.Amazoness), DeckManager.GetDeckHash(SpeedDuelDeck.Amazoness), () => new AmazonessBotBrain(new WindBotInspiredCardEvaluator(), new DefaultBoardEvaluator())),
         CreateBrain("RushDuel", "Rush Duel", RushDuelDeck.SevensRoad.ToString(), DeckManager.GetDeckName(RushDuelDeck.SevensRoad), DeckManager.GetDeckHash(RushDuelDeck.SevensRoad), () => new SevensRoadBotBrain(new WindBotInspiredCardEvaluator(), new DefaultBoardEvaluator())),
         CreateBrain("RushDuel", "Rush Duel", RushDuelDeck.CustomRushDeck.ToString(), DeckManager.GetDeckName(RushDuelDeck.CustomRushDeck), DeckManager.GetDeckHash(RushDuelDeck.CustomRushDeck), () => new SevensRoadBotBrain(new WindBotInspiredCardEvaluator(), new DefaultBoardEvaluator())),
-        CreateHeuristic("SpeedDuel", "Speed Duel", SpeedDuelDeck.SuperDuck.ToString(), DeckManager.GetDeckName(SpeedDuelDeck.SuperDuck), DeckManager.GetDeckHash(SpeedDuelDeck.SuperDuck)),
-        CreateHeuristic("SpeedDuel", "Speed Duel", SpeedDuelDeck.Amazoness.ToString(), DeckManager.GetDeckName(SpeedDuelDeck.Amazoness), DeckManager.GetDeckHash(SpeedDuelDeck.Amazoness))
     ];
 
     public static IReadOnlyList<FormatOption> GetFormatOptions()
@@ -55,14 +51,6 @@ public static class DeckCatalog
         return definition.Factory();
     }
 
-    private static DeckDefinition CreateClassic(
-        string formatId,
-        string formatName,
-        string deckId,
-        string deckName,
-        Func<BotActionsBase> actionsFactory) =>
-        new(formatId, formatName, deckId, deckName, deckId, () => new DuelBotWrapper(actionsFactory()));
-
     private static DeckDefinition CreateBrain(
         string formatId,
         string formatName,
@@ -71,23 +59,6 @@ public static class DeckCatalog
         string deckHash,
         Func<IBotBrain> brainFactory) =>
         new(formatId, formatName, deckId, deckName, deckId, () => new DuelBotWrapper(deckName, deckHash, brainFactory()));
-
-    private static DeckDefinition CreateHeuristic(
-        string formatId,
-        string formatName,
-        string baseDeckId,
-        string baseDeckName,
-        string deckHash) =>
-        new(
-            formatId,
-            formatName,
-            $"{baseDeckId}.BOT",
-            $"{baseDeckName} BOT",
-            baseDeckId,
-            () => new DuelBotWrapper(
-                $"{baseDeckName} BOT",
-                deckHash,
-                new ExampleAggroBotBrain(new WindBotInspiredCardEvaluator(), new DefaultBoardEvaluator())));
 }
 
 public sealed record DeckDefinition(

@@ -1,8 +1,9 @@
+using BotTest.Game.AI.Brains;
 using OmegaBotWrapper.Heuristics;
 
 namespace BotTest.Game.AI.Bots.MasterDuel.DarkMagician
 {
-    public sealed class DarkMagicianBotBrain : BotTest.Game.AI.Brains.DeckBotBrain
+    public sealed class DarkMagicianBotBrain : DeckBotBrain
     {
         public DarkMagicianBotBrain(
             ICardEvaluator? cardEvaluator = null,
