@@ -31,23 +31,23 @@ namespace OmegaBotWrapper
             bot.OnIdleCmdAction = OnIdleCmd;
             bot.OnSelectChainAction = OnSelectChain;
             bot.OnSelectCardAction = OnSelectCard;
-            bot.OnSelectTributeAction += OnSelectTribute;
-            bot.OnSelectSumAction += OnSelectSum;
-            bot.OnAnnounceAttributeAction += OnAnnounceAttribute;
-            bot.OnAnnounceRaceAction += OnAnnounceRace;
-            bot.OnAnnounceNumberAction += OnAnnounceNumber;
-            bot.OnAnnounceCardAction += OnAnnounceCard;
-            bot.OnAnnounceCardFilterAction += OnAnnounceCardFilter;
-            bot.OnSelectUnselectCardAction += OnSelectUnselectCard;
-            bot.OnSelectCounterAction += OnSelectCounter;
-            bot.OnSelectDisfieldAction += OnSelectDisfield;
-            bot.OnSelectPlaceAction += OnSelectPlace;
-            bot.OnSelectEffectYnAction += OnSelectEffectYn;
-            bot.OnSelectYesNoAction += OnSelectYesNo;
-            bot.OnSelectOptionAction += OnSelectOption;
-            bot.OnSelectRockPaperScissors += OnSelectRockPaperScissors;
-            bot.OnSelectPositionAction += OnSelectPosition;
-            bot.OnSortCardAction += OnSortCard;
+            bot.OnSelectTributeAction = OnSelectTribute;
+            bot.OnSelectSumAction = OnSelectSum;
+            bot.OnAnnounceAttributeAction = OnAnnounceAttribute;
+            bot.OnAnnounceRaceAction = OnAnnounceRace;
+            bot.OnAnnounceNumberAction = OnAnnounceNumber;
+            bot.OnAnnounceCardAction = OnAnnounceCard;
+            bot.OnAnnounceCardFilterAction = OnAnnounceCardFilter;
+            bot.OnSelectUnselectCardAction = OnSelectUnselectCard;
+            bot.OnSelectCounterAction = OnSelectCounter;
+            bot.OnSelectDisfieldAction = OnSelectDisfield;
+            bot.OnSelectPlaceAction = OnSelectPlace;
+            bot.OnSelectEffectYnAction = OnSelectEffectYn;
+            bot.OnSelectYesNoAction = OnSelectYesNo;
+            bot.OnSelectOptionAction = OnSelectOption;
+            bot.OnSelectRockPaperScissors = OnSelectRockPaperScissors;
+            bot.OnSelectPositionAction = OnSelectPosition;
+            bot.OnSortCardAction = OnSortCard;
         }
         /// <summary>
         /// Action to be taken at battle phase, should return the action and its index (or 0 if not applicable)
@@ -170,8 +170,10 @@ namespace OmegaBotWrapper
         {
             var filters = state.AppliableFilters;
             var cards = await DuelBotWrapper.GetMatchingCards(filters);
+            if (cards.Cards == null || cards.Cards.Length == 0)
+                return 0;
             Random rng = new();
-            return cards.Cards.ElementAt(rng.Next(0, cards.Cards.Length)).ID;
+            return cards.Cards[rng.Next(0, cards.Cards.Length)].ID;
         }
         /// <summary>
         /// Action to be taken when announcing a card with filter, should return the card id that was selected
@@ -180,8 +182,10 @@ namespace OmegaBotWrapper
         {
             var filters = state.AppliableFilters;
             var cards = await DuelBotWrapper.GetMatchingCards(filters);
+            if (cards.Cards == null || cards.Cards.Length == 0)
+                return 0;
             Random rng = new();
-            return cards.Cards.ElementAt(rng.Next(0, cards.Cards.Length)).ID;
+            return cards.Cards[rng.Next(0, cards.Cards.Length)].ID;
         }
         /// <summary>
         /// Action to be taken when selecting/unselecting card(s), should return the indexes that was selected from the selectable options
@@ -190,7 +194,7 @@ namespace OmegaBotWrapper
         {
             List<byte> selection = new();
             for (int i = 0; i < state.Minimum; i++)
-                selection[i] = (byte)i;
+                selection.Add((byte)i);
             return selection;
         }
         /// <summary>
@@ -200,13 +204,13 @@ namespace OmegaBotWrapper
         {
             List<short> resp = new();
             short need = state.RequiredQuantity;
-            byte i = 0;
-            while (need > 0)
+            for (int i = 0; i < state.Counters.Length && need > 0; i++)
             {
                 var amt = state.Counters[i];
                 if (amt > need)
                 {
                     resp.Add(need);
+                    need = 0;
                     break;
                 }
                 resp.Add(amt);
