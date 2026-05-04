@@ -54,7 +54,7 @@ namespace OmegaBotWrapper
         public static async Task<bool> SendResponsePacket(this byte[] data, int botId)
         {
             string resp = data.Base64Encode().ToSafeB64();
-            var result = await WebHandler.DownloadObject<ResponseReason>($"{Const.SET_BOT_RESPONSE}/{botId}/{resp}");            
+            var result = await WebHandler.DownloadObject<ResponseReason>($"{Const.SET_BOT_RESPONSE}/{botId}/{resp}");
             return result.Code == 200;
         }
         /// <summary>
@@ -66,8 +66,6 @@ namespace OmegaBotWrapper
         public static async Task<bool> SendResponsePacket(this BinaryWriter pkt, int botId)
         {
             byte[] data = ((MemoryStream)pkt.BaseStream).ToArray();
-            await pkt.BaseStream.DisposeAsync();
-            await pkt.DisposeAsync();
             return await data.SendResponsePacket(botId);
         }
         /// <summary>

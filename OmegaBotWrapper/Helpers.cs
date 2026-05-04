@@ -220,5 +220,38 @@ namespace OmegaBotWrapper
 
         public static bool HasAttribute(this DynamicCard card, CardAttribute attribute) => (card.Attribute & (byte)attribute) != 0;
 
+        public static bool HasRace(this DynamicCard card, CardRace race) => (card.Race & (int)race) != 0;
+
+        public static IEnumerable<DynamicCard> GetMonsters(this IEnumerable<DynamicCard> cards) =>
+            cards.Where(card => card.ID > 0 && card.HasType(CardType.Monster));
+
+        public static DynamicCard GetHighestAttackMonster(this IEnumerable<DynamicCard> cards) =>
+            cards.GetMonsters()
+                .Where(card => card.IsFaceup())
+                .OrderByDescending(card => card.Attack)
+                .FirstOrDefault();
+
+        public static DynamicCard GetLowestAttackMonster(this IEnumerable<DynamicCard> cards) =>
+            cards.GetMonsters()
+                .Where(card => card.IsFaceup())
+                .OrderBy(card => card.Attack)
+                .FirstOrDefault();
+
+        public static DynamicCard GetHighestPowerMonster(this IEnumerable<DynamicCard> cards) =>
+            cards.GetMonsters()
+                .OrderByDescending(card => card.GetRealPower())
+                .FirstOrDefault();
+
+        public static DynamicCard GetLowestPowerMonster(this IEnumerable<DynamicCard> cards) =>
+            cards.GetMonsters()
+                .OrderBy(card => card.GetRealPower())
+                .FirstOrDefault();
+
+        public static bool ContainsCardWithId(this IEnumerable<DynamicCard> cards, int id) =>
+            cards.Any(card => card.ID > 0 && card.IsCode(id));
+
+        public static int GetCardCount(this IEnumerable<DynamicCard> cards, int id) =>
+            cards.Count(card => card.ID > 0 && card.IsCode(id));
+
     }
 }

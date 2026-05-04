@@ -5,6 +5,8 @@
     /// </summary>
     public static class ConsoleUtils
     {
+        public static event Action<string>? MessageLogged;
+
         private static readonly Random _random = new Random();
         private static readonly ConsoleColor[] _availableColors = new[]
         {
@@ -36,6 +38,8 @@
         /// <param name="text">The text to print.</param>
         public static void PrintColored(string text)
         {
+            MessageLogged?.Invoke(text);
+
             // Store the original console color
             var originalColor = Console.ForegroundColor;
 

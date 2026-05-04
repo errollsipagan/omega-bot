@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Omega Bot AI Room</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="scene scene-left"></div>
+  <div class="scene scene-right"></div>
+  <div class="scene scene-center"></div>
+
+  <main class="shell">
+    <section class="hero hero-layout">
+      <article class="hero-copy">
+        <p class="eyebrow">YGO Omega Bot API</p>
+        <h1>AI Room</h1>
+        <p class="lede">
+          A calmer, more visual bridge between your bot and the arena. Pick the format, spotlight a deck, and launch duels with everything in view.
+        </p>
+
+        <div class="hero-meta">
+          <div class="hero-meta-card">
+            <span>Format</span>
+            <strong id="summaryFormat">-</strong>
+          </div>
+          <div class="hero-meta-card">
+            <span>Deck</span>
+            <strong id="summaryDeck">-</strong>
+          </div>
+          <div class="hero-meta-card">
+            <span>Execution</span>
+            <strong id="summaryBusy">-</strong>
+          </div>
+        </div>
+      </article>
+
+      <article class="hero-stage panel">
+        <div class="hero-stage-backdrop"></div>
+        <div class="hero-stage-copy">
+          <span class="panel-kicker">Live Selection</span>
+          <div class="format-logo-frame">
+            <img id="formatLogo" class="format-logo" alt="Selected format logo">
+          </div>
+          <h2 id="selectedDeckName" class="steel-title">Loading deck...</h2>
+          <p id="statusDetail" class="status-detail">Fetching the current panel state.</p>
+          <div class="status-line">
+            <span id="statusBadge" class="status-badge">Ready</span>
+            <span id="lastUpdated" class="status-meta"></span>
+          </div>
+        </div>
+
+        <div class="hero-stage-art">
+          <div class="hero-card-glow"></div>
+          <img id="heroDeckArt" class="hero-deck-art" alt="Selected deck cover">
+        </div>
+      </article>
+    </section>
+
+    <section class="grid main-grid">
+      <article class="panel panel-selection">
+        <div class="panel-head">
+          <span class="panel-kicker">Setup</span>
+          <h2>Choose Your Duel</h2>
+        </div>
+
+        <div class="field-group">
+          <label for="formatSelect">Format</label>
+          <select id="formatSelect"></select>
+        </div>
+
+        <div class="field-group">
+          <label for="deckSelect">Deck</label>
+          <select id="deckSelect"></select>
+        </div>
+
+        <div class="actions">
+          <button id="saveSelectionButton" class="button button-secondary">Save Selection</button>
+          <button id="startButton" class="button button-primary">Start Duel</button>
+        </div>
+
+        <div class="actions actions-secondary">
+          <button id="rematchButton" class="button button-secondary">Request Rematch</button>
+          <button id="resetButton" class="button button-ghost">Clear Status</button>
+        </div>
+      </article>
+
+      <article class="panel panel-carousel">
+        <div class="panel-head panel-head-inline">
+          <div>
+            <span class="panel-kicker">Deck Gallery</span>
+            <h2 id="carouselTitle">Deck Showcase</h2>
+          </div>
+
+          <div class="carousel-controls">
+            <button id="carouselPrevButton" class="carousel-button" type="button" aria-label="Show previous decks">‹</button>
+            <button id="carouselNextButton" class="carousel-button" type="button" aria-label="Show next decks">›</button>
+          </div>
+        </div>
+
+        <div id="deckCarousel" class="deck-carousel" aria-label="Deck carousel"></div>
+      </article>
+    </section>
+
+    <section class="grid grid-bottom">
+      <article class="panel panel-log">
+        <div class="panel-head">
+          <span class="panel-kicker">Timeline</span>
+          <h2>Recent Events</h2>
+        </div>
+
+        <div class="actions">
+          <button id="clearLogsButton" class="button button-ghost">Clear Recent Events</button>
+        </div>
+
+        <ul id="logList" class="log-list"></ul>
+      </article>
+    </section>
+  </main>
+
+  <template id="logItemTemplate">
+    <li class="log-item">
+      <span class="log-kind"></span>
+      <span class="log-time"></span>
+      <p class="log-message"></p>
+    </li>
+  </template>
+
+  <div id="cardPreview" class="card-preview" aria-hidden="true">
+    <div class="card-preview-frame">
+      <img id="cardPreviewImage" alt="Card preview">
+    </div>
+  </div>
+
+  <script src="/app.js" defer></script>
+</body>
+</html>

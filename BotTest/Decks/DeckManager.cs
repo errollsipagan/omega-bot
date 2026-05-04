@@ -36,7 +36,8 @@ namespace BotTest.Decks
     /// </summary>
     public enum RushDuelDeck
     {
-        SevensRoad
+        SevensRoad,
+        CustomRushDeck
     }
 
     /// <summary>
@@ -109,6 +110,13 @@ namespace BotTest.Decks
                 (
                     DeckName: "Sevens Road",
                     DeckHash: "s2KY+0STHYZ1V2jAcaaLJhwbAfkgvJVbC46fbNeA44uPEFj3uBYcb9ytwa65AoEtz0Ow8TJNOL4ENAuGw45D8FluBDYF6oPhjUD+eiS8CQm/0EPgpVYI7H0cgkHqAQ=="
+                )
+            },
+            {
+                RushDuelDeck.CustomRushDeck,
+                (
+                    DeckName: "Custom Rush Deck",
+                    DeckHash: "M2S4wKnJHvxOC46fXUBgPwdtOO6cogXHG2IROPAVAq+LReAiYQS+slQbjhW9tOBYe5Y2HGshYXUkbO6BwL+3a8BxTKEWHIP8AAA="
                 )
             }
         };
