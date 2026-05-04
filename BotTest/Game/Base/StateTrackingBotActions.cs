@@ -1,4 +1,3 @@
-using BotTest.Game.Field;
 using OmegaBotWrapper;
 using OmegaBotWrapper.Enum;
 using OmegaBotWrapper.States;
@@ -6,7 +5,7 @@ using OmegaBotWrapper.Struct;
 
 namespace BotTest.Game.Base
 {
-    public abstract class ContextualBotActions : RuleBasedBotActions
+    public abstract class StateTrackingBotActions : RuleEngineBotActions
     {
         protected enum PendingActionKind
         {
@@ -38,9 +37,7 @@ namespace BotTest.Game.Base
         protected async Task PrepareContextAsync()
         {
             if (BotWrapper == null)
-            {
                 return;
-            }
 
             var header = BotWrapper.CurrentStateHeader;
             if (header.CurrentTurn != _trackedTurn)
@@ -74,9 +71,7 @@ namespace BotTest.Game.Base
         protected void MarkCardActivated(int cardId)
         {
             if (cardId > 0)
-            {
                 _activatedThisTurn.Add(cardId);
-            }
         }
 
         protected bool WasCardActivatedThisTurn(int cardId)
@@ -93,9 +88,7 @@ namespace BotTest.Game.Base
         protected bool IsFirstTurnOrMain2()
         {
             if (BotWrapper == null)
-            {
                 return false;
-            }
 
             var header = BotWrapper.CurrentStateHeader;
             return header.CurrentTurn <= 1 || (DuelPhase)header.CurrentPhase == DuelPhase.Main2;
@@ -121,20 +114,14 @@ namespace BotTest.Game.Base
             return selected.Length >= state.Minimum ? selected : null;
         }
 
-        protected async Task<DynamicCard> GetBestEnemyMonster(bool onlyFaceUp = false)
-        {
-            return await _gameField.GetBestEnemyMonster(onlyFaceUp);
-        }
+        protected async Task<DynamicCard> GetBestEnemyMonster(bool onlyFaceUp = false) =>
+            await _gameField.GetBestEnemyMonster(onlyFaceUp);
 
-        protected async Task<DynamicCard> GetBestEnemySpell(bool onlyFaceUp = false)
-        {
-            return await _gameField.GetBestEnemySpell(onlyFaceUp);
-        }
+        protected async Task<DynamicCard> GetBestEnemySpell(bool onlyFaceUp = false) =>
+            await _gameField.GetBestEnemySpell(onlyFaceUp);
 
-        protected async Task<DynamicCard> GetBestEnemyCard(bool onlyFaceUp = false)
-        {
-            return await _gameField.GetBestEnemyCard(onlyFaceUp);
-        }
+        protected async Task<DynamicCard> GetBestEnemyCard(bool onlyFaceUp = false) =>
+            await _gameField.GetBestEnemyCard(onlyFaceUp);
 
         protected static bool CanBuildLevel8Synchro(IdleCmdData state)
         {

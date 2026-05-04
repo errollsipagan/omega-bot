@@ -14,5 +14,9 @@ namespace OmegaBotWrapper.Heuristics
         bool HasKnownDirectPath(FieldInfo? field);
 
         bool IsSafeAttack(DynamicCard attacker, DynamicCard defender);
+
+        int EvaluateBattleTarget(DynamicCard attacker, DynamicCard defender, ICardEvaluator cardEvaluator);
+
+        int EvaluateRemovalTarget(DynamicCard target, ICardEvaluator cardEvaluator);
     }
 }

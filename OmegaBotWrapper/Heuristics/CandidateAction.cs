@@ -12,7 +12,7 @@ namespace OmegaBotWrapper.Heuristics
 
         public required CandidateActionKind Kind { get; init; }
 
-        public required object Response { get; init; }
+        public required ICandidateResponse Response { get; init; }
 
         public DynamicCard? SourceCard { get; init; }
 
@@ -33,6 +33,10 @@ namespace OmegaBotWrapper.Heuristics
         public IReadOnlyDictionary<string, object?> Metadata { get; init; } =
             new Dictionary<string, object?>();
 
-        public TResponse GetResponse<TResponse>() => (TResponse)Response;
+        public TResponse GetResponse<TResponse>() =>
+            Response is ICandidateResponse<TResponse> typedResponse
+                ? typedResponse.Value
+                : throw new InvalidOperationException(
+                    $"Candidate response type mismatch. Expected {typeof(TResponse).Name}, actual {Response.ResponseType.Name}.");
     }
 }

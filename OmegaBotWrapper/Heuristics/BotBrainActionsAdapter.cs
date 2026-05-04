@@ -35,7 +35,7 @@ namespace OmegaBotWrapper.Heuristics
             _brain.OnSelectChainAsync(CreateContext(BotState.SelectChain, state));
 
         public Task<IList<byte>?> OnSelectCard(SelectCardData state) =>
-            _brain.OnSelectCardAsync(CreateContext(BotState.SelectCard, state));
+            _brain.OnSelectCardAsync(CreateContext(BotState.SelectCard, state, includeFieldSnapshot: true));
 
         public Task<IList<byte>?> OnSelectTribute(SelectTributeData state) =>
             _brain.OnSelectTributeAsync(CreateContext(BotState.SelectTribute, state));

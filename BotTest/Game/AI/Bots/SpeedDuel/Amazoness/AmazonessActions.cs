@@ -10,7 +10,7 @@ using OmegaBotWrapper.Struct;
 
 namespace BotTest.Game.AI.Bots.SpeedDuel.Amazoness
 {
-    public class AmazonessActions : RuleBasedBotActions
+    public class AmazonessActions : RuleEngineBotActions
     {
         public AmazonessActions(SpeedDuelDeck deck = SpeedDuelDeck.Amazoness)
         {

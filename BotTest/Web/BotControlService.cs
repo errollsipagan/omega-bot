@@ -182,8 +182,7 @@ public sealed class BotControlService
                 await Task.Delay(500, ct);
             }
 
-            var botActions = DeckCatalog.CreateBotActions(selection.FormatId, selection.DeckId);
-            var bot = new DuelBotWrapper(botActions);
+            var bot = DeckCatalog.CreateBot(selection.FormatId, selection.DeckId);
 
             UpdateStatus("Connecting", $"Trying to connect the bot using {selection.DeckName}...");
             var connected = await bot.Connect(ct: ct);
@@ -284,7 +283,7 @@ public sealed record BotStateResponse(
 
 public sealed record FormatOption(string Id, string Name, IReadOnlyList<DeckOptionDto> Decks);
 
-public sealed record DeckOptionDto(string Id, string Name);
+public sealed record DeckOptionDto(string Id, string Name, string? AssetDeckId = null);
 
 public sealed record LogEntry(DateTimeOffset Timestamp, string Message, string Kind);
 

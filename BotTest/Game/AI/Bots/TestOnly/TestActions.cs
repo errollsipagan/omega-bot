@@ -7,7 +7,7 @@ using OmegaBotWrapper.Struct;
 
 namespace BotTest.Game.AI.Bots.TestOnly
 {
-    public class TestActions : RuleBasedBotActions
+    public class TestActions : RuleEngineBotActions
     {
         public TestActions(SpeedDuelDeck deck = SpeedDuelDeck.SuperDuck)
         {

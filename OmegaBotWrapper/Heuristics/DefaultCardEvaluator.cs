@@ -16,6 +16,14 @@ namespace OmegaBotWrapper.Heuristics
 
         public virtual bool IsLikelyHandTrap(DynamicCard card) => false;
 
+        public virtual bool IsFloodgate(DynamicCard card) => false;
+
+        public virtual bool IsDangerousMonster(DynamicCard card) => false;
+
+        public virtual bool IsInvincibleMonster(DynamicCard card) => false;
+
+        public virtual bool ShouldAvoidTargeting(DynamicCard card) => false;
+
         public virtual IReadOnlyList<string> GetArchetypeTags(DynamicCard card) => Array.Empty<string>();
 
         public virtual IReadOnlyList<string> GetComboTags(DynamicCard card) => Array.Empty<string>();

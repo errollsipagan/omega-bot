@@ -10,7 +10,7 @@ using System.Data;
 
 namespace BotTest.Game.AI.Bots.SpeedDuel.SuperDuck
 {
-    public class SuperDuckActions : RuleBasedBotActions
+    public class SuperDuckActions : RuleEngineBotActions
     {
         private readonly Dictionary<int, bool> _selectChainMap = new();
 

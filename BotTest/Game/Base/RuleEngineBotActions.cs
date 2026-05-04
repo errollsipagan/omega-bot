@@ -1,30 +1,23 @@
-﻿using BotTest.Utils;
+using BotTest.Utils;
 using OmegaBotWrapper.Enum;
 using OmegaBotWrapper.States;
 using OmegaBotWrapper.Struct;
-using OmegaBotWrapper;
-using BotTest.Game.Field;
 using System.Reflection;
+
 #pragma warning disable 8605
 #pragma warning disable 8618
+
 namespace BotTest.Game.Base
 {
-    public abstract class RuleBasedBotActions : BaseBotActions
+    public abstract class RuleEngineBotActions : FieldBotActions
     {
-        public GameField _gameField;
         protected readonly List<ActionRule> _actionRules;
         protected readonly Dictionary<int, Base.CardInfo> _cardInfoMap;
 
-        protected RuleBasedBotActions()
+        protected RuleEngineBotActions()
         {
             _actionRules = new List<ActionRule>();
             _cardInfoMap = new Dictionary<int, Base.CardInfo>();
-        }
-
-        public override void RegisterActions(DuelBotWrapper bot)
-        {
-            _gameField = new GameField(bot);
-            base.RegisterActions(bot);
         }
 
         protected void AddCardInfo(int cardId, string cardName)
@@ -53,27 +46,19 @@ namespace BotTest.Game.Base
                 {
                     if (cards[i].ID == rule.CardId && await rule.Condition(state, cards[i]))
                     {
-                        var originalIndex = Array.IndexOf(originalCards, cards[i]);
+                        int originalIndex = Array.IndexOf(originalCards, cards[i]);
                         if (originalIndex < 0)
                             continue;
 
                         string cardDisplay = _cardInfoMap.TryGetValue(rule.CardId, out var cardInfo)
-                        ? cardInfo.CardName
-                        : rule.CardId.ToString();
+                            ? cardInfo.CardName
+                            : rule.CardId.ToString();
                         ConsoleUtils.PrintColored($"Bot Actions => ExecuteAction. Card: {cardDisplay}");
                         return ExecuteAction(rule.Action, (ushort)originalIndex);
                     }
                 }
-
-                //if (cards.TryGetByID(rule.CardId, out var card, out var index) && rule.Condition(state, card))
-                //{
-                //    string cardDisplay = _cardInfoMap.TryGetValue(rule.CardId, out var cardInfo)
-                //        ? cardInfo.CardName
-                //        : rule.CardId.ToString();
-                //    ConsoleUtils.PrintColored($"Bot Actions => ExecuteAction. Card: {cardDisplay}");
-                //    return ExecuteAction(rule.Action, (ushort)index);
-                //}
             }
+
             return null;
         }
 
@@ -111,22 +96,16 @@ namespace BotTest.Game.Base
         protected void InitializeCardInfo<TCardIdClass>()
         {
             var fields = typeof(TCardIdClass).GetFields(BindingFlags.Public | BindingFlags.Static)
-                                             .Where(f => f.IsLiteral && !f.IsInitOnly);
+                .Where(field => field.IsLiteral && !field.IsInitOnly);
 
             foreach (var field in fields)
             {
-                // Get the ID from the constant (e.g. 89631139 for BlueEyesWhiteDragon)
                 int cardId = (int)field.GetValue(null);
-
-                // Convert the field name to a human-readable name (e.g., BlueEyesWhiteDragon → Blue Eyes White Dragon)
                 string cardName = FormatCardName(field.Name);
-
-                // Add
                 AddCardInfo(cardId, cardName);
             }
         }
 
-        // Converts names like "BlueEyesWhiteDragon" to "Blue Eyes White Dragon"
         private static string FormatCardName(string fieldName)
         {
             return string.Concat(fieldName.Select(c => char.IsUpper(c) ? " " + c : c.ToString())).Trim();

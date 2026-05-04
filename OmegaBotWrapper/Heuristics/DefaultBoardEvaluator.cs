@@ -36,5 +36,66 @@ namespace OmegaBotWrapper.Heuristics
 
         public virtual bool IsSafeAttack(DynamicCard attacker, DynamicCard defender) =>
             attacker.Attack >= defender.GetRealPower();
+
+        public virtual int EvaluateBattleTarget(DynamicCard attacker, DynamicCard defender, ICardEvaluator cardEvaluator)
+        {
+            if (defender.ID <= 0)
+                return int.MinValue / 2;
+
+            if (cardEvaluator.ShouldAvoidTargeting(defender))
+                return int.MinValue / 4;
+
+            int defenderPower = defender.GetRealPower();
+            int attackDelta = attacker.Attack - defenderPower;
+
+            if (cardEvaluator.IsInvincibleMonster(defender))
+                return -20_000;
+
+            int score = attackDelta * 10;
+
+            if (cardEvaluator.IsFloodgate(defender))
+                score += 8_000;
+
+            if (cardEvaluator.IsDangerousMonster(defender))
+                score -= 2_000;
+
+            if (defender.IsFaceup() && defender.IsAttack())
+                score += 1_500;
+            else if (defender.IsDefense())
+                score += 800;
+            else
+                score += 250;
+
+            if (attackDelta > 0)
+                score += 5_000;
+            else if (attackDelta == 0)
+                score -= 500;
+            else
+                score -= 10_000;
+
+            return score;
+        }
+
+        public virtual int EvaluateRemovalTarget(DynamicCard target, ICardEvaluator cardEvaluator)
+        {
+            if (target.ID <= 0)
+                return int.MinValue / 2;
+
+            int score = target.GetRealPower();
+
+            if (cardEvaluator.IsFloodgate(target))
+                score += 10_000;
+
+            if (cardEvaluator.IsDangerousMonster(target))
+                score += 4_000;
+
+            if (cardEvaluator.IsInvincibleMonster(target))
+                score += 2_000;
+
+            if (cardEvaluator.ShouldAvoidTargeting(target))
+                score -= 12_000;
+
+            return score;
+        }
     }
 }
