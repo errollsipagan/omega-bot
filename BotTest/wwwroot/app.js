@@ -33,7 +33,12 @@ const DECK_ASSETS = {
   MasterDuel: {
     BlueEyes: "/assets/blue-eyes.jpg",
     DarkMagician: "/assets/dark-magician.jpg",
-    SwordSoul: "/assets/swordsoul.jpg"
+    SwordSoul: "/assets/swordsoul.jpg",
+    KaibaPureDragon: "/assets/kaiba_poc.jpg",
+    KaibaHeavyFusion: "/assets/kaiba_poc.jpg",
+    KaibaAntiMeta: "/assets/kaiba_poc.jpg",
+    KaibaGunBarrelDragon: "/assets/kaiba_poc.jpg",
+    KaibaHandBoardControl: "/assets/kaiba_poc.jpg",
   },
   SpeedDuel: {
     SuperDuck: "/assets/super_duck.jpg",

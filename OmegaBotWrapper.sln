@@ -7,8 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OmegaBotWrapper", "OmegaBot
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BotTest", "BotTest\BotTest.csproj", "{9D8773EC-D577-49E2-BE5B-54153FCC878F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OmegaBotWrapper.Tests", "OmegaBotWrapper.Tests\OmegaBotWrapper.Tests.csproj", "{343DD965-B888-4330-8792-AF672217A9DA}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

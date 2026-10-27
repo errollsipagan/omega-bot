@@ -3,6 +3,11 @@ using BotTest.Game.AI.Bots.MasterDuel.BlueEyes;
 using BotTest.Game.AI.Bots.MasterDuel.DarkMagician;
 using BotTest.Game.AI.Bots.MasterDuel.HandTraps;
 using BotTest.Game.AI.Bots.MasterDuel.SwordSoul;
+using BotTest.Game.AI.Bots.MasterDuel.KaibaPureDragon;
+using BotTest.Game.AI.Bots.MasterDuel.KaibaHeavyFusion;
+using BotTest.Game.AI.Bots.MasterDuel.KaibaAntiMeta;
+using BotTest.Game.AI.Bots.MasterDuel.KaibaGunBarrelDragon;
+using BotTest.Game.AI.Bots.MasterDuel.KaibaHandBoardControl;
 using BotTest.Game.AI.Bots.RushDuel.SevensRoad;
 using BotTest.Game.AI.Bots.SpeedDuel.Amazoness;
 using BotTest.Game.AI.Bots.SpeedDuel.MachineAngelAscension;
@@ -21,6 +26,11 @@ public static class DeckCatalog
         CreateBrain("MasterDuel", "Master Duel", MasterDuelDeck.DarkMagician.ToString(), DeckManager.GetDeckName(MasterDuelDeck.DarkMagician), DeckManager.GetDeckHash(MasterDuelDeck.DarkMagician), () => new DarkMagicianBotBrain(new WindBotInspiredCardEvaluator(), new DefaultBoardEvaluator())),
         CreateBrain("MasterDuel", "Master Duel", MasterDuelDeck.SwordSoul.ToString(), DeckManager.GetDeckName(MasterDuelDeck.SwordSoul), DeckManager.GetDeckHash(MasterDuelDeck.SwordSoul), () => new SwordSoulBotBrain(new WindBotInspiredCardEvaluator(), new DefaultBoardEvaluator())),
         CreateBrain("MasterDuel", "Master Duel", MasterDuelDeck.HandTraps.ToString(), DeckManager.GetDeckName(MasterDuelDeck.HandTraps), DeckManager.GetDeckHash(MasterDuelDeck.HandTraps), () => new HandTrapsBotBrain(new WindBotInspiredCardEvaluator(), new DefaultBoardEvaluator())),
+        CreateBrain("MasterDuel", "Master Duel", MasterDuelDeck.KaibaPureDragon.ToString(), DeckManager.GetDeckName(MasterDuelDeck.KaibaPureDragon), DeckManager.GetDeckHash(MasterDuelDeck.KaibaPureDragon), () => new KaibaPureDragonBotBrain(new WindBotInspiredCardEvaluator(), new DefaultBoardEvaluator())),
+        CreateBrain("MasterDuel", "Master Duel", MasterDuelDeck.KaibaHeavyFusion.ToString(), DeckManager.GetDeckName(MasterDuelDeck.KaibaHeavyFusion), DeckManager.GetDeckHash(MasterDuelDeck.KaibaHeavyFusion), () => new KaibaHeavyFusionBotBrain(new WindBotInspiredCardEvaluator(), new DefaultBoardEvaluator())),
+        CreateBrain("MasterDuel", "Master Duel", MasterDuelDeck.KaibaAntiMeta.ToString(), DeckManager.GetDeckName(MasterDuelDeck.KaibaAntiMeta), DeckManager.GetDeckHash(MasterDuelDeck.KaibaAntiMeta), () => new KaibaAntiMetaBotBrain(new WindBotInspiredCardEvaluator(), new DefaultBoardEvaluator())),
+        CreateBrain("MasterDuel", "Master Duel", MasterDuelDeck.KaibaGunBarrelDragon.ToString(), DeckManager.GetDeckName(MasterDuelDeck.KaibaGunBarrelDragon), DeckManager.GetDeckHash(MasterDuelDeck.KaibaGunBarrelDragon), () => new KaibaGunBarrelDragonBotBrain(new WindBotInspiredCardEvaluator(), new DefaultBoardEvaluator())),
+        CreateBrain("MasterDuel", "Master Duel", MasterDuelDeck.KaibaHandBoardControl.ToString(), DeckManager.GetDeckName(MasterDuelDeck.KaibaHandBoardControl), DeckManager.GetDeckHash(MasterDuelDeck.KaibaHandBoardControl), () => new KaibaHandBoardControlBotBrain(new WindBotInspiredCardEvaluator(), new DefaultBoardEvaluator())),
         CreateBrain("SpeedDuel", "Speed Duel", SpeedDuelDeck.SuperDuck.ToString(), DeckManager.GetDeckName(SpeedDuelDeck.SuperDuck), DeckManager.GetDeckHash(SpeedDuelDeck.SuperDuck), () => new SuperDuckBotBrain(new WindBotInspiredCardEvaluator(), new DefaultBoardEvaluator())),
         CreateBrain("SpeedDuel", "Speed Duel", SpeedDuelDeck.MachineAngelAscension.ToString(), DeckManager.GetDeckName(SpeedDuelDeck.MachineAngelAscension), DeckManager.GetDeckHash(SpeedDuelDeck.MachineAngelAscension), () => new MachineAngelAscensionBotBrain(new WindBotInspiredCardEvaluator(), new DefaultBoardEvaluator())),
         CreateBrain("SpeedDuel", "Speed Duel", SpeedDuelDeck.Amazoness.ToString(), DeckManager.GetDeckName(SpeedDuelDeck.Amazoness), DeckManager.GetDeckHash(SpeedDuelDeck.Amazoness), () => new AmazonessBotBrain(new WindBotInspiredCardEvaluator(), new DefaultBoardEvaluator())),

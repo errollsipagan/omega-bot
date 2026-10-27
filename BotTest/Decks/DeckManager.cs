@@ -18,7 +18,12 @@ namespace BotTest.Decks
         BlueEyes,
         DarkMagician,
         SwordSoul,
-        HandTraps
+        HandTraps,
+        KaibaPureDragon,
+        KaibaHeavyFusion,
+        KaibaAntiMeta,
+        KaibaGunBarrelDragon,
+        KaibaHandBoardControl,
     }
 
     /// <summary>
@@ -74,7 +79,45 @@ namespace BotTest.Decks
                     DeckName: "HandTraps",
                     DeckHash: "s2Fer3yPAYaVPGbC8XWp+Yww/LdzDisMbzI6A8dyLgFMft9LGWE4v+w9AwxfPFTB+s5tAwsMGy2qZQDhtY+4mGD4gpwRKwh7f0pnguGXZ06wwrDFxmQWGNbklmKG4aDvXXC8wX0THD+MmAvHpuzNTDAcMfkok7B7KgOIvlR8jRWGQX4GAA=="
                 )
-            }
+            },
+            {
+                MasterDuelDeck.KaibaPureDragon,
+                (
+                    DeckName: "Kaiba Pure Dragon",
+                    DeckHash: "02ZYujKcFYZrOCxYJgU/ZgDh27IXWddL+TLE9ZQztrI9heOKvD5WEFbV5WIEYfUCITB2/sTDAsIsz/4xgbDphX7GHa22DD8197GUuGszvlf9x7J3eT6jV4Ens/NaXhazX/OYQPgr50GW9+qBDIWHLVi0N+9lCv76i+X3LENma8+TrE8meTJeUs5jzC5zZn669hMzyI0A"
+                    // DeckHash: "02ZYujKcFYZrOCxYQPjcjIlMMLxzsQILDGcmcTDAcCvbU0YYrsjrYwVhmU0cTDtabRlA2HPyNCYQ/qm5j+X3HRHGEndtxveq/1j2Ls9n9CrwZHZey8vylfMgy3v1QIbCwxYs2pv3MgndXMAU/PUXy+9ZhszWnidZn0zyZLyknMeYXebM/HTtJ2aQGwE="
+                )
+            },
+            {
+                MasterDuelDeck.KaibaHeavyFusion,
+                (
+                    DeckName: "Kaiba Heavy Fusion",
+                    DeckHash: "02JYujKcFYZrOCxYJgU/ZgDh27IXWVvZnjLC8BVbA2YQVi8QYgRhlmf/mEDY9EI/o8wmDqZPAWtYYXhHqy1DiAIn40/NfSwl7tqM71X/sexdns8Iwl4FnszOa3lZzH7NYwLhr5wHWd6rBzIUHrZg0d68lyn46y+W37MMma09T7I+meTJeEk5jzG7zJkZ5D4A"
+                    // DeckHash: "02JYujKcFYZrOCxYzs2YyATCOxcrsMBwK9tTRhi+YmvADMIsz/4xgbDphX5GmU0cTJ8C1rDC8I5WW4YQBU7Gn5r7WGC4xF2b8b3qP5a9y/MZQdirwJPZeS0vy1fOgyzv1QMZCg9bsGhv3ssU/PUXy+9ZhszWnidZn0zyZLyknMeYXebMDHIfAA=="
+                )
+            },
+            {
+                MasterDuelDeck.KaibaAntiMeta,
+                (
+                    DeckName: "Kaiba Anti-Meta",
+                    DeckHash: "02RYujKcFYRrOCxYQHhS8GMGEL4te5F1vZQvQ1xPOSPLs39MIGx6oZ9RZhMH06eANaww/FJ2JhhHvXVkBuEdrbYMjzdoMf/U3MdS4q7N+F71H8tkXhuWvcvzGb0KPJmd1/KyvFcPZDA6n81UeNiCRXvzXiarewXMwV9/sYDw71mGzNaeJ1mfTPJk3C0hyHxJOY8R5D4A"
+                )
+            },
+            {
+                MasterDuelDeck.KaibaGunBarrelDragon,
+                (
+                    DeckName: "Kaiba Gun Barrel Dragon",
+                    // DeckHash: "02JYujKcFYRrOCxYQHhS8GMGEM5M4gBjHu/bLCDM8uwfEwibXuhnlNnEwfQpYA0rDL+UnQnGUW8dmXe02jKEKHAyTmRfzfRTcx9Libs243vVfyx7l+czehV4Mjuv5WXJ32fI8l49kKHwsAWL9ua9TFb3CpiDv/5i+T3LkNna8yTrk0mejCDs7DiXBYQvKecxgtwIAA=="
+                    DeckHash: "02CYFPwYjjOTOOCY1/s2CwybXuhnlNnEwfQpYA0rDL+UnQnGUW8dmUF44sSHjDtabRlCFDgZJ7KvZvqpuY+lxF2b8b3qPxavAk9m57W8LPn7DFmMzmczFR62YNHevJdJ6OYCOP49y5DZ2vMk65NJnowg7Ow4lwWEQe4CAA=="
+                )
+            },
+            {
+                MasterDuelDeck.KaibaHandBoardControl,
+                (
+                    DeckName: "Kaiba Hand & Board Control",
+                    DeckHash: "02RYujKctYbDggWEJwU/ZoDhzCQOOOb1vs1y+OQVBhA2vdDPKLOJg+lTwBpWGI5668gMwhMnPmTc0WrLEKLAyTiRfTXTT819LCXu2ozvVf+x7F2ez+hV4MnsvJaXxdnen8W2o5cJhL9yHmR5rx7IoL15L5PVvQJmEA7++ovl9yxDZmvPk6xPJnkygtwIAA=="
+                )
+            },
         };
 
         private static readonly Dictionary<SpeedDuelDeck, (string DeckName, string DeckHash)> _SDdecks = new()

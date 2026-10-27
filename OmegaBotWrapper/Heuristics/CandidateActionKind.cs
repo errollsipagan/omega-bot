@@ -11,6 +11,11 @@ namespace OmegaBotWrapper.Heuristics
         Summon,
         ToBattlePhase,
         ActivateChain,
-        PassChain
+        PassChain,
+        SpecialSummon,
+        SetMonster,
+        SetSpell,
+        Activate,
+        ShuffleHand
     }
 }

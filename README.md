@@ -51,6 +51,43 @@ Duel Bot Wrapper is Omega Custom Duel BOT API of [Yu-Gi-Oh!](https://www.yugioh-
   </ul>
 </details>
 
+<details>
+  <summary>Kaiba Pure Dragon</summary>
+  <ul>
+    <li>Lord of D. and The Flute of Summoning Dragon combo</li>
+    <li>Shared Kaiba heuristic scores and logs legal Main Phase and chain choices before selecting the highest score</li>
+  </ul>
+</details>
+
+<details>
+  <summary>Kaiba Heavy Fusion</summary>
+  <ul>
+    <li>Polymerization fusion strategy for Blue-Eyes Ultimate Dragon and Twin-Headed Thunder Dragon</li>
+    <li>Shared Kaiba heuristic scores and logs legal Main Phase and chain choices before selecting the highest score</li>
+  </ul>
+</details>
+
+<details>
+  <summary>Kaiba Anti-Meta</summary>
+  <ul>
+    <li>Arguably one of his most frustrating decks because it specifically targets and shuts down your magic cards.</li>
+  </ul>
+</details>
+
+<details>
+  <summary>Kaiba Gun Barrel Dragon</summary>
+  <ul>
+    <li>A psychological variant that relies heavily on RNG and chance to pick apart your field.</li>
+  </ul>
+</details>
+
+<details>
+  <summary>Kaiba Hand & Board Control</summary>
+  <ul>
+    <li>A brutal iteration designed to strip you of your resources before you can even take a turn.</li>
+  </ul>
+</details>
+
 ### Speed Duel <a name="speed-duel"></a>
 
 <details>
